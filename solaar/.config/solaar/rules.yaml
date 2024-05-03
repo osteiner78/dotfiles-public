@@ -1,0 +1,60 @@
+%YAML 1.3
+---
+- Device: 4D753DD2
+- Rule:
+  - Test: [thumb_wheel_up, 0x19]
+  - KeyPress:
+    - [Control_L, Page_Down]
+    - click
+- Rule:
+  - Test: [thumb_wheel_down, 0x19]
+  - KeyPress:
+    - [Control_L, Page_Up]
+    - click
+- Rule:
+  - MouseGesture: []
+  - KeyPress:
+    - [Super_L, w]
+    - click
+- Rule:
+  - MouseGesture: Mouse Up
+  - KeyPress:
+    - [Super_L, g]
+    - click
+- Rule:
+  - MouseGesture: Mouse Right
+  - KeyPress:
+    - [Super_L, Control_L, Right]
+    - click
+- Rule:
+  - MouseGesture: Mouse Left
+  - KeyPress:
+    - [Super_L, Control_L, Left]
+    - click
+- Rule:
+  - MouseGesture: Mouse Down
+  - KeyPress:
+    - [Control_L, w]
+    - click
+...
+---
+- Device: 2737FC7E
+- Rule:
+  - Key: [Lock PC, pressed]
+  - KeyPress:
+    - [Super_L, l]
+    - click
+- Rule:
+  - Key: [Calculator, pressed]
+  - Execute: kcalc
+- Rule:
+  - Key: [Mission Control/Task View, pressed]
+  - KeyPress:
+    - [Super_L, w]
+    - click
+- Rule:
+  - Key: [Dashboard Launchpad/Action Center, pressed]
+  - KeyPress:
+    - [Super_L, g]
+    - click
+...
