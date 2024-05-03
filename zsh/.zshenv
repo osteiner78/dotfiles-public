@@ -1,2 +1,2 @@
 . "$HOME/.cargo/env"
-export PATH=/home/osteiner/.local/bin:$PATH
+export PATH=/home/oliversteiner/.local/bin:$PATH
