@@ -2,55 +2,60 @@
 ---
 - Device: 4D753DD2
 - Rule:
-  - Test: [thumb_wheel_up, 0x19]
+  - Test: [thumb_wheel_up, 25]
   - KeyPress:
     - [Control_L, Page_Down]
     - click
 - Rule:
-  - Test: [thumb_wheel_down, 0x19]
+  - Test: [thumb_wheel_down, 25]
   - KeyPress:
     - [Control_L, Page_Up]
     - click
 - Rule:
   - MouseGesture: []
   - KeyPress:
-    - [Super_L, w]
+    - Super_L
     - click
 - Rule:
   - MouseGesture: Mouse Up
   - KeyPress:
-    - [Super_L, g]
+    - [Super_L, a]
     - click
 - Rule:
   - MouseGesture: Mouse Right
   - KeyPress:
-    - [Super_L, Control_L, Right]
+    - [Super_L, Alt_L, Right]
     - click
 - Rule:
   - MouseGesture: Mouse Left
   - KeyPress:
-    - [Super_L, Control_L, Left]
+    - [Super_L, Alt_L, Left]
     - click
 - Rule:
   - MouseGesture: Mouse Down
   - KeyPress:
-    - [Control_L, w]
+    - [Super_L, v]
+    - click
+- Rule:
+  - Test: crown_right
+  - KeyPress:
+    - [Super_L, a]
     - click
 ...
 ---
-- Device: 2737FC7E
+- Device: null
 - Rule:
   - Key: [Lock PC, pressed]
   - KeyPress:
-    - [Super_L, l]
-    - click
+    - Super_L
+    - release
 - Rule:
   - Key: [Calculator, pressed]
-  - Execute: kcalc
+  - Execute: Calculator
 - Rule:
   - Key: [Mission Control/Task View, pressed]
   - KeyPress:
-    - [Super_L, w]
+    - [Super_L, a]
     - click
 - Rule:
   - Key: [Dashboard Launchpad/Action Center, pressed]
