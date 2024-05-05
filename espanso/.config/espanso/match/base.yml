@@ -12,6 +12,7 @@
 
 matches:
   # Simple text replacement
+  # Personal information 
   - trigger: ;os
     replace: "osteiner@gmail.com"
 
@@ -27,16 +28,30 @@ matches:
   - trigger: ";sp"
     replace: "São Paulo"
 
-  - trigger: ";vnc"
-    replace: "Vila Nova Conceićão"
-
   - trigger: ";cep"
     replace: "04513-060"
 
   - trigger: ";cel"
     replace: "(11) 97892-8008"
 
+  - trigger: ";lk"
+    replace: "leticia.kawanami@gmail.com"
 
+  # Other simple replacements
+  - trigger: ";vnc"
+    replace: "Vila Nova Conceićão"
+
+  - trigger: ";lp"
+    replace: "Lycée Pasteur"
+
+  - trigger: ";ML"
+    replace: "Machine Learning"
+
+  - trigger: ";wf"
+    replace: "Waiting for " 
+
+   - trigger: ";ws"
+    replace: "Whatsapp " 
 
   # NOTE: espanso uses YAML to define matches, so pay attention to the indentation!
 
@@ -49,7 +64,7 @@ matches:
       - name: mydate
         type: date
         params:
-          format: "%d/%m/%Y"
+          format: "%Y-%M-%D - "
 
   # Print the output of a shell command
   - trigger: :shell
