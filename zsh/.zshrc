@@ -79,7 +79,9 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git
+          zsh-autosuggestions
+          zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -96,7 +98,7 @@ source $ZSH/oh-my-zsh.sh
 # else
 #   export EDITOR='mvim'
 # fi
-export EDITOR=nano
+export EDITOR=vim
 export VISUAL="$EDITOR"
 
 # Compilation flags
@@ -111,9 +113,26 @@ export VISUAL="$EDITOR"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ll="ls -lah"
-alias nvim="lvim"
+alias ll="exa -lah"
 alias vim="nvim"
+alias nvim="lvim"
 alias c="clear"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/oliversteiner/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/oliversteiner/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
