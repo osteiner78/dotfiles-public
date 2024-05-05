@@ -25,6 +25,9 @@ matches:
   - trigger: ";cpf"
     replace: "20539864846"
 
+  - trigger: ";lcpf"
+    replace: "07276779777"
+
   - trigger: ";sp"
     replace: "São Paulo"
 
@@ -39,7 +42,7 @@ matches:
 
   # Other simple replacements
   - trigger: ";vnc"
-    replace: "Vila Nova Conceićão"
+    replace: "Vila Nova Conceição"
 
   - trigger: ";lp"
     replace: "Lycée Pasteur"
@@ -50,8 +53,18 @@ matches:
   - trigger: ";wf"
     replace: "Waiting for " 
 
-   - trigger: ";ws"
+  - trigger: ";ws"
     replace: "Whatsapp " 
+
+  # Signatures
+  - trigger: ";sige"
+    replace: "Best regards,/nOliver Steiner"
+
+  - trigger: ";sigf"
+    replace: "Bien cordialement,/nOliver Steiner"
+
+  - trigger: ";sigp"
+    replace: "Atenciosamente,/nOliver Steiner"
 
   # NOTE: espanso uses YAML to define matches, so pay attention to the indentation!
 
