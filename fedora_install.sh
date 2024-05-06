@@ -5,17 +5,13 @@
 #==============
 sudo chsh -s /bin/zsh
 
-
 sudo dnf update
 
 # Git
 sudo dnf install git
-# Set git user
-git config --global user.name "Oliver Steiner"
-config --global user.email "osteiner@gmail.com"
 
 # Install other packages
-sudo dnf install bat curl htop mc tree wget exa meld espanso solaar
+sudo dnf install bat curl htop mc tree wget exa meld espanso solaar git-delta
 
 
 # -------------------------------------------------------
@@ -24,7 +20,6 @@ sudo dnf install bat curl htop mc tree wget exa meld espanso solaar
 sudo dnf install make pip python npm node cargo ripgrep lazygit 
 # Install Lvim
 LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
-
 
 
 
