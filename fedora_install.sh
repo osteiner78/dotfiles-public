@@ -1,17 +1,37 @@
 #!/bin/bash
 
+echo "Setting up your PC..."
+
+# Check for Oh My Zsh and install if we don't have it
+if test ! $(which omz); then
+    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+fi
 
 # Set zsh as the default shell
 #==============
 sudo chsh -s /bin/zsh
 
+
+# Install packages
 sudo dnf update
 
-# Git
+sudo dnf install bat
+sudo dnf install curl
+sudo dnf install espanso
+sudo dnf install exa
 sudo dnf install git
-
-# Install other packages
-sudo dnf install bat curl htop mc tree wget exa meld espanso solaar git-delta
+sudo dnf install git-delta
+sudo dnf install htop
+sudo dnf install mc
+sudo dnf install meld
+sudo dnf install powerlevel110k
+sudo dnf install stow
+sudo dnf install tmux
+sudo dnf install solaar
+sudo dnf install tree
+sudo dnf install wget
+sduo dnf install zsh-autosuggestions 
+sudo dnf install zsh-syntax-highlighting
 
 
 # -------------------------------------------------------
@@ -20,8 +40,6 @@ sudo dnf install bat curl htop mc tree wget exa meld espanso solaar git-delta
 sudo dnf install make pip python npm node cargo ripgrep lazygit 
 # Install Lvim
 LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
-
-
 
 # -------------------------------------------------------
 # Insall MesloLGS Nerd fonts

@@ -20,13 +20,13 @@ fi
 # Update Homebrew recipes
 brew update
 # CLI programs
-brew install htop
 brew install bat 
 brew install curl 
 brew install espanso
 brew install exa 
 brew install git 
 brew install git-delta
+brew install htop
 brew install mackup # check https://www.bam.tech/article/setting-new-mac-for-developers-simplifying-configuration-with-dotfiles-and-macos-preferences#:~:text=There%20is%20a%20way%20to,hosted%20with%20%E2%9D%A4%20by%20GitHub
 brew install mc 
 brew install powerlevel10k 
