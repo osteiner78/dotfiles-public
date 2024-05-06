@@ -17,6 +17,7 @@ sudo dnf update
 
 sudo dnf install bat
 sudo dnf install curl
+sudo dnf install dconf-editor
 sudo dnf install espanso
 sudo dnf install exa
 sudo dnf install git
@@ -33,6 +34,12 @@ sudo dnf install wget
 sduo dnf install zsh-autosuggestions 
 sudo dnf install zsh-syntax-highlighting
 
+# Install Albert
+sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/home:manuelschneid3r/Fedora_39/home:manuelschneid3r.repo
+sudo dnf install albert
+
+# Load custom shortcuts
+dconf load / <  gnome-custom-shortcuts.conf
 
 # -------------------------------------------------------
 # LunarVim
@@ -56,4 +63,3 @@ sudo dnf install cmake freetype-devel fontconfig-devel libxcb-devel libxkbcommon
 # build binary at target/release/alacritty
 cargo build --release --no-default-features --features=wayland
 # -------------------------------------------------------
-
