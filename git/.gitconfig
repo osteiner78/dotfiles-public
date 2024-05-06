@@ -1,0 +1,30 @@
+[user]
+	name = Oliver Steiner
+	email = osteiner@gmail.com
+	username = osteiner
+
+[core]
+	editor = nvim
+	pager = delta
+
+[diff]
+	# tool = meld
+    colorMoved = default
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+	side-by-side = true
+	line-numebers = true
+
+    navigate = true    # use n and N to move between diff sections
+
+    # delta detects terminal colors automatically; set one of these to disable auto-detection
+    # dark = true
+    # light = true
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
