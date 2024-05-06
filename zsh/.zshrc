@@ -114,6 +114,7 @@ export VISUAL="$EDITOR"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ll="ls -lah"
 alias ll="exa -lah"
+# alias ls="eza -a --color=always --long --icons=always --no-user"
 alias vim="nvim"
 alias nvim="lvim"
 alias c="clear"
@@ -121,6 +122,17 @@ alias c="clear"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# History setup
+HISTFILE=$HOME/.zhistory
+SAVEHIST=10000
+HISTSIZE=999
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -136,3 +148,4 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+fpath+=${ZDOTDIR:-~}/.zsh_functions
