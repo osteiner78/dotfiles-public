@@ -42,7 +42,7 @@ sudo dnf install make pip python npm node cargo ripgrep lazygit
 LV_BRANCH='release-1.3/neovim-0.9' bash <(curl -s https://raw.githubusercontent.com/LunarVim/LunarVim/release-1.3/neovim-0.9/utils/installer/install.sh)
 
 # -------------------------------------------------------
-# Insall MesloLGS Nerd fonts
+# Install MesloLGS Nerd fonts
 curl -L --create-dirs --output-dir ".local/share/fonts" -O https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
 curl -L --create-dirs --output-dir ".local/share/fonts" -O https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
 curl -L --create-dirs --output-dir ".local/share/fonts" -O https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf

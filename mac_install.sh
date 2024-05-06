@@ -40,6 +40,11 @@ brew install zsh-syntax-highlighting
 # GUI apps
 brew install --cask 1password 1password-cli alfred appcleaner arc dash google-chrome grandperspective itau iterm2 karabiner-elements keyboard-maestro logitech-options
 brew install --cask meld mimestream nordvpn obsidian rectangle fujitsu-scansnap-home spotify steam thunderbird visual-studio-code whatsapp zoom
+
+# ------------------------------------------------------------
+# Instal Nerd fonts
+brew tap homebrew /cask-fonts
+brew install font-meslo-lg-nerd
 # ------------------------------------------------------------
 
 # Define a function which rename a `target` file to `target.backup` if the file
