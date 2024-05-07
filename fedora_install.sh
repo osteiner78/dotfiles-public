@@ -38,6 +38,13 @@ sudo dnf install zsh-syntax-highlighting
 sudo dnf config-manager --add-repo https://download.opensuse.org/repositories/home:manuelschneid3r/Fedora_39/home:manuelschneid3r.repo
 sudo dnf install albert
 
+# Install keyd (to remap Caps Lock) - https://github.com/rvaiya/keyd?tab=readme-ov-file
+sudo dnf copr enable alternateved/keyd
+sudo dnf install keyd
+sudo systemctl enable keyd
+
+echo "Manually install run-or-raise Gnome extension"
+
 # Load custom shortcuts
 dconf load / <  gnome-custom-shortcuts.conf
 
