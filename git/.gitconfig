@@ -3,6 +3,9 @@
 	email = osteiner@gmail.com
 	username = osteiner
 
+[include]
+  path = ~/dotfiles/git/themes.gitconfig
+    
 [core]
 	editor = nvim
 	pager = delta
@@ -17,7 +20,8 @@
 [delta]
 	side-by-side = true
 	line-numebers = true
-
+  dark = true
+  features = arctic-fox 
     navigate = true    # use n and N to move between diff sections
 
     # delta detects terminal colors automatically; set one of these to disable auto-detection

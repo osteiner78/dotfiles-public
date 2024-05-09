@@ -4,21 +4,7 @@
         "id": "ed63730e",
         "name": "Amazon",
         "trigger": "ama",
-        "url": "http://www.amazon.com/s/?field-keywords=%s"
-    },
-    {
-        "iconPath": ":duckduckgo",
-        "id": "d03d87b6",
-        "name": "DuckDuckGo",
-        "trigger": "dd",
-        "url": "https://duckduckgo.com/?q=%s"
-    },
-    {
-        "iconPath": ":ebay",
-        "id": "ed41d195",
-        "name": "Ebay",
-        "trigger": "eb",
-        "url": "http://www.ebay.com/sch/i.html?_nkw=%s"
+        "url": "http://www.amazon.com.br/s/?field-keywords=%s"
     },
     {
         "iconPath": ":github",
@@ -38,7 +24,7 @@
         "iconPath": ":maps",
         "id": "6ee2e823",
         "name": "Google Maps",
-        "trigger": "maps",
+        "trigger": "gm",
         "url": "https://www.google.com/maps/search/%s/"
     },
     {
@@ -54,13 +40,6 @@
         "name": "Google Translate",
         "trigger": "gt",
         "url": "https://translate.google.com/?text=%s"
-    },
-    {
-        "iconPath": ":wolfram",
-        "id": "ba26f5a1",
-        "name": "Wolfram Alpha",
-        "trigger": "wa",
-        "url": "https://www.wolframalpha.com/input/?i=%s"
     },
     {
         "iconPath": ":youtube",
