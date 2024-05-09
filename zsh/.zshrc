@@ -112,12 +112,13 @@ export VISUAL="$EDITOR"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias ll="ls -lah"
+# alias ll="ls -lah"
 alias ll="exa -lah"
 # alias ls="eza -a --color=always --long --icons=always --no-user"
 alias vim="nvim"
 alias nvim="lvim"
 alias c="clear"
+alias obsidian="OBSIDIAN_USE_WAYLAND=1 ~/AppImages/gearlever_obsidian_7947f7.appimage --no-sandbox -enable-features=UseOzonePlatform -ozone-platform=wayland %U"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
