@@ -4,37 +4,37 @@
 - Rule:
   - Test: [thumb_wheel_up, 25]
   - KeyPress:
-    - [Control_L, Page_Down]
+    - [Control_L, Page_Up]
     - click
 - Rule:
   - Test: [thumb_wheel_down, 25]
   - KeyPress:
-    - [Control_L, Page_Up]
+    - [Control_L, Page_Down]
     - click
 - Rule:
   - MouseGesture: []
   - KeyPress:
-    - Super_L
+    - Super_R
     - click
 - Rule:
   - MouseGesture: Mouse Up
   - KeyPress:
-    - [Super_L, a]
+    - [Super_R, a]
     - click
 - Rule:
   - MouseGesture: Mouse Right
   - KeyPress:
-    - [Super_L, Alt_L, Right]
+    - [Super_R, Alt_L, Right]
     - click
 - Rule:
   - MouseGesture: Mouse Left
   - KeyPress:
-    - [Super_L, Alt_L, Left]
+    - [Super_R, Alt_L, Left]
     - click
 - Rule:
   - MouseGesture: Mouse Down
   - KeyPress:
-    - [Super_L, v]
+    - [Super_R, v]
     - click
 - Rule:
   - Test: crown_right
