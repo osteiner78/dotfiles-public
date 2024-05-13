@@ -77,7 +77,7 @@ matches:
       - name: mydate
         type: date
         params:
-          format: "%Y-%M-%D - "
+          format: "%Y-%m-%d - "
 
   # Print the output of a shell command
   - trigger: :shell

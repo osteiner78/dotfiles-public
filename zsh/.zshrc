@@ -116,7 +116,7 @@ export VISUAL="$EDITOR"
 alias ll="exa -lah"
 # alias ls="eza -a --color=always --long --icons=always --no-user"
 alias vim="nvim"
-alias nvim="lvim"
+# alias nvim="lvim"
 alias c="clear"
 alias obsidian="OBSIDIAN_USE_WAYLAND=1 ~/AppImages/gearlever_obsidian_7947f7.appimage --no-sandbox -enable-features=UseOzonePlatform -ozone-platform=wayland %U"
 
