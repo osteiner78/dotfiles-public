@@ -4,7 +4,7 @@
 	username = osteiner
 
 [include]
-  path = ~/dotfiles/git/themes.gitconfig
+	path = ~/dotfiles/git/themes.gitconfig
     
 [core]
 	editor = nvim
@@ -12,23 +12,24 @@
 
 [diff]
 	# tool = meld
-    colorMoved = default
+	colorMoved = default
 
 [interactive]
-    diffFilter = delta --color-only
+	diffFilter = delta --color-only
 
 [delta]
 	side-by-side = true
 	line-numebers = true
-  dark = true
-  features = arctic-fox 
-    navigate = true    # use n and N to move between diff sections
+	dark = true
+	features = arctic-fox 
+	navigate = true    # use n and N to move between diff sections
 
     # delta detects terminal colors automatically; set one of these to disable auto-detection
     # dark = true
     # light = true
 
 [merge]
-    conflictstyle = diff3
+	conflictstyle = diff3
 
 [diff]
+	colorMoved = default

@@ -7,8 +7,8 @@ fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-path+=('/home/oliversteiner/.cargo/bin')
-export PATH
+# path+=('/home/oliversteiner/.cargo/bin')
+# export PATH 
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -18,6 +18,9 @@ export ZSH="$HOME/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -116,12 +119,11 @@ export VISUAL="$EDITOR"
 alias ll="exa -lah"
 # alias ls="eza -a --color=always --long --icons=always --no-user"
 alias vim="nvim"
-# alias nvim="lvim"
 alias c="clear"
 alias obsidian="OBSIDIAN_USE_WAYLAND=1 ~/AppImages/gearlever_obsidian_7947f7.appimage --no-sandbox -enable-features=UseOzonePlatform -ozone-platform=wayland %U"
+alias ta="tmux new-session -A -s ${USER} >/dev/null 2>&1"
+alias gs="git status"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # History setup
 HISTFILE=$HOME/.zhistory
@@ -135,11 +137,25 @@ setopt hist_verify
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
 
-# Start tmux in every shell login
+# =====================================================================
+# LAUNCH ZSH PLUGINS WITHOUT PLUGIN MANAGER
+# For Mac
+# source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# For Linux
+# source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# =====================================================================
+# START TMUX IN EVERY SHELL LOGIN
 # [[ $TERM != "screen" ]] && exec tmux
-# if [ -x "$(command -v tmux)" ] && [ -n "${DISPLAY}" ] && [ -z "${TMUX}" ]; then
-#     exec tmux new-session -A -s ${USER} >/dev/null 2>&1
-# fi
+
+# from https://wiki.archlinux.org/title/Tmux#Start_tmux_on_every_shell_login
+if [ -x "$(command -v tmux)" ] && [ -z "${TMUX}" ]; then
+    exec tmux new-session -A -s ${USER} >/dev/null 2>&1
+fi
+# =====================================================================
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -156,3 +172,36 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 fpath+=${ZDOTDIR:-~}/.zsh_functions
+
+# =============== FZF ===================
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --zsh)"
+
+# -- Use fd instead of fzf --
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --exclude .git . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type=d --hidden --exclude .git . "$1"
+}
+
+# --- setup fzf theme ---
+fg="#CBE0F0"
+bg="#011628"
+bg_highlight="#143652"
+purple="#B388FF"
+blue="#06BCE4"
+cyan="#2CF9ED"
+
+export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
