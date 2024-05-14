@@ -152,9 +152,9 @@ bindkey "^[[B" history-search-forward
 # [[ $TERM != "screen" ]] && exec tmux
 
 # from https://wiki.archlinux.org/title/Tmux#Start_tmux_on_every_shell_login
-if [ -x "$(command -v tmux)" ] && [ -z "${TMUX}" ]; then
-    exec tmux new-session -A -s ${USER} >/dev/null 2>&1
-fi
+# if [ -x "$(command -v tmux)" ] && [ -z "${TMUX}" ]; then
+#     exec tmux new-session -A -s ${USER} >/dev/null 2>&1
+# fi
 # =====================================================================
 
 # >>> conda initialize >>>
@@ -205,3 +205,6 @@ blue="#06BCE4"
 cyan="#2CF9ED"
 
 export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
+
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
