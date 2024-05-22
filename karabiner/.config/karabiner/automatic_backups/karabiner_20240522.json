@@ -61,7 +61,7 @@
             "key_code" : "1"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/1Password.app\""
+            "shell_command" : "open -a /Applications/1Password.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -74,7 +74,7 @@
             "key_code" : "a"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/Arc.app\""
+            "shell_command" : "open -a /Applications/Arc.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -87,7 +87,7 @@
             "key_code" : "c"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/System/Applications/Calendar.app\""
+            "shell_command" : "open -a /System/Applications/Calendar.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -100,7 +100,7 @@
             "key_code" : "d"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/opt/homebrew/bin/dark-mode\""
+            "shell_command" : "open -a /opt/homebrew/bin/dark-mode"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -113,7 +113,7 @@
             "key_code" : "f"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/System/Library/CoreServices/Finder.app\""
+            "shell_command" : "open -a /System/Library/CoreServices/Finder.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -126,7 +126,7 @@
             "key_code" : "g"
           },
           "to" : [ {
-            "shell_command" : "open -a \"~/Applications/Gmail.app\""
+            "shell_command" : "open -a ~/Applications/Gmail.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -139,7 +139,7 @@
             "key_code" : "h"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/Things3.app\""
+            "shell_command" : "open -a /Applications/Things3.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -152,7 +152,7 @@
             "key_code" : "m"
           },
           "to" : [ {
-            "shell_command" : "open -a \"~/Applications/'Google Maps'.app\""
+            "shell_command" : "open -a ~/Applications/'Google Maps'.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -165,7 +165,7 @@
             "key_code" : "o"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/Obsidian.app\""
+            "shell_command" : "open -a /Applications/Obsidian.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -178,7 +178,7 @@
             "key_code" : "p"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/'PDF Expert'.app\""
+            "shell_command" : "open -a /Applications/'PDF Expert'.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -191,7 +191,7 @@
             "key_code" : "s"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/Dash.app\""
+            "shell_command" : "open -a /Applications/Dash.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -204,7 +204,7 @@
             "key_code" : "t"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/iTerm.app\""
+            "shell_command" : "open -a /Applications/iTerm.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -217,7 +217,7 @@
             "key_code" : "v"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/'Visual Studio Code'.app\""
+            "shell_command" : "open -a /Applications/'Visual Studio Code'.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -230,7 +230,7 @@
             "key_code" : "w"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/Whatsapp.app\""
+            "shell_command" : "open -a /Applications/Whatsapp.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -243,7 +243,7 @@
             "key_code" : "equal_sign"
           },
           "to" : [ {
-            "shell_command" : "open -a \"/Applications/'Soulver 3'.app\""
+            "shell_command" : "open -a /Applications/'Soulver 3'.app"
           } ],
           "conditions" : [ {
             "name" : "hyper_layer",
@@ -502,6 +502,17 @@
           "type" : "basic"
         }, {
           "from" : {
+            "key_code" : "v",
+            "modifiers" : {
+              "mandatory" : [ "left_control", "left_shift" ]
+            }
+          },
+          "to" : [ {
+            "shell_command" : "/opt/homebrew/bin/yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
             "key_code" : "p",
             "modifiers" : {
               "mandatory" : [ "left_control", "left_shift" ]
@@ -733,7 +744,7 @@
           "type" : "basic"
         }, {
           "from" : {
-            "key_code" : "v",
+            "key_code" : "r",
             "modifiers" : {
               "mandatory" : [ "left_control", "left_shift" ]
             }

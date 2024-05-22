@@ -89,6 +89,11 @@ require("oliver.core.options")
 require("oliver.core.keymaps")
 require("oliver.lazy")
 
+-- Set colorscheme
+-- vim.cmd.colorscheme("gruvbox")
+vim.cmd.colorscheme("gruvbox-material")
+-- vim.cmd.colorscheme("tokyonight-moon")
+
 -- ===========================================================================================================
 -- [[ BASIC AUTOCOMMANDS ]]
 --  See `:help lua-guide-autocommands`
