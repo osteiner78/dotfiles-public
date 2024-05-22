@@ -27,6 +27,7 @@ brew install exa
 brew install git 
 brew install git-delta
 brew install htop
+brew install jordanbaird-ice # Bartender replacement
 brew install mackup # check https://www.bam.tech/article/setting-new-mac-for-developers-simplifying-configuration-with-dotfiles-and-macos-preferences#:~:text=There%20is%20a%20way%20to,hosted%20with%20%E2%9D%A4%20by%20GitHub
 brew install mc 
 brew install powerlevel10k 
@@ -36,6 +37,9 @@ brew install tree
 brew install wget 
 brew install zsh-autosuggestions 
 brew install zsh-syntax-highlighting 
+
+brew install --cask --no-quarantine middleclick # Simulate triple click with trackpad
+brew install --cask rectangle
 
 # GUI apps
 brew install --cask 1password 1password-cli alfred appcleaner arc dash google-chrome grandperspective itau iterm2 karabiner-elements keyboard-maestro logitech-options
