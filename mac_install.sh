@@ -15,35 +15,79 @@ if test ! $(which brew); then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# ------------------------------------------------------------
-# Install applications
+# ============= INSTALL APPLICATIONS ================
+
 # Update Homebrew recipes
 brew update
+
 # CLI programs
-brew install bat 
-brew install curl 
+brew install bat curl exa fzf htop mc neovim stow tmux tree wget
+
+# Git related
+brew install git git-delta lazygit
+
+# Karabiner Elements
+brew install --cask karabiner-elements
+brew install goku
+
+# Text replacement
+brew tap espanso/espanso # From https://espanso.org/docs/install/mac/
 brew install espanso
-brew install exa 
-brew install git 
-brew install git-delta
-brew install htop
-brew install jordanbaird-ice # Bartender replacement
+
+
+# Ice - Bartender replacement - https://github.com/jordanbaird/Ice
+brew install jordanbaird-ice
+
 brew install mackup # check https://www.bam.tech/article/setting-new-mac-for-developers-simplifying-configuration-with-dotfiles-and-macos-preferences#:~:text=There%20is%20a%20way%20to,hosted%20with%20%E2%9D%A4%20by%20GitHub
-brew install mc 
-brew install powerlevel10k 
-brew install stow
-brew install tmux 
-brew install tree 
-brew install wget 
-brew install zsh-autosuggestions 
-brew install zsh-syntax-highlighting 
 
-brew install --cask --no-quarantine middleclick # Simulate triple click with trackpad
+# Maccy - Clipboard manager - https://github.com/p0deje/Maccy?tab=readme-ov-file#install
+brew install maccy
+
+# Window management
 brew install --cask rectangle
+brew install yabai spaceman
 
-# GUI apps
-brew install --cask 1password 1password-cli alfred appcleaner arc dash google-chrome grandperspective itau iterm2 karabiner-elements keyboard-maestro logitech-options
-brew install --cask meld mimestream nordvpn obsidian rectangle fujitsu-scansnap-home spotify steam thunderbird visual-studio-code whatsapp zoom
+# Simulate middle click with trackpad - https://github.com/artginzburg/MiddleClick-Sonoma#install
+brew install --cask --no-quarantine middleclick # Simulate triple click with trackpad
+
+# macOS dark mode toggle
+brew install dark-mode
+
+# GUI APPS
+# Utils
+brew install --cask 1password 1password-cli alfred appcleaner grandperspective
+brew install --cask itau
+brew install --cask logi-options-plus
+brew install --cask nordvpn
+brew install --cask obsidian
+brew install --cask fujitsu-scansnap-home
+brew install --cask spotify
+brew install --cask betterdisplay # https://github.com/waydabber/BetterDisplay
+brew install --cask soulver
+
+# Trading
+brew install --cask ibkr tradingview
+
+# Browsers
+brew install --cask arc google-chrome
+
+# Coding
+brew install --cask visual-studio-code dash iterm2 meld
+brew install --cask sublime-text
+
+# Comms
+brew install --cask mimestream thunderbird whatsapp
+
+# Gaming
+brew install --cask steam whisky
+
+# ARCHIVE
+# brew install powerlevel10k 
+# brew install zsh-autosuggestions 
+# brew install zsh-syntax-highlighting 
+# brew install --cask zoom
+# brew install --cask keyboard-maestro
+# brew install --cask logitech-options
 
 # ------------------------------------------------------------
 # Instal Nerd fonts
