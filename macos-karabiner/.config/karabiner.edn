@@ -2,7 +2,6 @@
 :profiles {
     :Default {
         :default true
-
         :sim     25     ;; simultaneous key press threshold (def: 50)
                         ;; simlayer is implemented with to_if_alone and simultaneous key press feature
                         ;; if keydown event for two different keys are pressed within :sim ms, the keypresses are considered simultaneous
@@ -24,34 +23,67 @@
     }
 } 
 
-:templates {    :launch "open -a %sa"
-                :yabai "/opt/homebrew/bin/yabai %s"} ;; Should not need to specify full path, something wrong in $PATH definition
+:templates {    :launch "open -a %s"
+                ;; :yabai "/opt/homebrew/bin/yabai %s" ;; Should not need to specify full path, something wrong in $PATH definition
+                :yabai "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai %s"
+                ;; :openFinder "open \"/System/Library/CoreServices/Finder.app\"" ;; "openFinder" to switch to the Finder
+                :notification "osascript -e 'display notification \"%s\" with title \"%s\"'"    ;; Display notification
+                                                                                                ;; notifcation "text" "title"
+}
 
-:layers {:hyper_layer {:key :caps_lock} ;;hyper_layer when pressing caps-lock}
-;;      couldn't create yabai_layer using both left_control and left_shift
-        ;;  :yabai_layer {:key :left_shift :modi {:mandatory :left_control}}    
-} 
+:applications{
+        :1password  ["^com\\.1password\\.1password$"]
+        :arc ["^company\\.thebrowser\\.Browser$"]
+        :code [ "^com\\.visualstudio\\.code\\.oss$"
+                "^com\\.microsoft\\.VSCode(Insiders)?$"
+                "^com\\.microsoft\\.VSCode?$"]
+        :finder ["^com\\.apple\\.finder$"]
+        :notes  ["^com\\.apple\\.Notes$"]
+        :obsidian ["^md\\.obsidian$"]
+        :pdf   ["^com\\.readdle\\.PDFExpert-Mac$"]
+        :safari   ["^com\\.apple\\.Safari$"]
+        :sublime   ["^com\\.sublimetext\\.4$"]
+        :things ["^com\\.culturedcode\\.ThingsMac$"]
+}
 
-:main [
-        {:des "Caps Lock → Escape (if alone) | Caps Lock (simple)"
+;; layers are basically "hyper" keys
+;; press this in combination with something else and depending on your rule, make things happen
+:layers {:hyper-mode {:key :caps_lock :alone {:key :escape}}    ;; make the caps_lock key the hyper key
+                                                                ;; In "System Preferences/Keyboard/Modifier Keys..."
+                                                                ;; the Caps Lock Key is set to "No Action".
+         :yabai-mode {:key :tab}  ;; couldn't create yabai-mode using both left_control and left_shift
+}    
+
+;; simlayers are basically "hyper" keys
+;; layers works too, but only recommended for non-typing keys like . or tab
+;; or keys like z which are used less often
+;; :simlayers {
+;;          :yabai-mode {:key :z :modi {:mandatory [:left_control]} }
+;;         ;;  :yabai-mode {:key :left_shift :modi {:mandatory :left_control}}    
+;; }
+
+:main [  
+        ;; {:des "Caps Lock → Escape (if alone) | Caps Lock (simple)"
         ;;  CapsLock to Hyperkey:
         ;;  :rules [[:##caps_lock :!CTOleft_shift nil {:alone [:escape]}]]
-         :rules [[:##caps_lock :caps_lock nil {:alone [:escape]}]]}
-        
+        ;;  :rules [[:##caps_lock :caps_lock nil {:alone [:escape]}]]
+        ;;  }
         {:des "Launch apps with hyperkey"
-        :rules [:hyper_layer
+        :rules [:hyper-mode
                 [:1 [:launch "/Applications/1Password.app"]]
                 [:a [:launch "/Applications/Arc.app"]]
                 [:c [:launch "/System/Applications/Calendar.app"]]
                 [:d [:launch "/opt/homebrew/bin/dark-mode"]]
-                [:f [:launch "/System/Library/CoreServices/Finder.app"]]
+                [:f ["open ~"]]
+                ;; [:f ["open \"/System/Library/CoreServices/Finder.app\""]]
                 [:g [:launch "~/Applications/Gmail.app"]]
                 [:h [:launch "/Applications/Things3.app"]]
                 [:m [:launch "~/Applications/'Google Maps'.app"]]
                 [:o [:launch "/Applications/Obsidian.app"]]
                 [:p [:launch "/Applications/'PDF Expert'.app"]]
-                [:s [:launch "/Applications/Dash.app"]]
+                ;; [:s [:launch "/Applications/Dash.app"]] ;; conflicts with universal sidebar
                 [:t [:launch "/Applications/iTerm.app"]]
+                [:grave_accent_and_tilde [:launch "/Applications/iTerm.app"]]
                 [:v [:launch "/Applications/'Visual Studio Code'.app"]]
                 [:w [:launch "/Applications/Whatsapp.app"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
@@ -66,89 +98,129 @@
                 [:!Epage_up :!QRopen_bracket]
                 [:!Epage_down :!QRclose_bracket]]}
         
+        {:des "left_command alone -> ⌘ + tab to last app"
+         :rules [[:left_command :left_command nil {:alone :!Ctab}]]}
+
+        {:des "Hyper+S: Universal sidebar toggle"
+        :rules [:hyper-mode
+                [:s :!CSd :1password]     
+                [:s :!Cs :arc]           
+                [:s :!Cb :code]          
+                [:s :!CTs :finder]       
+                [:s :!TSs :obsidian]     
+                [:s :!CSl :safari] 
+                [:s :!CO0 :pdf] 
+                [:s [:!Qk :!Qb] :sublime] 
+                [:s :!Cslash :things]    
+                [:s :!COs :notes]
+                ]}
+
+        {:des "Hyper+space: Universal command palette"
+        :rules [:hyper-mode
+                [:spacebar :!Cl :arc]     
+                [:spacebar :!Cp :obsidian]     
+                [:spacebar :!QRp :code]     
+                [:spacebar :!QRp :sublime]     
+                ]}
+
+        {:des "Hyper+{page_up/page_down}"
+        :rules [:hyper-mode
+                [:period :page_down]     
+                [:comma :page_up]     
+                ]}
+
 ;;              ============== YABAI RULES =================
-        {:des "Yabai rules"
+        {:des "Yabai rules - Inside yabai layer (tab)"
+        :rules[:yabai-mode
+;;              Warp windows
+                [:j [:yabai "-m window --warp south"]]
+                [:k [:yabai "-m window --warp north"]]
+                [:h [:yabai "-m window --warp west"]]
+                [:l [:yabai "-m window --warp east"]]
+
+;;              Roate layout clockwise
+                [:r [:yabai "-m space --rotate 270"]]
+
+;;              Flip along x or y-axis
+                [:x [:yabai "-m space --mirror x-axis"]]
+                [:y [:yabai "-m space --mirror y-axis"]]
+
+;;              Balance out tree of windows (resize to occupy)
+                [:e [:yabai "-m space --balance"]]
+                
+;;              Maximize window
+                [:return_or_enter [:yabai "-m window --toggle zoom-fullscreen"]]
+
+;;              Toggle window float
+                [:t [:yabai "-m window --toggle float --grid 4:4:1:1:2:2"]]
+
+;;              Toggle space layout (bsp/float)
+                ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')"]
+                ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(/opt/homebrew/bin/yabai -m query --spaces --space | jq -r 'if .type == 'bsp' then 'float' else 'bsp' end')"]
+
+;;              Toggle paddings
+                [:p [:yabai "-m space --toggle padding --toggle gap"]]
+
+;;              ============== YABAI - SPACES NAVIGATION =================
+;;              Move window to space #
+                [:1 [:yabai "-m window --space 1 ; /opt/homebrew/bin/yabai -m space --focus 1"]]
+                [:2 [:yabai "-m window --space 2 ; /opt/homebrew/bin/yabai -m space --focus 2"]]
+                [:3 [:yabai "-m window --space 3 ; /opt/homebrew/bin/yabai -m space --focus 3"]]
+                [:4 [:yabai "-m window --space 4 ; /opt/homebrew/bin/yabai -m space --focus 4"]]
+                [:5 [:yabai "-m window --space 5 ; /opt/homebrew/bin/yabai -m space --focus 5"]]
+                [:6 [:yabai "-m window --space 6 ; /opt/homebrew/bin/yabai -m space --focus 6"]]
+                [:7 [:yabai "-m window --space 7 ; /opt/homebrew/bin/yabai -m space --focus 7"]]
+                [:8 [:yabai "-m window --space 8 ; /opt/homebrew/bin/yabai -m space --focus 8"]]
+                [:9 [:yabai "-m window --space 9 ; /opt/homebrew/bin/yabai -m space --focus 9"]]
+
+;;              Move window to Previous and Next space #
+                [:comma [:yabai "-m window --space prev ; /opt/homebrew/bin/yabai -m space --focus prev"]]
+                [:period [:yabai "-m window --space next ; /opt/homebrew/bin/yabai -m space --focus next"]]
+
+;;              Alternate to recent space
+                [:x [:yabai "-m space --focus recent"]]
+                [:m [:yabai "-m space --focus prev"]]
+                [:slash [:yabai "-m space --focus next"]]
+
+;;              ============== YABAI - DISPLAY NAVIGATION =================
+;;              Move window to left and right display #
+                [:open_bracket [:yabai "-m window --display west ; /opt/homebrew/bin/yabai -m display --focus west"]]
+                [:close_bracket [:yabai "-m window --display east ; /opt/homebrew/bin/yabai -m display --focus east"]]
+
+;;              ====================== YABAI - SYSTEM ======================
+;;              Start/Stop yabai
+                ;; [:q [[:yabai "--stop-service"] [:notification "Stopped" "Yabai"]]]
+                [:q ["/opt/homebrew/bin/yabai --stop-service" [:notification "Stopped" "Yabai"]]]
+                ;; [:w [[:yabai "--start-service"] [:notification "Started" "Yabai"]]]
+                [:w ["/opt/homebrew/bin/yabai --start-service" [:notification "Started" "Yabai"]]]
+                ;; [:v [["/opt/homebrew/bin/yabai w--restart-service"] [:notification "Retarted" "Yabai"]]]
+]}
+
+        {:des "Yabai rules - Outside yabai layer (tab)"
         :rules[
-;;              ============== WINDOWS NAVIGATION =================
+;;              ============== YABAI - WINDOWS NAVIGATION =================
 ;;              Change window focus within space - Alt/Option
                 [:!Oj [:yabai "-m window --focus south"]]
                 [:!Ok [:yabai "-m window --focus north"]]
                 [:!Oh [:yabai "-m window --focus west"]]
                 [:!Ol [:yabai "-m window --focus east"]]
 
-;;              Swap windows - Shift+Ctrl
-                [:!STj [:yabai "-m window --swap south"]]
-                [:!STk [:yabai "-m window --swap north"]]
-                [:!STh [:yabai "-m window --swap west"]]
-                [:!STl [:yabai "-m window --swap east"]]
-
 ;;              Move window and split - Ctrl+Alt
-                [:!TOj [:yabai "-m window --warp south"]]
-                [:!TOk [:yabai "-m window --warp north"]]
-                [:!TOh [:yabai "-m window --warp west"]]
-                [:!TOl [:yabai "-m window --warp east"]]
+                [:!TOj [:yabai "-m window --swap south"]]
+                [:!TOk [:yabai "-m window --swap north"]]
+                [:!TOh [:yabai "-m window --swap west"]]
+                [:!TOl [:yabai "-m window --swap east"]]
 
-;;              Roate layout clockwise - Shift+Ctrl
-                [:!STr [:yabai "-m space --rotate 270"]]
-
-;;              Flip along x or y-axis - Shift+Ctrl
-                [:!STx [:yabai "-m space --mirror x-axis"]]
-                [:!STy [:yabai "-m space --mirror y-axis"]]
-
-;;              Balance out tree of windows (resize to occupy) - Shift+Ctrl
-                [:!STe [:yabai "-m space --balance"]]
-                
-;;              Maximize window - Shift+Ctrl
-                [:!STreturn_or_enter [:yabai "-m window --toggle zoom-fullscreen"]]
-
-;;              Toggle window float - Shift+Ctrl
-                [:!STt [:yabai "-m window --toggle float --grid 4:4:1:1:2:2"]]
-
-;;              Toggle space layout (bsp/float) - Shift+Ctrl
-                ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')"]
-                ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(/opt/homebrew/bin/yabai -m query --spaces --space | jq -r 'if .type == 'bsp' then 'float' else 'bsp' end')"]
-
-;;              Toggle paddings
-                [:!STp [:yabai "-m space --toggle padding --toggle gap"]]
- 
-;;              ============== SPACES NAVIGATION =================
-;;              Move window to space # - Shift+Ctrl
-                [:!ST1 [:yabai "-m window --space 1 ; /opt/homebrew/bin/yabai -m space --focus 1"]]
-                [:!ST2 [:yabai "-m window --space 2 ; /opt/homebrew/bin/yabai -m space --focus 2"]]
-                [:!ST3 [:yabai "-m window --space 3 ; /opt/homebrew/bin/yabai -m space --focus 3"]]
-                [:!ST4 [:yabai "-m window --space 4 ; /opt/homebrew/bin/yabai -m space --focus 4"]]
-                [:!ST5 [:yabai "-m window --space 5 ; /opt/homebrew/bin/yabai -m space --focus 5"]]
-                [:!ST6 [:yabai "-m window --space 6 ; /opt/homebrew/bin/yabai -m space --focus 6"]]
-                [:!ST7 [:yabai "-m window --space 7 ; /opt/homebrew/bin/yabai -m space --focus 7"]]
-                [:!ST8 [:yabai "-m window --space 8 ; /opt/homebrew/bin/yabai -m space --focus 8"]]
-                [:!ST9 [:yabai "-m window --space 9 ; /opt/homebrew/bin/yabai -m space --focus 9"]]
-
-;;              Move window to Previous and Next space # - Shift+Ctrl
-                [:!STcomma [:yabai "-m window --space prev ; /opt/homebrew/bin/yabai -m space --focus prev"]]
-                [:!STperiod [:yabai "-m window --space next ; /opt/homebrew/bin/yabai -m space --focus next"]]
-
-;;              Alternate to recent space - Shift+Ctrl
-                [:!STx [:yabai "-m space --focus recent"]]
-                [:!STm [:yabai "-m space --focus prev"]]
-                [:!STslash [:yabai "-m space --focus next"]]
-
-;;              ============== DISPLAY NAVIGATION =================
-;;              Move window to left and right display # - Shift+Ctrl
-                [:!STopen_bracket [:yabai "-m window --display west ; /opt/homebrew/bin/yabai -m display --focus west"]]
-                [:!STclose_bracket [:yabai "-m window --display east ; /opt/homebrew/bin/yabai -m display --focus east"]]
-
+;;              ============== YABAI - DISPLAY NAVIGATION =================
 ;;              Change focus between external displays # - Control
                 [:!Topen_bracket [:yabai "-m display --focus west"]]
                 [:!Tclose_bracket [:yabai "-m display --focus east"]]
 
-;;              ====================== SYSTEM ======================
-;;              Start/Stop yabai - Shift+Ctrl
-                [:!STq [:yabai "--stop-service"]]
-                [:!STw [:yabai "--start-service"]]
-                [:!STv [:yabai "--restart-service"]]
+;;              ====================== TEST ======================
+                ; [:!F9 "echo $PATH >> ~/test.log"]
         ]}
-        ]
-}
+]}
+
 
 ;; !  | means mandatory
 ;; #  | means optional
