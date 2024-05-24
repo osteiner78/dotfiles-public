@@ -21,7 +21,7 @@ fi
 brew update
 
 # CLI programs
-brew install bat curl exa fzf htop mc neovim stow tmux tree wget
+brew install bat curl eza fzf htop mc neovim stow tmux tree wget
 
 # Git related
 brew install git git-delta lazygit
@@ -64,6 +64,7 @@ brew install --cask fujitsu-scansnap-home
 brew install --cask spotify
 brew install --cask betterdisplay # https://github.com/waydabber/BetterDisplay
 brew install --cask soulver
+brew install --cask cheatsheet
 
 # Trading
 brew install --cask ibkr tradingview

@@ -48,22 +48,22 @@ yabai -m config \
 # ============= WINDOW OPTIONS =============
 # Padding
 yabai -m config \
-        top_padding     6 \
-        bottom_padding  6 \
-        right_padding   6 \
-        left_padding    6 \
-        window_gap      6 
+        top_padding     5 \
+        bottom_padding  5 \
+        right_padding   5 \
+        left_padding    5 \
+        window_gap      5 
 
 # Test
-yabai -m config \
-        windows_shadow                  float           \
-        window_opacity                  on              \
-        window_opacity_duration         0.2             \
-        active_window_opacity           1.0             \
-        normal_window_opacity           0.95             \
-        window_animation_duration       0.3             \
-        windows_animation_easing        ease_out_quint  \
-        insert_feedback_color           0xff272727
+yabai -m config \        
+        window_shadow                  float           \
+        window_opacity                  on             \
+        window_opacity_duration         0.2            \ 
+        active_window_opacity           1.0            \ 
+        normal_window_opacity           0.95           \ 
+        window_animation_duration       0.3            \ 
+        window_animation_easing         ease_in_expo   \      #ease_out_quint  
+        insert_feedback_color           0xff272727      
 
 # ============= MOUSE SETTINGS =============
 yabai -m config mouse_modifier alt    # set mouse interaction modifier key (default: fn)
@@ -72,7 +72,7 @@ yabai -m config mouse_action2 resize    #right click+drag
 yabai -m config mouse_drop_action swap
 
 yabai -m config focus_follows_mouse off \
-                mouse_follow_focus off
+                mouse_follows_focus off
 
 # ===========================================================
 # WINDOWS MODIFICATIONS
@@ -117,19 +117,23 @@ yabai -m rule --add label="About This Mac" app="System Information" title="About
 yabai -m rule --add label="Select file to save to" app="^Inkscape$" title="Select file to save to" manage=off
 
 # For Arc mini          
-yabai -m rule --add app="^Arc$" title="^Space.*$" manage=off layer=below
-yabai -m rule --add app="^Arc$" title="^$" manage=off layer=below
+yabai -m rule --add app="^Arc$" title="^Space.*$" manage=off
+yabai -m rule --add app="^Arc$" title="^$" manage=off
+
+# ============================== TO SOLVE BUG  ==================================
+# https://github.com/koekeishiya/yabai/issues/1929
+yabai -m rule --add app=".*" sub-layer=normal
 
 
-
+# ============================== ARCHIVE ==================================
 # =========== FOR YABAI INDICATOR ==================
-yabai -m signal --add event=mission_control_exit action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=display_added action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=display_removed action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_created action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_destroyed action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_focused action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_moved action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_resized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_minimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-yabai -m signal --add event=window_deminimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=mission_control_exit action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=display_added action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=display_removed action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_created action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_destroyed action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_focused action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_moved action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_resized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_minimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+# yabai -m signal --add event=window_deminimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'

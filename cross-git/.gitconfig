@@ -4,7 +4,7 @@
 	username = osteiner
 
 [include]
-	path = ~/dotfiles/git/themes.gitconfig
+	path = ~/themes.gitconfig
     
 [core]
 	editor = nvim
