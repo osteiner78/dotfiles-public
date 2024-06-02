@@ -1,4 +1,4 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Enable Powerlevel10k instant prompt. Should stay crlose to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -44,6 +44,30 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # ===================== ALIASES =========================
+alias ".."="cd .." 
+alias "..."="cd ../.." 
+alias "...."="cd ../../.." 
+alias "....."="cd ../../../.." 
+
+# alias -g ..='..'
+# alias -g ...='../..'
+# alias -g ....='../../..'
+# alias -g .....='../../../..'
+# alias -g ......='../../../../..'
+alias /="cd /"
+
+
+alias -- -='cd -'
+alias 1='cd -1'
+alias 2='cd -2'
+alias 3='cd -3'
+alias 4='cd -4'
+alias 5='cd -5'
+alias 6='cd -6'
+alias 7='cd -7'
+alias 8='cd -8'
+alias 9='cd -9'
+
 # alias ll="ls -lah"
 # alias ls="eza -a --color=always --long --icons=always --no-user"
 alias ll="eza -lah --color=always --long --icons=always"

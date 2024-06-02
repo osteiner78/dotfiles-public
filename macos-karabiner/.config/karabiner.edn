@@ -22,28 +22,34 @@
                         ;; key is fired twice when :held ms is elapsed (otherwise seen as a hold command) (TODO WHAT IS THIS??)
     }
 } 
-
-:templates {    :launch "open -a %s"
-                ;; :yabai "/opt/homebrew/bin/yabai %s" ;; Should not need to specify full path, something wrong in $PATH definition
-                :yabai "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai %s"
-                ;; :openFinder "open \"/System/Library/CoreServices/Finder.app\"" ;; "openFinder" to switch to the Finder
-                :notification "osascript -e 'display notification \"%s\" with title \"%s\"'"    ;; Display notification
+:devices{:apple-internal [{:vendor_id 1452 :product_id 834}] 
+        :logitech [{:vendor_id 1133 :product_id 50475}] ;; Logitech MX Keys
+}
+:templates {    
+        :activate "osascript -e 'tell application \"%s\" to activate'"
+        :launch "open -a %s"
+        ;; :openFinder "open \"/System/Library/CoreServices/Finder.app\"" ;; "openFinder" to switch to the Finder
+        :notification "osascript -e 'display notification \"%s\" with title \"%s\"'"    ;; Display notification
+        :show        "osascript -e 'set appName to \"%s\"\nset startIt to false\ntell application \"System Events\"\n  if not (exists process appName) then\n    set startIt to true\n  else\n    set frontmost of process appName to true\n  end if\nend tell\nif startIt then\n  tell application appName to activate\nend if'\n"
+        ;; :yabai "/opt/homebrew/bin/yabai %s" ;; Should not need to specify full path, something wrong in $PATH definition
+        :yabai "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai %s"
                                                                                                 ;; notifcation "text" "title"
 }
 
 :applications{
-        :1password  ["^com\\.1password\\.1password$"]
-        :arc ["^company\\.thebrowser\\.Browser$"]
-        :code [ "^com\\.visualstudio\\.code\\.oss$"
-                "^com\\.microsoft\\.VSCode(Insiders)?$"
-                "^com\\.microsoft\\.VSCode?$"]
-        :finder ["^com\\.apple\\.finder$"]
-        :notes  ["^com\\.apple\\.Notes$"]
-        :obsidian ["^md\\.obsidian$"]
-        :pdf   ["^com\\.readdle\\.PDFExpert-Mac$"]
-        :safari   ["^com\\.apple\\.Safari$"]
-        :sublime   ["^com\\.sublimetext\\.4$"]
-        :things ["^com\\.culturedcode\\.ThingsMac$"]
+        :1password      ["^com\\.1password\\.1password$"]
+        :arc            ["^company\\.thebrowser\\.Browser$"]
+        :code           ["^com\\.visualstudio\\.code\\.oss$"
+                        "^com\\.microsoft\\.VSCode(Insiders)?$"
+                        "^com\\.microsoft\\.VSCode?$"]
+        :finder         ["^com\\.apple\\.finder$"]
+        :notes          ["^com\\.apple\\.Notes$"]
+        :obsidian       ["^md\\.obsidian$"]
+        :pdf            ["^com\\.readdle\\.PDFExpert-Mac$"]
+        :safari         ["^com\\.apple\\.Safari$"]
+        :sublime        ["^com\\.sublimetext\\.4$"]
+        :things         ["^com\\.culturedcode\\.ThingsMac$"]
+        :todoist        ["^com\\.todoist\\.mac\\.Todoist$"]
 }
 
 ;; layers are basically "hyper" keys
@@ -74,16 +80,18 @@
                 [:a [:launch "/Applications/Arc.app"]]
                 [:c [:launch "/System/Applications/Calendar.app"]]
                 [:d [:launch "/opt/homebrew/bin/dark-mode"]]
-                [:f ["open ~"]]
+                ;; [:f ["open ~"]]
                 ;; [:f ["open \"/System/Library/CoreServices/Finder.app\""]]
+                [:f [:activate "/System/Library/CoreServices/Finder.app\""]]
                 [:g [:launch "~/Applications/Gmail.app"]]
                 [:h [:launch "/Applications/Things3.app"]]
                 [:m [:launch "~/Applications/'Google Maps'.app"]]
                 [:o [:launch "/Applications/Obsidian.app"]]
                 [:p [:launch "/Applications/'PDF Expert'.app"]]
                 ;; [:s [:launch "/Applications/Dash.app"]] ;; conflicts with universal sidebar
-                [:t [:launch "/Applications/iTerm.app"]]
-                [:grave_accent_and_tilde [:launch "/Applications/iTerm.app"]]
+                ;; [:t [:launch "/Applications/iTerm.app"]]
+                [:t [:launch "/Applications/WezTerm.app"]]
+                [:grave_accent_and_tilde [:launch "/Applications/WezTerm.app"]]
                 [:v [:launch "/Applications/'Visual Studio Code'.app"]]
                 [:w [:launch "/Applications/Whatsapp.app"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
@@ -91,36 +99,47 @@
         {:des "Home and End keys"
          :rules [
                 [:home :!Cleft_arrow]
-                [:end :!Cright_arrow]]}
+                [:end :!Cright_arrow]
+                [:!Rhome :!CRleft_arrow]
+                [:!Rend :!CRright_arrow]
+                ]}
 
         {:des "Next/Previous tab"
          :rules [
                 [:!Epage_up :!QRopen_bracket]
-                [:!Epage_down :!QRclose_bracket]]}
-        
+                [:!Epage_down :!QRclose_bracket]
+                ]}
+
+        {:des "Page Up/Page Down"
+         :rules [:hyper-mode
+                [:down_arrow :page_down]
+                [:up_arrow :page_up]
+                ]}
+
         {:des "left_command alone -> ⌘ + tab to last app"
          :rules [[:left_command :left_command nil {:alone :!Ctab}]]}
 
         {:des "Hyper+S: Universal sidebar toggle"
         :rules [:hyper-mode
-                [:s :!CSd :1password]     
-                [:s :!Cs :arc]           
-                [:s :!Cb :code]          
-                [:s :!CTs :finder]       
-                [:s :!TSs :obsidian]     
-                [:s :!CSl :safari] 
-                [:s :!CO0 :pdf] 
-                [:s [:!Qk :!Qb] :sublime] 
+                [:s :!CSd :1password]
+                [:s :!Cs :arc]
+                [:s :!Cb :code]
+                [:s :!CTs :finder]
+                [:s :!TSs :obsidian]
+                [:s :!CSl :safari]
+                [:s :!CO0 :pdf]
+                [:s [:!Qk :!Qb] :sublime]
                 [:s :!Cslash :things]    
                 [:s :!COs :notes]
                 ]}
 
         {:des "Hyper+space: Universal command palette"
         :rules [:hyper-mode
-                [:spacebar :!Cl :arc]     
-                [:spacebar :!Cp :obsidian]     
-                [:spacebar :!QRp :code]     
-                [:spacebar :!QRp :sublime]     
+                [:spacebar :!Cl :arc]
+                [:spacebar :!Cp :obsidian]
+                [:spacebar :!QRp :code]
+                [:spacebar :!QRp :sublime]
+                [:spacebar :!Qk :todoist]
                 ]}
 
         {:des "Hyper+{page_up/page_down}"
@@ -130,7 +149,7 @@
                 ]}
 
 ;;              ============== YABAI RULES =================
-        {:des "Yabai rules - Inside yabai layer (tab)"
+                {:des "Yabai rules - Inside yabai layer (tab)"
         :rules[:yabai-mode
 ;;              Warp windows
                 [:j [:yabai "-m window --warp south"]]
@@ -178,7 +197,7 @@
                 [:period [:yabai "-m window --space next ; /opt/homebrew/bin/yabai -m space --focus next"]]
 
 ;;              Alternate to recent space
-                [:x [:yabai "-m space --focus recent"]]
+                [:x [:yabai "-m space --focus recent"]] ;; does not work
                 [:m [:yabai "-m space --focus prev"]]
                 [:slash [:yabai "-m space --focus next"]]
 
@@ -188,11 +207,12 @@
                 [:close_bracket [:yabai "-m window --display east ; /opt/homebrew/bin/yabai -m display --focus east"]]
 
 ;;              ====================== YABAI - SYSTEM ======================
-;;              Start/Stop yabai
+;;              Start/Stop yabai        
                 ;; [:q [[:yabai "--stop-service"] [:notification "Stopped" "Yabai"]]]
-                [:q ["/opt/homebrew/bin/yabai --stop-service" [:notification "Stopped" "Yabai"]]]
+                ;; [:q [[:notification "Stopped" "Yabai"] "/opt/homebrew/bin/yabai --stop-service"]] 
+                [:q ["/opt/homebrew/bin/yabai --stop-service"]]
                 ;; [:w [[:yabai "--start-service"] [:notification "Started" "Yabai"]]]
-                [:w ["/opt/homebrew/bin/yabai --start-service" [:notification "Started" "Yabai"]]]
+                [:w ["/opt/homebrew/bin/yabai --start-service"]]
                 ;; [:v [["/opt/homebrew/bin/yabai w--restart-service"] [:notification "Retarted" "Yabai"]]]
 ]}
 
@@ -213,8 +233,8 @@
 
 ;;              ============== YABAI - DISPLAY NAVIGATION =================
 ;;              Change focus between external displays # - Control
-                [:!Topen_bracket [:yabai "-m display --focus west"]]
-                [:!Tclose_bracket [:yabai "-m display --focus east"]]
+                [:!Oopen_bracket [:yabai "-m display --focus west"]]
+                [:!Oclose_bracket [:yabai "-m display --focus east"]]
 
 ;;              ====================== TEST ======================
                 ; [:!F9 "echo $PATH >> ~/test.log"]
