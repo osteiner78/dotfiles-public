@@ -55,15 +55,14 @@ yabai -m config \
         window_gap      5 
 
 # Test
-yabai -m config \        
-        window_shadow                  float           \
-        window_opacity                  on             \
-        window_opacity_duration         0.2            \ 
-        active_window_opacity           1.0            \ 
-        normal_window_opacity           0.95           \ 
-        window_animation_duration       0.3            \ 
-        window_animation_easing         ease_in_expo   \      #ease_out_quint  
-        insert_feedback_color           0xff272727      
+ yabai -m config window_shadow                  float           
+ yabai -m config window_opacity                  on            
+ yabai -m config window_opacity_duration         0.2             
+ yabai -m config active_window_opacity           1.0             
+ yabai -m config normal_window_opacity           0.95            
+ yabai -m config window_animation_duration       0.3             
+ yabai -m config window_animation_easing         ease_in_expo #ease_out_quint  
+ yabai -m config insert_feedback_color           0xff272727    
 
 # ============= MOUSE SETTINGS =============
 yabai -m config mouse_modifier alt    # set mouse interaction modifier key (default: fn)
