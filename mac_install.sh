@@ -21,7 +21,7 @@ fi
 brew update
 
 # CLI programs
-brew install bat curl eza fzf htop mc neovim stow tmux tree wget
+brew install bat curl eza fzf htop btop mc neovim stow tmux tree wget
 
 # Git related
 brew install git git-delta lazygit
@@ -38,7 +38,7 @@ brew install espanso
 # Ice - Bartender replacement - https://github.com/jordanbaird/Ice
 brew install jordanbaird-ice
 
-brew install mackup # check https://www.bam.tech/article/setting-new-mac-for-developers-simplifying-configuration-with-dotfiles-and-macos-preferences#:~:text=There%20is%20a%20way%20to,hosted%20with%20%E2%9D%A4%20by%20GitHub
+# brew install mackup # check https://www.bam.tech/article/setting-new-mac-for-developers-simplifying-configuration-with-dotfiles-and-macos-preferences#:~:text=There%20is%20a%20way%20to,hosted%20with%20%E2%9D%A4%20by%20GitHub
 
 # Maccy - Clipboard manager - https://github.com/p0deje/Maccy?tab=readme-ov-file#install
 brew install maccy
@@ -49,7 +49,7 @@ brew install yabai spaceman
 
 # Simulate middle click with trackpad - https://github.com/artginzburg/MiddleClick-Sonoma#install
 brew install --cask --no-quarantine middleclick # Simulate triple click with trackpad
-
+osascript -e 'tell application "System Events" to make login item at end with properties {path:"/Applications/MiddleClick.app", hidden:true}' # add login item
 # macOS dark mode toggle
 brew install dark-mode
 
@@ -110,7 +110,7 @@ backup() {
 
 # For all files `$name` in the present folder except `*.zsh`,
 # backup the target file located at `~/.$name` and symlink `$name` to `~/.$name`
-for name in espanso git karabiner mackup mc p10k skhd yabai zsh mackup.cfg; do
+for name in espanso git karabiner mc p10k skhd yabai zsh ; do
     if [ ! -d "$name" ]; then
         target="$HOME/.$name"
         backup $target
@@ -118,7 +118,7 @@ for name in espanso git karabiner mackup mc p10k skhd yabai zsh mackup.cfg; do
     fi
 done
 
-mackup restore
+
 
 echo 'Install Menlo font from:'
 echo 'https://gist.github.com/qrush/1595572#file-menlo-powerline-otf'
