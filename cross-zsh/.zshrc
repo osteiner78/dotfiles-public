@@ -5,7 +5,10 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# For macOS
 source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+# For Linux 
+# source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -22,7 +25,6 @@ setopt hist_verify
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
 
-
 # ==================== EDITOR =============================
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -34,10 +36,10 @@ export VISUAL="$EDITOR"
 
 # ==================== LOAD SHELL PLUGINS (WITHOUT PLUGIN MANAGER)=======================
 # For Mac
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-# source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # For Linux
 # source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -55,7 +57,6 @@ alias "....."="cd ../../../.."
 # alias -g .....='../../../..'
 # alias -g ......='../../../../..'
 alias /="cd /"
-
 
 alias -- -='cd -'
 alias 1='cd -1'
@@ -87,7 +88,6 @@ alias gs="git status"
 alias gcm="git commit -m " ""
 alias gd="git diff"
 
-
 # ==================== TMUX =================================================
 # START TMUX IN EVERY SHELL LOGIN
 # [[ $TERM != "screen" ]] && exec tmux
@@ -100,7 +100,6 @@ alias gd="git diff"
 # ==================== FZF =================================================
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
-
 
 # Lines below from josean-dev: https://www.josean.com/posts/7-amazing-cli-tools
 # -- Use fd instead of fzf --
@@ -119,7 +118,6 @@ _fzf_compgen_path() {
 _fzf_compgen_dir() {
   fd --type=d --hidden --exclude .git . "$1"
 }
-
 
 # --- setup fzf theme ---
 # fg="#CBE0F0"
