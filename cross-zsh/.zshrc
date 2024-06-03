@@ -1,3 +1,4 @@
+# ==================== POWERLEVEL 10k =============================
 # Enable Powerlevel10k instant prompt. Should stay crlose to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -5,8 +6,17 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Load powerlevel10k theme - Cross-platform
+if [ "$(uname -s)" = "Darwin" ]; then
+    source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+    echo "Loaded powerlevel10k theme from Homebrew"
+elif [ "$(uname -s)" =  "Linux" ]; then
+    source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+    echo "Loaded powerlevel10k theme from Linux package manager"
+fi
+
 # For macOS
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+# source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 # For Linux 
 # source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
@@ -35,15 +45,26 @@ fi
 export VISUAL="$EDITOR"
 
 # ==================== LOAD SHELL PLUGINS (WITHOUT PLUGIN MANAGER)=======================
+# Load shell plugins - Cross-platform
+if [ "$(uname -s)" = "Darwin" ]; then
+    source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+    source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    echo "Loaded shell plugins theme from Homebrew"
+elif [ "$(uname -s)" =  "Linux" ]; then
+    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+    echo "Loaded shell plugins theme from Linux package manager"
+fi
+
+
 # For Mac
 # source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 # source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
+# source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # For Linux
 # source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # ===================== ALIASES =========================
 alias ".."="cd .." 
@@ -88,6 +109,8 @@ alias gs="git status"
 alias gcm="git commit -m " ""
 alias gd="git diff"
 
+echo "Loaded alias"
+
 # ==================== TMUX =================================================
 # START TMUX IN EVERY SHELL LOGIN
 # [[ $TERM != "screen" ]] && exec tmux
@@ -128,9 +151,10 @@ _fzf_compgen_dir() {
 # cyan="#2CF9ED"
 
 # export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
-
-# GRUVBOX THEME
 _gen_fzf_default_opts() {
+
+echo "Loaded fzf"
+# ================================= GRUVBOX THEME =================================================
 
 local color00='#32302f'
 local color01='#3c3836'
@@ -162,6 +186,8 @@ show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head
 
 export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+echo "Loaded gruvbox theme"
 
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
