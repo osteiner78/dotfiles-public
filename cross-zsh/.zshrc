@@ -9,10 +9,10 @@ fi
 # Load powerlevel10k theme - Cross-platform
 if [ "$(uname -s)" = "Darwin" ]; then
     source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-    echo "Loaded powerlevel10k theme from Homebrew"
+    # echo "Loaded powerlevel10k theme from Homebrew"
 elif [ "$(uname -s)" =  "Linux" ]; then
-    source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-    echo "Loaded powerlevel10k theme from Linux package manager"
+    source /usr/share/powerlevel10k/powerlevel10k.zsh-theme
+    # echo "Loaded powerlevel10k theme from Linux package manager"
 fi
 
 # For macOS
@@ -49,11 +49,11 @@ export VISUAL="$EDITOR"
 if [ "$(uname -s)" = "Darwin" ]; then
     source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    echo "Loaded shell plugins theme from Homebrew"
+    # echo "Loaded shell plugins theme from Homebrew"
 elif [ "$(uname -s)" =  "Linux" ]; then
     source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
     source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    echo "Loaded shell plugins theme from Linux package manager"
+    # echo "Loaded shell plugins theme from Linux package manager"
 fi
 
 
@@ -109,7 +109,7 @@ alias gs="git status"
 alias gcm="git commit -m " ""
 alias gd="git diff"
 
-echo "Loaded alias"
+# echo "Loaded alias"
 
 # ==================== TMUX =================================================
 # START TMUX IN EVERY SHELL LOGIN
@@ -153,7 +153,7 @@ _fzf_compgen_dir() {
 # export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
 _gen_fzf_default_opts() {
 
-echo "Loaded fzf"
+# echo "Loaded fzf"
 # ================================= GRUVBOX THEME =================================================
 
 local color00='#32302f'
@@ -187,7 +187,7 @@ show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head
 export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
-echo "Loaded gruvbox theme"
+# echo "Loaded gruvbox theme"
 
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
