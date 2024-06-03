@@ -3,14 +3,13 @@
 echo "Setting up your PC..."
 
 # Check for Oh My Zsh and install if we don't have it
-if test ! $(which omz); then
-    /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
-fi
+# if test ! $(which omz); then
+#     /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+# fi
 
 # Set zsh as the default shell
 #==============
 sudo chsh -s /bin/zsh
-
 
 # Install packages
 sudo dnf update
@@ -65,7 +64,7 @@ curl -L --create-dirs --output-dir ".local/share/fonts" -O https://github.com/ro
 # -------------------------------------------------------
 # Alacritty
 # Install dependencies
-sudo dnf install cmake freetype-devel fontconfig-devel libxcb-devel libxkbcommon-devel g++
+# sudo dnf install cmake freetype-devel fontconfig-devel libxcb-devel libxkbcommon-devel g++
 
 # build binary at target/release/alacritty
 cargo build --release --no-default-features --features=wayland
