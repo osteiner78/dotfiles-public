@@ -4,7 +4,7 @@
 Configuration file located in /etc/keyd/default.conf 
 
 Command to run from dotfiles directory:
-`sudo stow -t /etc/keyd keyd`    
+`sudo stow -t /etc/keyd linux-keyd`    
 
 Also install run-or-raise Gnome extension to map keybingings
 
