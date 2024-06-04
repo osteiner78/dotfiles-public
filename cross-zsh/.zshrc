@@ -23,6 +23,11 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+
+# ==================== REQUIRED BY ZOXIDE =============================
+autoload -Uz compinit
+compinit
+
 # ==================== HISTORY SETUP =============================
 HISTFILE=$HOME/.zhistory
 SAVEHIST=3000
@@ -191,6 +196,11 @@ export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
+
+# ============ Zoxide (better cd) =========================
+eval "$(zoxide init zsh)"
+
+alias cd="z"
 
 # ===================== CONDA ================================================
 # >>> conda initialize >>>
