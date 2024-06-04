@@ -14,10 +14,12 @@ opacity=0.9
 blur=true
 
 [font]
-normal.family = "MesloLGS NF"
+normal.family = "JetBrainsMono NF"
+# normal.family = "MesloLGS NF"
+# normal.family = "Inconsolata"
 
 #regular
-size = 12
+size = 16 
 
 #for video
 # size = 35.0

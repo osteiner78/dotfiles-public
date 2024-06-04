@@ -53,6 +53,10 @@ osascript -e 'tell application "System Events" to make login item at end with pr
 # macOS dark mode toggle
 brew install dark-mode
 
+# Install tldr (better man pages)
+brew install tlrc
+
+
 # GUI APPS
 # Utils
 brew install --cask 1password 1password-cli alfred appcleaner grandperspective

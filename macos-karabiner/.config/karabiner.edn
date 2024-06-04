@@ -90,8 +90,8 @@
                 [:p [:launch "/Applications/'PDF Expert'.app"]]
                 ;; [:s [:launch "/Applications/Dash.app"]] ;; conflicts with universal sidebar
                 ;; [:t [:launch "/Applications/iTerm.app"]]
-                [:t [:launch "/Applications/WezTerm.app"]]
-                [:grave_accent_and_tilde [:launch "/Applications/WezTerm.app"]]
+                [:t [:launch "/Applications/Alacritty.app"]]
+                [:grave_accent_and_tilde [:launch "/Applications/Alacritty.app/"]]
                 [:v [:launch "/Applications/'Visual Studio Code'.app"]]
                 [:w [:launch "/Applications/Whatsapp.app"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
