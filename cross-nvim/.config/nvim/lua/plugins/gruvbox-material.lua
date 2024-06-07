@@ -1,8 +1,7 @@
 return {
 	"sainnhe/gruvbox-material",
 	priority = 1000,
-	lazy = true,
-	config = true,
+	lazy = false,
 	-- opts = ...,
 	config = function()
 		-- Optionally configure and load the colorscheme
