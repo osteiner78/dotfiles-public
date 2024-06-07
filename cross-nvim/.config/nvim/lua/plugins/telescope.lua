@@ -66,7 +66,11 @@ return {
 			--     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
 			--   },
 			-- },
-			-- pickers = {}
+			pickers = {
+				colorscheme = {
+					enable_preview = true,
+				},
+			},
 			path_display = { "smart" },
 			mappings = {
 				i = {
@@ -90,21 +94,27 @@ return {
 
 		-- See `:help telescope.builtin`
 		local builtin = require("telescope.builtin")
-		vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles in cwd" })
-		vim.keymap.set("n", "<leader>sr", builtin.oldfiles, { desc = "[S]earch [R]ecent Files" })
-		vim.keymap.set("n", "<leader>ss", builtin.live_grep, { desc = "[S]earch [S]tring in cwd" })
-		vim.keymap.set("n", "<leader>sc", builtin.grep_string, { desc = "[S]earch String under [C]ursor in cwd" })
-		vim.keymap.set("n", "<leader>st", "<cmd>TodoTelescope<cr>", { desc = "[S]earch [T]odos" })
-		vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
-		vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
-		vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
+		vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "[F]ind existing [b]uffers" })
+		vim.keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "[F]ind [s]tring in cwd" })
+		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[F]ind [H]elp" })
+		vim.keymap.set("n", "<leader>fm", builtin.marks, { desc = "[F]ind [M]arks" })
+		vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "[F]ind [r]ecent Files" })
+		vim.keymap.set("n", "<leader>fgc", builtin.git_commits, { desc = "[F]ind [g]it [c]ommits" })
+		vim.keymap.set("n", "<leader>fgs", builtin.git_status, { desc = "[F]ind [g]it [c]ommits" })
+		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[F]ind [f]iles in cwd" })
+		vim.keymap.set("n", "<leader>fa", "<cmd>Telescope find_files follow=true no-Ignore=true hidden=true<CR>", { desc = "[F]ind [a]ll [f]iles in cwd" })
 
-		vim.keymap.set("n", "<leader>sT", builtin.builtin, { desc = "[S]earch Select [T]elescope" })
-		vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
-		vim.keymap.set("n", "<leader>sR", builtin.resume, { desc = "[S]earch [R]esume" })
+		vim.keymap.set("n", "<leader>fc", builtin.grep_string, { desc = "[F]ind String under [c]ursor in cwd" })
+		vim.keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "[F]ind [t]odos" })
+		vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "[F]ind [k]eymaps" })
+
+		vim.keymap.set("n", "<leader>fT", builtin.builtin, { desc = "[F]ind Select [t]elescope" })
+		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "[F]ind [d]iagnostics" })
+		vim.keymap.set("n", "<leader>fR", builtin.resume, { desc = "[F]ind [r]esume" })
+		vim.keymap.set("n", "<leader>th", builtin.colorscheme, { desc = "Find [th]eme" })
 
 		-- Slightly advanced example of overriding default behavior and theme
-		vim.keymap.set("n", "<leader>/", function()
+		vim.keymap.set("n", "<leader>fz", function()
 			-- You can pass additional configuration to Telescope to change the theme, layout, etc.
 			builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 				winblend = 10,
@@ -114,16 +124,16 @@ return {
 
 		-- It's also possible to pass additional configuration options.
 		--  See `:help telescope.builtin.live_grep()` for information about particular keys
-		vim.keymap.set("n", "<leader>s/", function()
+		vim.keymap.set("n", "<leader>f/", function()
 			builtin.live_grep({
 				grep_open_files = true,
 				prompt_title = "Live Grep in Open Files",
 			})
-		end, { desc = "[S]earch [/] in Open Files" })
+		end, { desc = "[F]ind [/] in Open Files" })
 
 		-- Shortcut for searching your Neovim configuration files
-		vim.keymap.set("n", "<leader>sn", function()
+		vim.keymap.set("n", "<leader>fn", function()
 			builtin.find_files({ cwd = vim.fn.stdpath("config") })
-		end, { desc = "[S]earch [N]eovim files" })
+		end, { desc = "[F]ind [N]eovim files" })
 	end,
 }
