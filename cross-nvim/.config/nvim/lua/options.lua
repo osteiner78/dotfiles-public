@@ -10,9 +10,12 @@ vim.g.have_nerd_font = true -- Set to true if you have a Nerd Font installed and
 -- Make line numbers default
 vim.opt.number = true
 -- vim.opt.relativenumber = true
+vim.opt.numberwidth = 2
+-- vim.opt.ruler = false
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
+vim.opt.mousemoveevent = true
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
@@ -23,11 +26,12 @@ vim.opt.splitbelow = true
 
 -- Show which line your cursor is on
 vim.opt.cursorline = true
+vim.opt.cursorlineopt = "number"
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
--- ================================ Tabs ===========================================
+-- ================================ Tabs and indenting ===========================================
 vim.opt.tabstop = 4 -- number of visual spaces per TAB
 vim.opt.softtabstop = 4 -- number of spacesin tab when editing
 vim.opt.shiftwidth = 4 -- insert 4 spaces on a tab
@@ -64,7 +68,7 @@ vim.opt.timeoutlen = 300
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+-- vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"

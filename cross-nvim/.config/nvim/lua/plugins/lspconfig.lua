@@ -1,6 +1,8 @@
-return { 
+return {
 	-- LSP Configuration & Plugins
 	"neovim/nvim-lspconfig",
+	lazy = true,
+	event = {"BufReadPost", "BufNewFile"},
 	dependencies = {
 		-- Automatically install LSPs and related tools to stdpath for Neovim
 		{ "williamboman/mason.nvim", config = true }, -- NOTE: Must be loaded before dependants
@@ -80,11 +82,7 @@ return {
 
 				-- Fuzzy find all the symbols in your current workspace.
 				--  Similar to document symbols, except searches over your entire project.
-				map(
-					"<leader>ws",
-					require("telescope.builtin").lsp_dynamic_workspace_symbols,
-					"[W]orkspace [S]ymbols"
-				)
+				map("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
 
 				-- Rename the variable under your cursor.
 				--  Most Language Servers support renaming across files, etc.
@@ -109,8 +107,7 @@ return {
 				-- When you move your cursor, the highlights will be cleared (the second autocommand).
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
 				if client and client.server_capabilities.documentHighlightProvider then
-					local highlight_augroup =
-						vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
+					local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
 					vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 						buffer = event.buf,
 						group = highlight_augroup,
@@ -136,11 +133,11 @@ return {
 				-- code, if the language server you are using supports them
 				--
 				-- This may be unwanted, since they displace some of your code
-				if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-					map("<leader>th", function()
-						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-					end, "[T]oggle Inlay [H]ints")
-				end
+				-- if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+				-- 	map("<leader>th", function()
+				-- 		vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+				-- 	end, "[T]oggle Inlay [H]ints")
+				-- end
 			end,
 		})
 
@@ -218,5 +215,5 @@ return {
 				end,
 			},
 		})
-	end,	
+	end,
 }
