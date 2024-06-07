@@ -70,7 +70,7 @@ What is Kickstart?
     plugins or Neovim features used in Kickstart.
 	
 	NOTE: Look for lines like this
-	
+	                                                                                                                                                                                                                                                  
     Throughout the file. These are for you, the reader, to help you understand what is happening.
     Feel free to delete them once you know what you're doing, but they should serve as a guide
     for when you are first encountering a few different constructs in your Neovim config.
@@ -82,17 +82,17 @@ What is Kickstart?
 	
 	P.S. You can delete this when you're done too. It's your config now! :)
 	--]]
-	
-	-- Set to true if you have a Nerd Font installed and selected in the terminal
 
-require("oliver.core.options")
-require("oliver.core.keymaps")
-require("oliver.lazy")
+-- Set to true if you have a Nerd Font installed and selected in the terminal
+
+require("options")
+require("keymaps")
+require("autocommands")
+require("lazy-bootstrap")
+require("lazy-plugins")
 
 -- Set colorscheme
--- vim.cmd.colorscheme("gruvbox")
 vim.cmd.colorscheme("gruvbox-material")
--- vim.cmd.colorscheme("tokyonight-moon")
 
 -- ===========================================================================================================
 -- [[ BASIC AUTOCOMMANDS ]]
@@ -101,14 +101,14 @@ vim.cmd.colorscheme("gruvbox-material")
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
-vim.api.nvim_create_autocmd("TextYankPost", {
-	desc = "Highlight when yanking (copying) text",
-	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-	callback = function()
-		vim.highlight.on_yank()
-	end,
-})
-
+-- vim.api.nvim_create_autocmd("TextYankPost", {
+-- 	desc = "Highlight when yanking (copying) text",
+-- 	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+-- 	callback = function()
+-- 		vim.highlight.on_yank()
+-- 	end,
+-- })
+--
 -- -- ===========================================================================================================
 -- -- [[ INSTALL `LAZY.NVIM` PLUGIN MANAGER ]]
 -- --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -710,11 +710,11 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- 		dependencies = { "nvim-lua/plenary.nvim" },
 -- 		opts = { signs = false },
 -- 	},
-	
+
 -- 	{ 	"ellisonleao/gruvbox.nvim",
 -- 		priority = 1000,
 -- 		config = true,
--- 		opts = ... 
+-- 		opts = ...
 -- 		-- init =function()
 -- 			-- vim.cmd.colorscheme("gruvbox")
 -- 	},
