@@ -7,8 +7,8 @@ return {
 		event = { "BufReadPost", "BufNewFile" },
 		main = "ibl",
 		opts = {
-			indent = { char = "│" }, --, highlight = "IblChar" },
-			scope = { char = "│" }, --highlight = "IblScopeChar" },
+			-- indent = { char = "|" }, --, highlight = "IblChar" },
+			-- scope = { char = "|" }, --highlight = "IblScopeChar" },
 		},
 	},
 }
