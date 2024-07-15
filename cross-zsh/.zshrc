@@ -114,7 +114,19 @@ alias gs="git status"
 alias gcm="git commit -m " ""
 alias gd="git diff"
 
-# echo "Loaded alias"
+# nnn
+# alias n="nnn -dHieo -Pp"
+alias n="nnn -dHio -Pp"
+
+# ==================== NNN =================================================
+export NNN_BMS="c:$HOME/.config/;D:$HOME/Downloads/;n:$HOME/.config/nvim/"
+export NNN_COLORS='2314'
+export NNN_PLUG="p:preview-tui;c:fzcd"
+export NNN_USE_EDITOR=1
+export NNN_RESTRICT_NAV_OPEN=1
+
+# For live preview plugin
+export NNN_FIFO=/tmp/nnn.fifo
 
 # ==================== TMUX =================================================
 # START TMUX IN EVERY SHELL LOGIN
@@ -202,16 +214,17 @@ eval "$(zoxide init zsh)"
 
 alias cd="z"
 
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/Users/oliversteiner/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/opt/miniconda3/bin:$PATH"
+        export PATH="/Users/oliversteiner/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup

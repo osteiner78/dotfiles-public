@@ -3,7 +3,7 @@
     "result" : {
       "textSpacing" : 5,
       "subtext" : {
-        "size" : 11,
+        "size" : 10,
         "colorSelected" : "#3C3836FF",
         "font" : "System",
         "color" : "#928374FF"
@@ -16,39 +16,39 @@
       },
       "backgroundSelected" : "#A79884FF",
       "text" : {
-        "size" : 18,
+        "size" : 20,
         "colorSelected" : "#3C3734D8",
         "font" : "System",
         "color" : "#A89983FF"
       },
       "iconPaddingHorizontal" : 14,
-      "roundness" : 10,
-      "paddingVertical" : 7,
+      "roundness" : 0,
+      "paddingVertical" : 5,
       "iconSize" : 40
     },
     "search" : {
-      "backgroundSelected" : "#3A4438FF",
+      "backgroundSelected" : "#302F2FCC",
       "paddingHorizontal" : 24,
-      "spacing" : 14,
+      "spacing" : 12,
       "text" : {
-        "size" : 34,
+        "size" : 31,
         "colorSelected" : "#A79884FF",
         "font" : "System",
         "color" : "#A79884FF"
       },
-      "background" : "#312F2F6C",
+      "background" : "#312F2F00",
       "roundness" : 10,
-      "paddingVertical" : 5
+      "paddingVertical" : 0
     },
     "window" : {
-      "color" : "#312F2F99",
-      "paddingHorizontal" : 4,
+      "color" : "#312F2F0E",
+      "paddingHorizontal" : 0,
       "width" : 667,
       "borderPadding" : 0,
       "borderColor" : "#3C3836FF",
       "blur" : 0,
       "roundness" : 14,
-      "paddingVertical" : 4
+      "paddingVertical" : 15
     },
     "credit" : "Oliver",
     "visualEffectMode" : 2,

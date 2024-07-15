@@ -4,34 +4,36 @@
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 sudo yabai --load-sa
 
-# ============= DESKTOP LABELS AND RULES =============
-# mission-control desktop labels
-yabai -m space 1 --label multi
-yabai -m space 2 --label web
-yabai -m space 3 --label comms
-yabai -m space 4 --label todo
-yabai -m space 5 --label notes
-yabai -m space 6 --label code
-yabai -m space 7 --label finance
-yabai -m space 8 --label terminal
-yabai -m space 9 --label other
+# ============= DESKTOP RULES =============
+# specific space settings
+yabai -m config --space 1 layout float
+# yabai -m config --space comms layout stack
 
 # Spaces rules
-yabai -m rule --add app="^Arc$" space=web
-yabai -m rule --add app="^Safari$" space=web
-yabai -m rule --add app="^Gmail$" space=comms
-yabai -m rule --add app="^WhatsApp$" space=comms
-yabai -m rule --add app="^Gmail$" space=comms
-yabai -m rule --add app="^Calendar$" space=todo
-yabai -m rule --add app="^Things$" space=todo
-yabai -m rule --add app="^Obsidian$" space=notes
-yabai -m rule --add app="^Code$" space=code
-yabai -m rule --add app="^TradingView$" space=finance
-yabai -m rule --add app="^iTerm$" space=terminal
+yabai -m rule --add app="^Arc$" space=2
+yabai -m rule --add app="^Safari$" space=2
 
-# specific space settings
-yabai -m config --space multi  layout float
-# yabai -m config --space comms layout stack
+yabai -m rule --add app="^Gmail$" space=3
+yabai -m rule --add app="^WhatsApp$" space=3
+
+yabai -m rule --add app="^Calendar$" space=4
+yabai -m rule --add app="^Things$" space=4
+yabai -m rule --add app="^Todoist$" space=4
+
+yabai -m rule --add app="^Obsidian$" space=5
+yabai -m rule --add app="^Notes$" space=5
+
+yabai -m rule --add app="^Code$" space=6
+yabai -m rule --add app="^Dash$" space=6
+yabai -m rule --add app="^Sublime Text$" space=6
+
+yabai -m rule --add app="^Alacritty$" space=7
+yabai -m rule --add app="^iTerm2$" space=7
+yabai -m rule --add app="^Terminal$" space=7
+
+yabai -m rule --add app="^Stocks$" space=8
+yabai -m rule --add app="^TradingView$" space=8
+
 
 # ============= TILING OPTIONS =============
 # Tiling
@@ -55,14 +57,14 @@ yabai -m config \
         window_gap      5 
 
 # Test
- yabai -m config window_shadow                  float           
- yabai -m config window_opacity                  on            
- yabai -m config window_opacity_duration         0.2             
- yabai -m config active_window_opacity           1.0             
- yabai -m config normal_window_opacity           0.95            
- yabai -m config window_animation_duration       0.3             
- yabai -m config window_animation_easing         ease_in_expo #ease_out_quint  
- yabai -m config insert_feedback_color           0xff272727    
+ yabai -m config window_shadow                  float
+ yabai -m config window_opacity                  on
+ yabai -m config window_opacity_duration         0.2
+ yabai -m config active_window_opacity           1.0
+ yabai -m config normal_window_opacity           0.95
+ yabai -m config window_animation_duration       0.2
+ yabai -m config window_animation_easing         ease_in_expo #ease_out_quint
+ yabai -m config insert_feedback_color           0xff272727
 
 # ============= MOUSE SETTINGS =============
 yabai -m config mouse_modifier alt    # set mouse interaction modifier key (default: fn)
@@ -92,28 +94,34 @@ yabai -m config focus_follows_mouse off \
 # The following signal can be added to your yabai config to automatically flash the focused window when focus changes.
 # yabai -m signal --add label="flash_focus" event="window_focused" action="yabai -m window \$YABAI_WINDOW_ID --opacity 0.1 && sleep $(yabai -m config window_opacity_duration) && yabai -m window \$YABAI_WINDOW_ID --opacity 0.0"
 
-
 # ============== DISABLE MANAGEMENT FOR SPECIFIC APPS =============================================
 yabai -m rule --add app="^1Password$" manage=off
 yabai -m rule --add app="^Activity Monitor$" manage=off
 yabai -m rule --add app="^Alfred Preferences$" manage=off
+yabai -m rule --add app="^AppCleaner$" manage=off
 yabai -m rule --add app="^App Store$" manage=off
+yabai -m rule --add app="^Arc$" title="Oliver" manage=off
 yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^Calendar$" title="General" manage=off
+yabai -m rule --add app="^Clock$" manage=off
+yabai -m rule --add app="^Contacts$" manage=off
 yabai -m rule --add app="^Creative Cloud$" manage=off
 yabai -m rule --add app="^Dictionary$" manage=off
-yabai -m rule --add app="^Karabiner_Elements$" manage=off
+yabai -m rule --add app="^Font Book$" manage=off
+yabai -m rule --add app="^Karabiner-Elements$" manage=off
+yabai -m rule --add app="^Karabiner-EventViewer$" manage=off
 yabai -m rule --add app="^Keyboard Maestro$"t manage=off
 yabai -m rule --add app="^Logi Options$" manage=off
 yabai -m rule --add app="^Software Update$" manage=off
+yabai -m rule --add app="^Soulver 3$" manage=off
 yabai -m rule --add app="^Stickies$" manage=off
 yabai -m rule --add app="^Steam$" manage=off
 yabai -m rule --add app="^System Settings$" manage=off
-yabai -m rule --add app="^Karabiner$" manage=off
 
 yabai -m rule --add label="Finder" app="^Finder$" title="(Co(py|nnect)|Move|Info|Pref)" manage=off
 yabai -m rule --add label="Safari" app="^Safari$" title="^(General|(Tab|Password|Website|Extension)s|AutoFill|Se(arch|curity)|Privacy|Advance)$" manage=off
+yabai -m rule --add app="^SnippetsLab$" title="^(General|Text\ Editing|Sync|Assistant|Theme|Markdown|Languages|Integrations|Advanced)$" manage=off
 yabai -m rule --add label="About This Mac" app="System Information" title="About This Mac" manage=off
-yabai -m rule --add label="Select file to save to" app="^Inkscape$" title="Select file to save to" manage=off
 
 # For Arc mini          
 yabai -m rule --add app="^Arc$" title="^Space.*$" manage=off
@@ -122,7 +130,6 @@ yabai -m rule --add app="^Arc$" title="^$" manage=off
 # ============================== TO SOLVE BUG  ==================================
 # https://github.com/koekeishiya/yabai/issues/1929
 yabai -m rule --add app=".*" sub-layer=normal
-
 
 # ============================== ARCHIVE ==================================
 # =========== FOR YABAI INDICATOR ==================
