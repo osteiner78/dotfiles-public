@@ -1,11 +1,41 @@
 {
+    ;; !  | means mandatory -   modifier(s) alone when pressend change behavior
+    ;; #  | means optional  -   modifiers are optional (but atleast one necessary)
+
+    ;; :!Ca is keycode :a and prefix a with !C
+
+    ;; C  | left_command
+    ;; T  | left_control
+    ;; O  | left_option
+    ;; S  | left_shift
+    ;; F  | fn
+    ;; Q  | right_command
+    ;; W  | right_control
+    ;; E  | right_option
+    ;; R  | right_shift
+
+    ;; ## | optional any
+    ;; !! | command + control + optional + shift (hyper)
+
+    ;; Install via brew: `brew install yqrashawn/goku/goku`
+
+    ;; karabiner docs: ;; https://pqrs.org/osx/karabiner/json.html#complex_modifications-manipulator-definition
+    ;; <other options> includs ~to_if_alone~, ~to_if_held_down~,~to_after_key_up~, ~to_delayed_action~ and ~parameters~.
+
+    ;; (custom variables) & modifiers -> Advanced
+    ;; https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org#custom-variable
+
+    ;; Examples: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org
+    ;; https://gist.github.com/kaushikgopal/ff7a92bbc887e59699c804b59074a126
+    ;; https://github.com/kchen0x/k-goku/blob/master/karabiner.edn
+    ;; https://github.com/tIsGoud/goku/blob/master/karabiner.edn
 :profiles {
     :Default {
         :default true
-        :sim     25     ;; simultaneous key press threshold (def: 50)
+        :sim     50     ;; simultaneous key press threshold (def: 50)
                         ;; simlayer is implemented with to_if_alone and simultaneous key press feature
                         ;; if keydown event for two different keys are pressed within :sim ms, the keypresses are considered simultaneous
-        :delay   500    ;; to_delayed_action_delay_milliseconds (def: 500)
+        :delay   2000    ;; to_delayed_action_delay_milliseconds (def: 500)
                        ;; checkout karabiner's documentation
                        ;; https://pqrs.org/osx/karabiner/json.html
                        ;; basically it means time after which the key press is count delayed
@@ -22,15 +52,20 @@
                         ;; key is fired twice when :held ms is elapsed (otherwise seen as a hold command) (TODO WHAT IS THIS??)
     }
 } 
-:devices{:apple-internal [{:vendor_id 1452 :product_id 834}] 
+:devices {:apple-internal [{:vendor_id 1452 :product_id 834}] 
         :logitech [{:vendor_id 1133 :product_id 50475}] ;; Logitech MX Keys
+        :yk75 [{:vendor_id 1452 :product_id 591}]
 }
+
 :templates {    
         :activate "osascript -e 'tell application \"%s\" to activate'"
+        :alfred "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"%s\" in workflow \"%s\" with argument \"%s\"'"
         :launch "open -a %s"
         ;; :openFinder "open \"/System/Library/CoreServices/Finder.app\"" ;; "openFinder" to switch to the Finder
         :notification "osascript -e 'display notification \"%s\" with title \"%s\"'"    ;; Display notification
-        :show        "osascript -e 'set appName to \"%s\"\nset startIt to false\ntell application \"System Events\"\n  if not (exists process appName) then\n    set startIt to true\n  else\n    set frontmost of process appName to true\n  end if\nend tell\nif startIt then\n  tell application appName to activate\nend if'\n"
+        :open "open %s"
+        ; :open_folder "osascript -e 'tell application \"Finder\"\n set target of Finder window 1 to POSIX file \"%s\" \nend tell'"
+        ; :show        "osascript -e 'set appName to \"%s\"\nset startIt to false\ntell application \"System Events\"\n  if not (exists process appName) then\n    set startIt to true\n  else\n    set frontmost of process appName to true\n  end if\nend tell\nif startIt then\n  tell application appName to activate\nend if'\n"
         ;; :yabai "/opt/homebrew/bin/yabai %s" ;; Should not need to specify full path, something wrong in $PATH definition
         :yabai "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai %s"
                                                                                                 ;; notifcation "text" "title"
@@ -43,9 +78,11 @@
                         "^com\\.microsoft\\.VSCode(Insiders)?$"
                         "^com\\.microsoft\\.VSCode?$"]
         :finder         ["^com\\.apple\\.finder$"]
+        :mail           ["^com\\.apple\\.mail$"]
         :notes          ["^com\\.apple\\.Notes$"]
         :obsidian       ["^md\\.obsidian$"]
         :pdf            ["^com\\.readdle\\.PDFExpert-Mac$"]
+        :snippetslab    ["^com\\.renfei\\.SnippetsLab$"]
         :safari         ["^com\\.apple\\.Safari$"]
         :sublime        ["^com\\.sublimetext\\.4$"]
         :things         ["^com\\.culturedcode\\.ThingsMac$"]
@@ -57,18 +94,19 @@
 :layers {:hyper-mode {:key :caps_lock :alone {:key :escape}}    ;; make the caps_lock key the hyper key
                                                                 ;; In "System Preferences/Keyboard/Modifier Keys..."
                                                                 ;; the Caps Lock Key is set to "No Action".
-         :yabai-mode {:key :tab}  ;; couldn't create yabai-mode using both left_control and left_shift
+         ; :yabai-mode {:key :tab}  ;; couldn't create yabai-mode using both left_control and left_shift
 }    
 
 ;; simlayers are basically "hyper" keys
 ;; layers works too, but only recommended for non-typing keys like . or tab
 ;; or keys like z which are used less often
-;; :simlayers {
-;;          :yabai-mode {:key :z :modi {:mandatory [:left_control]} }
-;;         ;;  :yabai-mode {:key :left_shift :modi {:mandatory :left_control}}    
-;; }
+:simlayers {
+              :o-mode {:key :o}
+              :yabai-mode {:key :w} 
+;;          :yabai-mode {:key :left_shift :modi {:mandatory :left_control}}    
+}
 
-:main [  
+:main [
         ;; {:des "Caps Lock → Escape (if alone) | Caps Lock (simple)"
         ;;  CapsLock to Hyperkey:
         ;;  :rules [[:##caps_lock :!CTOleft_shift nil {:alone [:escape]}]]
@@ -80,54 +118,56 @@
                 [:a [:launch "/Applications/Arc.app"]]
                 [:c [:launch "/System/Applications/Calendar.app"]]
                 [:d [:launch "/opt/homebrew/bin/dark-mode"]]
-                ;; [:f ["open ~"]]
-                ;; [:f ["open \"/System/Library/CoreServices/Finder.app\""]]
-                [:f [:activate "/System/Library/CoreServices/Finder.app\""]]
+                [:e :!Fe]
+                ;; This is the one
+                [:f ["open /System/Library/CoreServices/Finder.app && osascript -e 'tell application \"Finder\" to activate'"]]
+                ; [:f ["open ~"]]
+                ; [:f ["open /System/Library/CoreServices/Finder.app"]]
+                ; [:f ["osascript -e \"tell application \"Finder\" to activate\""]]
+                ; [:f [:launch "/System/Library/CoreServices/Finder.app\""]]
                 [:g [:launch "~/Applications/Gmail.app"]]
                 [:h [:launch "/Applications/Things3.app"]]
                 [:m [:launch "~/Applications/'Google Maps'.app"]]
+                [:n [:launch "/Applications/SnippetsLab.app"]]
                 [:o [:launch "/Applications/Obsidian.app"]]
                 [:p [:launch "/Applications/'PDF Expert'.app"]]
+                [:q [:launch "/Applications/Dash.app"]]
                 ;; [:s [:launch "/Applications/Dash.app"]] ;; conflicts with universal sidebar
                 ;; [:t [:launch "/Applications/iTerm.app"]]
                 [:t [:launch "/Applications/Alacritty.app"]]
-                [:grave_accent_and_tilde [:launch "/Applications/Alacritty.app/"]]
+                ; [:grave_accent_and_tilde [:launch "/Applications/Alacritty.app/"]]
                 [:v [:launch "/Applications/'Visual Studio Code'.app"]]
                 [:w [:launch "/Applications/Whatsapp.app"]]
+                [:##delete_or_backspace :!CTq]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
 
-        {:des "Home and End keys"
-         :rules [
-                [:home :!Cleft_arrow]
-                [:end :!Cright_arrow]
-                [:!Rhome :!CRleft_arrow]
-                [:!Rend :!CRright_arrow]
+        {:des "Screenshots with hyperkey"
+        :rules [:hyper-mode
+                [:4 :!CS4]
+                [:5 :!CS5]
                 ]}
 
-        {:des "Next/Previous tab"
-         :rules [
-                [:!Epage_up :!QRopen_bracket]
-                [:!Epage_down :!QRclose_bracket]
-                ]}
-
-        {:des "Page Up/Page Down"
-         :rules [:hyper-mode
+        {:des "Page Up/Page Down with hyperkey"
+        :rules [:hyper-mode
                 [:down_arrow :page_down]
                 [:up_arrow :page_up]
+                [:period :page_down]
+                [:comma :page_up]
+                [:j :page_down]
+                [:k :page_up]     
                 ]}
-
-        {:des "left_command alone -> ⌘ + tab to last app"
-         :rules [[:left_command :left_command nil {:alone :!Ctab}]]}
 
         {:des "Hyper+S: Universal sidebar toggle"
         :rules [:hyper-mode
                 [:s :!CSd :1password]
-                [:s :!Cs :arc]
-                [:s :!Cb :code]
+                [:s :!Cs  :arc]
+                [:s :!Cb  :code]
                 [:s :!CTs :finder]
+                [:s :!CTs :mail]
                 [:s :!TSs :obsidian]
                 [:s :!CSl :safari]
                 [:s :!CO0 :pdf]
+                [:s :!SCl :snippetslab]
                 [:s [:!Qk :!Qb] :sublime]
                 [:s :!Cslash :things]    
                 [:s :!COs :notes]
@@ -142,15 +182,52 @@
                 [:spacebar :!Qk :todoist]
                 ]}
 
-        {:des "Hyper+{page_up/page_down}"
+        {:des "Hyper: Arc Browser (l: Little Arc - u: copy URL as markdown - z: Reopen last closed tab)"
         :rules [:hyper-mode
-                [:period :page_down]     
-                [:comma :page_up]     
+                [:##grave_accent_and_tilde :!CTOp :arc]
+                [:##l :!COn :arc]
+                [:##u :!COSc :arc]
+                [:##z :!CSt :arc]
+                ]}
+
+        {:des "Home and End keys"
+        :rules [
+                [:home :!Cleft_arrow]
+                [:end :!Cright_arrow]
+                [:!Rhome :!CRleft_arrow]
+                [:!Rend :!CRright_arrow]
+                ]}
+
+        {:des "Next/Previous tab (on 100% keyboard)"
+        :rules [
+                [:!Epage_up :!QRopen_bracket]
+                [:!Epage_down :!QRclose_bracket]
+                ]}
+
+        {:des "Next/Previous tab (on YK75)"
+        :rules [:yk75
+                [:!Wpage_up :!QRopen_bracket]
+                [:!Wpage_down :!QRclose_bracket]
+                ]}
+
+        {:des "left_command alone -> ⌘ + tab to last app"
+         :rules [[:left_command :left_command nil {:alone :!Ctab}]]}
+
+        {:des "In Arc browser: left_control alone -> ctrl + tab to last tab"
+        :rules [[:left_control :left_control :arc {:alone :!Ttab}]]}
+
+        {:des "okey mode"
+        :rules[:o-mode
+                [:d [:open "~/Downloads/"]]
+                [:i [:open "~/Documents/0.\\ Inbox/"]]
+                [:m [:alfred "menu bar search" "com.folded-paper.menu-bar-search"]]
+                [:p [:alfred "search processes" "de.chris-grieser.atop"]]
+                [:t [:alfred "temp email" "com.vitorgalvao.alfred.temporaryemail"]]
                 ]}
 
 ;;              ============== YABAI RULES =================
-                {:des "Yabai rules - Inside yabai layer (tab)"
-        :rules[:yabai-mode
+        {:des "Yabai rules - Inside yabai layer (tab)"
+          :rules[:yabai-mode
 ;;              Warp windows
                 [:j [:yabai "-m window --warp south"]]
                 [:k [:yabai "-m window --warp north"]]
@@ -165,8 +242,8 @@
                 [:y [:yabai "-m space --mirror y-axis"]]
 
 ;;              Balance out tree of windows (resize to occupy)
-                [:e [:yabai "-m space --balance"]]
-                
+                [:b [:yabai "-m space --balance"]]
+ 
 ;;              Maximize window
                 [:return_or_enter [:yabai "-m window --toggle zoom-fullscreen"]]
 
@@ -208,11 +285,22 @@
 
 ;;              ====================== YABAI - SYSTEM ======================
 ;;              Start/Stop yabai        
-                ;; [:q [[:yabai "--stop-service"] [:notification "Stopped" "Yabai"]]]
-                ;; [:q [[:notification "Stopped" "Yabai"] "/opt/homebrew/bin/yabai --stop-service"]] 
-                [:q ["/opt/homebrew/bin/yabai --stop-service"]]
+                ; [:q ["/opt/homebrew/bin/yabai --stop-service"]]
+                ; [:w ["/opt/homebrew/bin/yabai --start-service"]]
+                ; [:q [[:yabai "--stop-service"] [:notification "Stopped" "Yabai"]]]
+                ; [:w ["/opt/homebrew/bin/yabai --start-service" [:notification "Started Yabai"] ]]
+                [:q
+                  ["/opt/homebrew/bin/yabai --stop-service" [:noti :stop "Stopped Yabai"] ]
+                  nil
+                 {:delayed {:invoked  [:noti :stop]
+                            :canceled [:noti :stop]}}]
+                [:e
+                  ["/opt/homebrew/bin/yabai --start-service" [:noti :start "Started Yabai"] ]
+                  nil
+                 {:delayed {:invoked  [:noti :start]
+                            :canceled [:noti :start]}}]
+                ; [:q [[:notification "Stopped" "Yabai"]]] 
                 ;; [:w [[:yabai "--start-service"] [:notification "Started" "Yabai"]]]
-                [:w ["/opt/homebrew/bin/yabai --start-service"]]
                 ;; [:v [["/opt/homebrew/bin/yabai w--restart-service"] [:notification "Retarted" "Yabai"]]]
 ]}
 
