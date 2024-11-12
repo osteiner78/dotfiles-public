@@ -1,0 +1,402 @@
+---
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 8001:8000
+      - 9443:9443
+    restart: always
+
+#     ======================================================= ARR STACK ===========================================================
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - /opt/deluge/config:/config
+      - /media/WDElements/data/torrents:/data/torrents
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+      - 58846:58846 #optional
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - etc/localtime:etc/localtime:ro
+      - /opt/radarr:/config
+      - /media/WDElements/data:/data #optional
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+   sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      # - etc/localtime:etc/localtime:ro
+      - /opt/sonarr:/config:rw
+      - /media/WDElements/data:/data #optional
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+   lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - etc/localtime:etc/localtime:ro
+      - /opt/lidarr:/config:rw
+      - /media/WDElements/data/:/data #optional
+      # - /path/to/downloadclient-downloads:/downloads #optional
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+   readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - etc/localtime:etc/localtime:ro
+      - /opt/readarr:/config:rw
+      - /media/nvme/books/:/data #optional
+      # - /path/to/downloadclient-downloads:/downloads #optional
+    ports:
+      - 8787:8787
+    restart: unless-stopped
+
+ tautulli:
+    image: ghcr.io/tautulli/tautulli
+    container_name: tautulli
+    restart: unless-stopped
+    volumes:
+      - /opt/tautulli:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    ports:
+      - 8181:8181
+
+prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - etc/localtime:etc/localtime:ro
+      - /opt/prowlarr:/config:rw
+    ports:
+      - 9696:9696 
+    restart: unless-stopped
+
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=America/Sao_Paulo
+    ports:
+      - "${PORT:-8191}:8191"
+    restart: unless-stopped
+
+#     ================================================ CLOUDFLARE DAEMON ===================================================
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    network_mode: host
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiMDFhN2M0ODJiOTJjN2ZiY2I0MmY4YTQzYjEyNTRiNTciLCJ0IjoiMzMwM2ZiOTMtYmZiMy00NmZhLWE0ZWYtMzllYTUxZGY2Y2IyIiwicyI6Ik1HUmlZalU1TnpndE1XUXpaQzAwTTJZNExXSTROR1F0WkRFd09XVmtNV1k0TXpZMSJ9
+   
+#     ================================================ NEXTCLOUD =======================================================
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    init: true
+    restart: always
+    container_name: nextcloud-aio-mastercontainer # This line is not allowed to be changed as otherwise AIO will not work correctly
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work
+      - /var/run/docker.sock:/var/run/docker.sock:ro # May be changed on macOS, Windows or docker rootless. See the applicable documentation. If adjusting, don't forget to also set 'WATCHTOWER_DOCKER_SOCKET_PATH'!
+    network_mode: bridge # add to the same network as docker run would do
+    ports:
+      # - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      - 8080:8080
+      # - 8443:8443 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+    environment: # Is needed when using any of the options below
+      # AIO_DISABLE_BACKUP_SECTION: false # Setting this to true allows to hide the backup section in the AIO interface. See https://github.com/nextcloud/all-in-one#how-to-disable-the-backup-section
+      - APACHE_PORT=11000 # Is needed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      - APACHE_IP_BINDING=0.0.0.0 # Should be set when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else) that is running on the same host. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+      # BORG_RETENTION_POLICY: --keep-within=7d --keep-weekly=4 --keep-monthly=6 # Allows to adjust borgs retention policy. See https://github.com/nextcloud/all-in-one#how-to-adjust-borgs-retention-policy
+      # COLLABORA_SECCOMP_DISABLED: false # Setting this to true allows to disable Collabora's Seccomp feature. See https://github.com/nextcloud/all-in-one#how-to-disable-collaboras-seccomp-feature
+      - NEXTCLOUD_DATADIR=/media/WDElements/data/media/nextcloud_data # Allows to set the host directory for Nextcloud's datadir. ⚠️⚠️⚠️ Warning: do not set or adjust this value after the initial Nextcloud installation is done! See https://github.com/nextcloud/all-in-one#how-to-change-the-default-location-of-nextclouds-datadir
+      # NEXTCLOUD_MOUNT: /mnt/ # Allows the Nextcloud container to access the chosen directory on the host. See https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host
+      # NEXTCLOUD_UPLOAD_LIMIT: 10G # Can be adjusted if you need more. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-upload-limit-for-nextcloud
+      # NEXTCLOUD_MAX_TIME: 3600 # Can be adjusted if you need more. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-max-execution-time-for-nextcloud
+      # NEXTCLOUD_MEMORY_LIMIT: 512M # Can be adjusted if you need more. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-php-memory-limit-for-nextcloud
+      # NEXTCLOUD_TRUSTED_CACERTS_DIR: /path/to/my/cacerts # CA certificates in this directory will be trusted by the OS of the nexcloud container (Useful e.g. for LDAPS) See See https://github.com/nextcloud/all-in-one#how-to-trust-user-defined-certification-authorities-ca
+      # NEXTCLOUD_STARTUP_APPS: dec;k twofactor_totp tasks calendar contacts notes # Allows to modify the Nextcloud apps that are installed on starting AIO the first time. See https://github.com/nextcloud/all-in-one#how-to-change-the-nextcloud-apps-that-are-installed-on-the-first-startup
+      # NEXTCLOUD_ADDITIONAL_APKS: imagemagick # This allows to add additional packages to the Nextcloud container permanently. Default is imagemagick but can be overwritten by modifying this value. See https://github.com/nextcloud/all-in-one#how-to-add-os-packages-permanently-to-the-nextcloud-container
+      # NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: imagick # This allows to add additional php extensions to the Nextcloud container permanently. Default is imagick but can be overwritten by modifying this value. See https://github.com/nextcloud/all-in-one#how-to-add-php-extensions-permanently-to-the-nextcloud-container
+      # NEXTCLOUD_ENABLE_DRI_DEVICE: true # This allows to enable the /dev/dri device in the Nextcloud container. ⚠️⚠️⚠️ Warning: this only works if the '/dev/dri' device is present on the host! If it should not exist on your host, don't set this to true as otherwise the Nextcloud container will fail to start! See https://github.com/nextcloud/all-in-one#how-to-enable-hardware-transcoding-for-nextcloud
+      # NEXTCLOUD_KEEP_DISABLED_APPS: false # Setting this to true will keep Nextcloud apps that are disabled in the AIO interface and not uninstall them if they should be installed. See https://github.com/nextcloud/all-in-one#how-to-keep-disabled-apps
+      - SKIP_DOMAIN_VALIDATION=true
+      # TALK_PORT: 3478 # This allows to adjust the port that the talk container is using. See https://github.com/nextcloud/all-in-one#how-to-adjust-the-talk-port
+      # WATCHTOWER_DOCKER_SOCKET_PATH: /var/run/docker.sock # Needs to be specified if the docker socket on the host is not located in the default '/var/run/docker.sock'. Otherwise mastercontainer updates will fail. For macos it needs to be '/var/run/docker.sock'
+    # security_opt: ["label:disable"] # Is needed when using SELinux
+
+  # # Optional: Caddy reverse proxy. See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+  # # You can find further examples here: https://github.com/nextcloud/all-in-one/discussions/588
+  # caddy:
+  #   image: caddy:alpine
+  #   restart: always
+  #   container_name: caddy
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - ./certs:/certs
+  #     - ./config:/config
+  #     - ./data:/data
+  #     - ./sites:/srv
+  #   network_mode: "host"
+
+#     ============================ PAPERLESS-NGX ========================================
+#
+# Docker Compose file for running paperless from the docker container registry.
+# This file contains everything paperless needs to run.
+# Paperless supports amd64, arm and arm64 hardware.
+#
+# All compose files of paperless configure paperless in the following way:
+#
+# - Paperless is (re)started on system boot, if it was running before shutdown.
+# - Docker volumes for storing data are managed by Docker.
+# - Folders for importing and exporting files are created in the same directory
+#   as this file and mounted to the correct folders inside the container.
+# - Paperless listens on port 8000.
+#
+# In addition to that, this Docker Compose file adds the following optional
+# configurations:
+#
+# - Instead of SQLite (default), PostgreSQL is used as the database server.
+# - Apache Tika and Gotenberg servers are started with paperless and paperless
+#   is configured to use these services. These provide support for consuming
+#   Office documents (Word, Excel, Power Point and their LibreOffice counter-
+#   parts.
+#
+# To install and update paperless with this file, do the following:
+#
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.
+# - Run 'docker compose pull'.
+# - Run 'docker compose run --rm webserver createsuperuser' to create a user.
+# - Run 'docker compose up -d'.
+#
+# For more extensive installation and update instructions, refer to the
+# documentation.
+
+  broker:
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  db:
+    image: docker.io/library/postgres:16
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    ports:
+      - "8000:8000"
+    volumes:
+      - /media/nvme/paperless/data:/usr/src/paperless/data
+      - /media/nvme/paperless/media:/usr/src/paperless/media
+      - ./export:/usr/src/paperless/export
+      - /media/nvme/paperless-inbox:/usr/src/paperless/consume
+      - /home/osteiner/paperless-ngx/scripts:/usr/src/paperless/scripts
+    environment:
+      USERMAP_UID: 1000
+      USERMAP_GID: 1000
+      PAPERLESS_URL: https://paperless.osteiner.xyz
+      PAPERLESS_TIME_ZONE: America/Sao_Paulo
+      PAPERLESS_OCR_LANGUAGES: por eng fra
+      PAPERLESS_OCR_LANGUAGE: por+eng
+      PAPERLESS_SECRET_KEY: 'hjQSWe!wy6AN158eBB8NMFg/uzs_fEptXj>@JNl.kP-3.9M.r3U{L(ZtrLVdO$Z;'
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_PRE_CONSUME_SCRIPT: /usr/src/paperless/scripts/removepassword.py
+      PAPERLESS_FILENAME_FORMAT: '{correspondent}/{created_year}-{created_month}-{created_day} - {correspondent} - {title}'
+      PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true, "continue_on_soft_render_error": true}' # To process signed documents and process pdf with ghostscript errors
+      PAPERLESS_FILENAME_DATE_ORDER: 'YMD' # To recognize dates in filenames
+      PAPERLESS_DATE_ORDER: 'DMY' 
+      PAPERLESS_IGNORE_DATES: '27/07/1978, 26/12/1976'
+      PAPERLESS_TASK_WORKERS: 4 # Processes in parallel
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.7
+    restart: unless-stopped
+  #
+  #   # The gotenberg chromium route is used to convert .eml files. We do not
+  #   # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+  #
+  tika:
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+
+#     ======================================================= CALIBRE + CALIBRE WEB ===============================================
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre
+    # security_opt:
+      # - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      # - PASSWORD= #optional
+      # - CLI_ARGS= #optional
+      # - CUSTOM_PORT=9090
+      # - CUSTOM_HTTPS_PORT=9191
+    volumes:
+      - /opt/calibre/config:/config
+      - /media/nvme/books:/books
+    ports:
+      - 9090:8080
+      - 9191:8181
+      - 9091:8081
+    restart: unless-stopped
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - /opt/calibre-web/config:/config
+      - /media/nvme/books:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+
+#     ======================================================= UPTIME KUMA ===========================================================
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    volumes:
+      - /opt/uptime-kuma/data:/app/data
+    ports:
+      # <Host Port>:<Container Port>
+      - 3001:3001
+    restart: unless-stopped
+
+#     ======================================================= APPRISE ===========================================================
+  # apprise:
+  #   image: caronc/apprise:latest
+  #   container_name: apprise
+  #   environment:
+  #     - APPRISE_STATEFUL_MODE=simple
+  #     - APPRISE_WORKER_COUNT=1
+  #   ports:
+  #     - 8003:8000
+  #   volumes:
+  #     - /opt/apprise/apprise_api:/opt/apprise/webapp:ro
+  #     # if uncommenting the below, you will need to type the following
+  #     # Note: if you opt for bind mount config file consider setting env var APPRISE_STATEFUL_MODE to simple with appropriate file format
+  #     # otherwise the django instance won't have permissions to write
+  #     # to the directory correctly:
+  #     #   $> chown -R 33:33 ./config
+  #     #   $> chmod -R 775 ./config
+  #     - /opt/apprise/config:/config:rw
+  #     # Note: The attachment directory can be exposed outside of the container if required
+  #     #   $> chown -R 33:33 ./attach
+  #     #   $> chmod -R 775 ./attach
+  #     - /opt/apprise/attach:/attach:rw
+  #     - /opt/apprise/plugin:/plugin:rw
+  #
+  ## Un-comment the below and then access a testing environment with:
+  ##    docker-compose run test.py310 build
+  ##    docker-compose run --service-ports --rm test.py310 bash
+  ##
+  ## From here you
+  ## > Check for any lint errors
+  ##    flake8 apprise_api
+  ##
+  ## > Run unit tests
+  ##    pytest apprise_api
+  ##
+  ## > Host service (visit http://localhost on host pc to access):
+  ##   ./manage.py runserver 0.0.0.0:8000
+  # test.py310:
+  #   ports:
+  #     - 8000:8000
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.py310
+  #   volumes:
+  #     - ./:/apprise-api
+
+
+volumes: # If you want to store the data on a different drive, see https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # This line is not allowed to be changed as otherwise the built-in backup solution will not work
+  pgdata:
+  redisdata:
+  portainer_data:
