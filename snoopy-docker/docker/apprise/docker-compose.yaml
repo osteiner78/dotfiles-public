@@ -1,0 +1,45 @@
+# services:
+#   apprise:
+#     image: caronc/apprise:latest
+#     container_name: apprise
+#     environment:
+#       - APPRISE_STATEFUL_MODE=simple
+#       - APPRISE_WORKER_COUNT=1
+#     ports:
+#       - 8003:8000
+#     volumes:
+#       - /opt/apprise/apprise_api:/opt/apprise/webapp:ro
+#       # if uncommenting the below, you will need to type the following
+#       # Note: if you opt for bind mount config file consider setting env var APPRISE_STATEFUL_MODE to simple with appropriate file format
+#       # otherwise the django instance won't have permissions to write
+#       # to the directory correctly:
+#       #   $> chown -R 33:33 ./config
+#       #   $> chmod -R 775 ./config
+#       - /opt/apprise/config:/config:rw
+#       # Note: The attachment directory can be exposed outside of the container if required
+#       #   $> chown -R 33:33 ./attach
+#       #   $> chmod -R 775 ./attach
+#       - /opt/apprise/attach:/attach:rw
+#       - /opt/apprise/plugin:/plugin:rw
+  
+#   # Un-comment the below and then access a testing environment with:
+#   #    docker-compose run test.py310 build
+#   #    docker-compose run --service-ports --rm test.py310 bash
+#   #
+#   # From here you
+#   # > Check for any lint errors
+#   #    flake8 apprise_api
+#   #
+#   # > Run unit tests
+#   #    pytest apprise_api
+#   #
+#   # > Host service (visit http://localhost on host pc to access):
+#   #   ./manage.py runserver 0.0.0.0:8000
+#   test.py310:
+#     ports:
+#       - 8000:8000
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.py310
+#     volumes:
+#       - ./:/apprise-api
