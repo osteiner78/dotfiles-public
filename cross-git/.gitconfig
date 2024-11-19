@@ -33,3 +33,13 @@
 
 [diff]
 	colorMoved = default
+
+; [filter "remove-cloudflared-token"]
+; clean = "sed -e 's/^token = .*/token = FILTERED' "
+;
+; [filter "remove-openai-key"]
+; clean = "sed -e 's/^openai = .*/token = FILTERED' "
+;
+; [filter "remove-paperless-key"]
+; clean = "sed -e 's/^paperless-secret-key = .*/token = FILTERED' "
+
