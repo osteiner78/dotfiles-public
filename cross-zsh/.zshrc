@@ -230,7 +230,7 @@ elif [ "$(uname -s)" =  "Linux" ]; then
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
-path+=('/home/osteiner/.local/bin/')
+path+=${HOME}/.local/bin
 
 # For borgmatic
 path+=('/root/.local/bin/')
