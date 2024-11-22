@@ -52,6 +52,7 @@ stow cross-zsh
 stow cross-tmux
 stow cross-nvim
 stow cross-yazi
+stow cross-git
 
 # Change shell to zsh
 sudo passwd
