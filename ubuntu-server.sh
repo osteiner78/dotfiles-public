@@ -13,7 +13,7 @@ sudo apt update
 
 # Install zsh and plugins
 printf "================= Installing other tools ======================"
-sudo apt install eza stow btop neovim fastfetch tmux tree zoxide unzip -y
+sudo apt install eza stow btop neovim tmux tree zoxide unzip -y
 
 printf " ================== Install zsh and plugins ======================"
 sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting -y
