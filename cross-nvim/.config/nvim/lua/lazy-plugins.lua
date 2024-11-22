@@ -3,7 +3,7 @@ require("lazy").setup({
 }, { -- options - https://github.com/folke/lazy.nvim?tab=readme-ov-file#-installation
 	checker = {
 		enabled = true,
-		notify = true,
+		notify = false,
 	},
 	change_detection = {
 		notify = true,
