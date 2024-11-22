@@ -12,40 +12,40 @@ echo "Setting up Ubuntu Server"
 sudo apt update
 
 # Install zsh and plugins
-echo "\n================= Installing other tools ======================"
+printf "\n================= Installing other tools ======================"
 sudo apt install eza stow btop neovim tmux tree zoxide unzip -y
 
-echo "\n ================== Install zsh and plugins ======================"
+printf "\n ================== Install zsh and plugins ======================"
 sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting -y
 
 # Install powerlevel10k
-echo "\n==================== Installing powerlevel10k ========================="
+printf "\n==================== Installing powerlevel10k ========================="
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 
 # Install fzf
-echo "\n ======================= Installing fzf ============================"
+printf "\n ======================= Installing fzf ============================"
 sudo apt install fd-find
 mkdir ~/.local/bin
 ln -s $(which fdfind) ~/.local/bin/fd
 
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+~/.fzf/install -all
 
 # Install yazi
-echo "\n========================== Installing yazi ==========================="
+printf "\n========================== Installing yazi ==========================="
 cd ~
 wget https://github.com/sxyazi/yazi/releases/download/v0.3.3/yazi-x86_64-unknown-linux-gnu.zip
 unzip yazi-x86_64-unknown-linux-gnu.zip
 mv ~/yazi-x86_64-unknown-linux-gnu/yazi ~/.local/bin
 
 # Install bat
-echo "\n ============================ Installing bat ==========================="
+printf "\n ============================ Installing bat ==========================="
 sudo apt install bat -y
 mkdir -p ~/.local/bin
 ln -s /usr/bin/batcat ~/.local/bin/bat
 
 # Install dotfiles
-echo "\n============================ Installing dotfiles ============================"
+printf "\n============================ Installing dotfiles ============================"
 rm ~/.fzf.*
 rm ~/.zshrc
 cd ~/dotfiles/
