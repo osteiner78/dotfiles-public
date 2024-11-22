@@ -12,6 +12,9 @@ echo "Setting up Ubuntu Server"
 sudo apt update
 
 # Install zsh and plugins
+echo "Installing other tools"
+sudo apt install eza stow btop neovim tmux tree zoxide unzip -y
+
 echo "Install zsh and plugins"
 sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting -y
 
@@ -39,9 +42,6 @@ echo "Installing bat"
 sudo apt install bat -y
 mkdir -p ~/.local/bin
 ln -s /usr/bin/batcat ~/.local/bin/bat
-
-echo "Installing other tools"
-sudo apt install eza stow btop neovim tmux tree zoxide unzip -y
 
 # Install dotfiles
 echo "Installing dotfiles"
