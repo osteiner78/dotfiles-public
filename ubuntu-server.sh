@@ -12,40 +12,39 @@ echo "Setting up Ubuntu Server"
 sudo apt update
 
 # Install zsh and plugins
-printf "\n================= Installing other tools ======================"
-sudo apt install eza stow btop neovim tmux tree zoxide unzip -y
+printf "================= Installing other tools ======================"
+sudo apt install eza stow btop neovim fastfetch tmux tree zoxide unzip -y
 
-printf "\n ================== Install zsh and plugins ======================"
+printf " ================== Install zsh and plugins ======================"
 sudo apt install zsh zsh-autosuggestions zsh-syntax-highlighting -y
 
 # Install powerlevel10k
-printf "\n==================== Installing powerlevel10k ========================="
+printf "==================== Installing powerlevel10k ========================="
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 
 # Install fzf
-printf "\n ======================= Installing fzf ============================"
+printf "======================= Installing fzf ============================"
 sudo apt install fd-find
-mkdir ~/.local/bin
+mkdir -p ~/.local/bin
 ln -s $(which fdfind) ~/.local/bin/fd
 
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install -all
+~/.fzf/install --all
 
 # Install yazi
-printf "\n========================== Installing yazi ==========================="
+printf "========================== Installing yazi ==========================="
 cd ~
 wget https://github.com/sxyazi/yazi/releases/download/v0.3.3/yazi-x86_64-unknown-linux-gnu.zip
 unzip yazi-x86_64-unknown-linux-gnu.zip
 mv ~/yazi-x86_64-unknown-linux-gnu/yazi ~/.local/bin
 
 # Install bat
-printf "\n ============================ Installing bat ==========================="
+printf "============================ Installing bat ==========================="
 sudo apt install bat -y
-mkdir -p ~/.local/bin
 ln -s /usr/bin/batcat ~/.local/bin/bat
 
 # Install dotfiles
-printf "\n============================ Installing dotfiles ============================"
+printf "============================ Installing dotfiles ============================"
 rm ~/.fzf.*
 rm ~/.zshrc
 cd ~/dotfiles/
