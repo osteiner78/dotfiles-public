@@ -1,0 +1,15 @@
+[Unit]
+Description=Borg User Backup
+ 
+[Service]
+Type=oneshot
+Nice=19
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+ExecStartPre=/usr/bin/borg break-lock /media/backups/borgbackup_snoopy
+;ExecStart=/home/osteiner/.local/bin/borgbackup-snoopy.sh
+ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /root/.local/bin/borgmatic --stats --verbosity -2 --syslog-verbosity 1 --log-file /media/backups/borgbackup.log
+;User=osteiner
+;Group=osteiner
+
+AmbientCapabilities=CAP_DAC_READ_SEARCH
