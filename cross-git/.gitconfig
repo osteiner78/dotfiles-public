@@ -1,7 +1,8 @@
 [user]
 	name = Oliver Steiner
 	email = osteiner@gmail.com
-	username = osteiner
+	username = osteiner78
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEgnP7ER5amem+5Br7dYQ2pJzUJfZzrFj1VduZW8O9pu
 
 [include]
 	path = ~/themes.gitconfig
@@ -42,4 +43,14 @@
 ;
 ; [filter "remove-paperless-key"]
 ; clean = "sed -e 's/^paperless-secret-key = .*/token = FILTERED' "
+
+; [gpg]
+  ; format = ssh
+	; program = gpg1
+
+; [gpg "ssh"]
+  ; program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+; [commit]
+  ; gpgsign = true
 
