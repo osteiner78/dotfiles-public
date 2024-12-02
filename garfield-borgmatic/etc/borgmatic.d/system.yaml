@@ -29,7 +29,7 @@ source_directories:
 repositories:
     # - path: ssh://user@backupserver/./sourcehostname.borg
     #   label: backupserver
-  - path: ssh://osteiner@10.8.0.2/media/backups/borgbackup_garfield
+  - path: ssh://osteiner@10.0.0.2:39583/media/backups/borgbackup_garfield
     label: backupserver
 
 # Name of the archive. Borg placeholders can be used. See the output
@@ -104,7 +104,7 @@ exclude_caches: true
 # ======================= MONITORING ===================================
 
 uptime_kuma:
-    push_url: http://snoopy:3001/api/push/GFEyJa4cby
+    push_url: http://osteiner.xyz:3001/api/push/FCaPWhGCIb
     states:
         - finish
         - fail
