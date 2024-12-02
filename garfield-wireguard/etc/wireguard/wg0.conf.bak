@@ -1,0 +1,18 @@
+[Interface]
+Address = 10.8.0.1/24
+SaveConfig = true
+PostUp = iptables -t nat -A PREROUTING -p tcp -i eth0 '!' --dport 22 -j DNAT --to-destination 10.8.0.2;
+PostUp = iptables -t nat -A PREROUTING -p tcp -i eth0 '!' --dport 3001 -j DNAT --to-destination 10.8.0.2;
+PostUp = iptables -t nat -A PREROUTING -p udp -i eth0 '!' --dport 51820 -j DNAT --to-destination 10.8.0.2;
+PostUp = iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 104.168.120.158
+PostDown = iptables -t nat -D PREROUTING -p tcp -i eth0 '!' --dport 22 -j DNAT --to-destination 10.8.0.2;
+PostDown = iptables -t nat -D PREROUTING -p tcp -i eth0 '!' --dport 3001 -j DNAT --to-destination 10.8.0.2;
+PostDown = iptables -t nat -D PREROUTING -p udp -i eth0 '!' --dport 51820 -j DNAT --to-destination 10.8.0.2;
+PostDown = iptables -t nat -D POSTROUTING -o eth0 -j SNAT --to-source 104.168.120.158
+ListenPort = 51820
+PrivateKey = 
+
+[Peer]
+PublicKey = gFw79HSJRXWDMcaMkUSa59oD5WhAhPAGNmHGZNE8lGo=
+AllowedIPs = 10.8.0.2/32
+Endpoint = 191.23.84.149:51820
