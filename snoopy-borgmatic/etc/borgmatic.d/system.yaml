@@ -104,7 +104,7 @@ exclude_caches: true
 # ======================= MONITORING ===================================
 
 uptime_kuma:
-    push_url: http://snoopy:3001/api/push/GFEyJa4cby
+    push_url: http://osteiner.xyz:3001/api/push/GFEyJa4cby
     states:
         - finish
         - fail
