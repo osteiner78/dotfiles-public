@@ -1,5 +1,5 @@
 [Unit]
-Description=Borg User Backup
+Description=Borgmatic snoopy
  
 [Service]
 Type=oneshot
