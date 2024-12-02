@@ -1,0 +1,644 @@
+# Constants to use in the configuration file. Within option values,
+# all occurrences of the constant name in curly braces will be
+# replaced with the constant value. For example, if you have a
+# constant named "app_name" with the value "myapp", then the string
+# "{app_name}" will be replaced with "myapp" in the configuration
+# file.
+# constants:
+    # app_name: myapp
+    # user: myuser
+
+# List of source directories and files to back up. Globs and tildes
+# are expanded. Do not backslash spaces in path names.
+source_directories:
+    - /
+    # - /etc
+    # - /var/log/syslog*
+    # - /home/user/path with spaces
+
+# A required list of local or remote repositories with paths and
+# optional labels (which can be used with the --repository flag to
+# select a repository). Tildes are expanded. Multiple repositories are
+# backed up to in sequence. Borg placeholders can be used. See the
+# output of "borg help placeholders" for details. See ssh_command for
+# SSH options like identity file or port. If systemd service is used,
+# then add local repository paths in the systemd service file to the
+# ReadWritePaths list. Prior to borgmatic 1.7.10, repositories was a
+# list of plain path strings.
+repositories:
+  # - path: ssh://osteiner@snoopy/./media/backups/borgbackup_raspi/
+  # - path: ssh://osteiner@192.168.1.101:39583/./media/backups/borgbackup_raspi/
+  - path: ssh://osteiner@snoopy/media/backups/borgbackup_raspi/
+    label: backupserver
+    # - path: /mnt/backup
+    #   label: local
+
+# Working directory to use when running actions, useful for backing up
+# using relative source directory paths. Does not currently apply to
+# borgmatic configuration file paths or includes. Tildes are expanded.
+# See http://borgbackup.readthedocs.io/en/stable/usage/create.html for
+# details. Defaults to not set.
+# working_directory: /path/to/working/directory
+
+# Stay in same file system; do not cross mount points beyond the given
+# source directories. Defaults to false. But when a database hook is
+# used, the setting here is ignored and one_file_system is considered
+# true.
+one_file_system: true
+
+# Only store/extract numeric user and group identifiers. Defaults to
+# false.
+# numeric_ids: true
+
+# Store atime into archive. Defaults to true in Borg < 1.2, false in
+# Borg 1.2+.
+# atime: false
+
+# Store ctime into archive. Defaults to true.
+# ctime: false
+
+# Store birthtime (creation date) into archive. Defaults to true.
+# birthtime: false
+
+# Use Borg's --read-special flag to allow backup of block and other
+# special devices. Use with caution, as it will lead to problems if
+# used when backing up special devices such as /dev/zero. Defaults to
+# false. But when a database hook is used, the setting here is ignored
+# and read_special is considered true.
+# read_special: false
+
+# Record filesystem flags (e.g. NODUMP, IMMUTABLE) in archive.
+# Defaults to true.
+# flags: true
+
+# Mode in which to operate the files cache. See
+# http://borgbackup.readthedocs.io/en/stable/usage/create.html for
+# details. Defaults to "ctime,size,inode".
+# files_cache: ctime,size,inode
+
+# Alternate Borg local executable. Defaults to "borg".
+# local_path: borg1
+
+# Alternate Borg remote executable. Defaults to "borg".
+# remote_path: borg1
+
+# Any paths matching these patterns are included/excluded from
+# backups. Globs are expanded. (Tildes are not.) See the output of
+# "borg help patterns" for more details. Quote any value if it
+# contains leading punctuation, so it parses correctly. Note that only
+# one of "patterns" and "source_directories" may be used.
+patterns:
+    # - R /
+    - '- /home/*/.cache'
+    - '- /var/tmp/*'
+    - '- /var/cache/*'
+    - '- swap.img'
+
+# Read include/exclude patterns from one or more separate named files,
+# one pattern per line. Note that Borg considers this option
+# experimental. See the output of "borg help patterns" for more
+# details.
+# patterns_from:
+    # - /etc/borgmatic/patterns
+
+# Any paths matching these patterns are excluded from backups. Globs
+# and tildes are expanded. Note that a glob pattern must either start
+# with a glob or be an absolute path. Do not backslash spaces in path
+# names. See the output of "borg help patterns" for more details.
+exclude_patterns:
+    # - '*.pyc'
+    - '/home/*/.cache'
+    - '/var/run/*'
+    - '/var/tmp/*'
+    - '/var/cache/*'
+    - 'swap.img'
+    - '/dev/*'
+    - '/proc/*'
+    - '/run/*'
+    - '/sys/*'
+    - '/tmp/*'
+
+# Read exclude patterns from one or more separate named files, one
+# pattern per line. See the output of "borg help patterns" for more
+# details.
+# exclude_from:
+    # - /etc/borgmatic/excludes
+
+# Exclude directories that contain a CACHEDIR.TAG file. See
+# http://www.brynosaurus.com/cachedir/spec.html for details. Defaults
+# to false.
+exclude_caches: true
+
+# Exclude directories that contain a file with the given filenames.
+# Defaults to not set.
+# exclude_if_present:
+    # - .nobackup
+
+# If true, the exclude_if_present filename is included in backups.
+# Defaults to false, meaning that the exclude_if_present filename is
+# omitted from backups.
+# keep_exclude_tags: true
+
+# Exclude files with the NODUMP flag. Defaults to false.
+# exclude_nodump: true
+
+# Deprecated. Only used for locating database dumps and bootstrap
+# metadata within backup archives created prior to deprecation.
+# Replaced by borgmatic_runtime_directory and
+# borgmatic_state_directory. Defaults to ~/.borgmatic
+# borgmatic_source_directory: /tmp/borgmatic
+
+# Path for storing temporary runtime data like streaming database
+# dumps and bootstrap metadata. borgmatic automatically creates and
+# uses a "borgmatic" subdirectory here. Defaults to $XDG_RUNTIME_DIR
+# or /run/user/$UID.
+# user_runtime_directory: /run/user/1001/borgmatic
+
+# Path for storing borgmatic state files like records of when checks
+# last ran. borgmatic automatically creates and uses a "borgmatic"
+# subdirectory here. If you change this option, borgmatic must
+# create the check records again (and therefore re-run checks).
+# Defaults to $XDG_STATE_HOME or ~/.local/state.
+# user_state_directory: /var/lib/borgmatic
+
+# Store configuration files used to create a backup in the backup
+# itself. Defaults to true. Changing this to false prevents "borgmatic
+# bootstrap" from extracting configuration files from the backup.
+# store_config_files: false
+
+# If true, then source directories must exist, otherwise an error is
+# raised. Defaults to false.
+# source_directories_must_exist: true
+
+# The standard output of this command is used to unlock the encryption
+# key. Only use on repositories that were initialized with
+# passcommand/repokey/keyfile encryption. Note that if both
+# encryption_passcommand and encryption_passphrase are set, then
+# encryption_passphrase takes precedence. This can also be used to
+# access encrypted systemd service credentials. Defaults to not set.
+# For more details, see:
+# https://torsion.org/borgmatic/docs/how-to/provide-your-passwords/
+# encryption_passcommand: secret-tool lookup borg-repository repo-name
+
+# Passphrase to unlock the encryption key with. Only use on
+# repositories that were initialized with passphrase/repokey/keyfile
+# encryption. Quote the value if it contains punctuation, so it parses
+# correctly. And backslash any quote or backslash literals as well.
+# Defaults to not set.
+# encryption_passphrase: "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+
+# Number of seconds between each checkpoint during a long-running
+# backup. See https://borgbackup.readthedocs.io/en/stable/faq.html for
+# details. Defaults to checkpoints every 1800 seconds (30 minutes).
+# checkpoint_interval: 1800
+
+# Number of backed up bytes between each checkpoint during a
+# long-running backup. Only supported with Borg 2+. See
+# https://borgbackup.readthedocs.io/en/stable/faq.html for details.
+# Defaults to only time-based checkpointing (see
+# "checkpoint_interval") instead of volume-based checkpointing.
+# checkpoint_volume: 1048576
+
+# Specify the parameters passed to the chunker (CHUNK_MIN_EXP,
+# CHUNK_MAX_EXP, HASH_MASK_BITS, HASH_WINDOW_SIZE). See
+# https://borgbackup.readthedocs.io/en/stable/internals.html for
+# details. Defaults to "19,23,21,4095".
+# chunker_params: 19,23,21,4095
+
+# Type of compression to use when creating archives. (Compression
+# level can be added separated with a comma, like "zstd,7".) See
+# http://borgbackup.readthedocs.io/en/stable/usage/create.html for
+# details. Defaults to "lz4".
+compression: lz4
+
+# Remote network upload rate limit in kiBytes/second. Defaults to
+# unlimited.
+# upload_rate_limit: 100
+
+# Size of network upload buffer in MiB. Defaults to no buffer.
+# upload_buffer_size: 160
+
+# Number of times to retry a failing backup before giving up. Defaults
+# to 0 (i.e., does not attempt retry).
+# retries: 3
+
+# Wait time between retries (in seconds) to allow transient issues
+# to pass. Increases after each retry by that same wait time as a
+# form of backoff. Defaults to 0 (no wait).
+# retry_wait: 10
+
+# Directory where temporary Borg files are stored. Defaults to
+# $TMPDIR. See "Resource Usage" at
+# https://borgbackup.readthedocs.io/en/stable/usage/general.html for
+# details.
+# temporary_directory: /path/to/tmpdir
+
+# Command to use instead of "ssh". This can be used to specify ssh
+# options. Defaults to not set.
+# ssh_command: ssh -i /path/to/private/key
+
+# Base path used for various Borg directories. Defaults to $HOME,
+# ~$USER, or ~.
+# borg_base_directory: /path/to/base
+
+# Path for Borg configuration files. Defaults to
+# $borg_base_directory/.config/borg
+# borg_config_directory: /path/to/base/config
+
+# Path for Borg cache files. Defaults to
+# $borg_base_directory/.cache/borg
+# borg_cache_directory: /path/to/base/cache
+
+# Maximum time to live (ttl) for entries in the Borg files cache.
+# borg_files_cache_ttl: 20
+
+# Path for Borg security and encryption nonce files. Defaults to
+# $borg_base_directory/.config/borg/security
+# borg_security_directory: /path/to/base/config/security
+
+# Path for Borg encryption key files. Defaults to
+# $borg_base_directory/.config/borg/keys
+# borg_keys_directory: /path/to/base/config/keys
+
+# A list of Borg exit codes that should be elevated to errors or
+# squashed to warnings as indicated. By default, Borg error exit codes
+# (2 to 99) are treated as errors while warning exit codes (1 and
+# 100+) are treated as warnings. Exit codes other than 1 and 2 are
+# only present in Borg 1.4.0+.
+# borg_exit_codes:
+    # - code: 13
+      # treat_as: warning
+    # - code: 100
+      # treat_as: error
+
+# Umask used for when executing Borg or calling hooks. Defaults to
+# 0077 for Borg or the umask that borgmatic is run with for hooks.
+# umask: 77
+
+# Maximum seconds to wait for acquiring a repository/cache lock.
+# Defaults to 1.
+# lock_wait: 5
+
+# Name of the archive to create. Borg placeholders can be used. See
+# the output of "borg help placeholders" for details. Defaults to
+# "{hostname}-{now:%Y-%m-%dT%H:%M:%S.%f}" with Borg 1 and
+# "{hostname}" with Borg 2, as Borg 2 does not require unique
+# archive names; identical archive names form a common "series" that
+# can be targeted together. When running actions like repo-list,
+# info, or check, borgmatic automatically tries to match only
+# archives created with this name format.
+archive_name_format: '{hostname}-raspi-{now:%Y-%m-%d@%H:%M}'
+
+# A Borg pattern for filtering down the archives used by borgmatic
+# actions that operate on multiple archives. For Borg 1.x, use a shell
+# pattern here and see the output of "borg help placeholders" for
+# details. For Borg 2.x, see the output of "borg help match-archives".
+# If match_archives is not specified, borgmatic defaults to deriving
+# the match_archives value from archive_name_format.
+match_archives: sh:{hostname}-*
+
+# Bypass Borg error about a repository that has been moved. Defaults
+# to not bypassing.
+# relocated_repo_access_is_ok: true
+
+# Bypass Borg error about a previously unknown unencrypted repository.
+# Defaults to not bypassing.
+# unknown_unencrypted_repo_access_is_ok: true
+
+# Bypass Borg confirmation about check with repair option. Defaults to
+# an interactive prompt from Borg.
+# check_i_know_what_i_am_doing: true
+
+# Additional options to pass directly to particular Borg commands,
+# handy for Borg options that borgmatic does not yet support natively.
+# Note that borgmatic does not perform any validation on these
+# options. Running borgmatic with "--verbosity 2" shows the exact Borg
+# command-line invocation.
+# extra_borg_options:
+    # Extra command-line options to pass to "borg init".
+    # init: --extra-option
+
+    # Extra command-line options to pass to "borg create".
+    # create: --extra-option
+
+    # Extra command-line options to pass to "borg prune".
+    # prune: --extra-option
+
+    # Extra command-line options to pass to "borg compact".
+    # compact: --extra-option
+
+    # Extra command-line options to pass to "borg check".
+    # check: --extra-option
+
+# Keep all archives within this time interval. See "skip_actions" for
+# disabling pruning altogether.
+# keep_within: 3H
+
+# Number of secondly archives to keep.
+# keep_secondly: 60
+
+# Number of minutely archives to keep.
+# keep_minutely: 60
+
+# Number of hourly archives to keep.
+keep_hourly: 6
+
+# Number of daily archives to keep.
+keep_daily: 7
+
+# Number of weekly archives to keep.
+keep_weekly: 4
+
+# Number of monthly archives to keep.
+keep_monthly: 6
+
+# Number of yearly archives to keep.
+# keep_yearly: 1
+
+# Deprecated. When pruning or checking archives, only consider archive
+# names starting with this prefix. Borg placeholders can be used. See
+# the output of "borg help placeholders" for details. If a prefix is
+# not specified, borgmatic defaults to matching archives based on the
+# archive_name_format (see above).
+# prefix: sourcehostname
+
+# List of one or more consistency checks to run on a periodic basis
+# (if "frequency" is set) or every time borgmatic runs checks (if
+# "frequency" is omitted).
+# checks:
+    # Name of the consistency check to run:
+    #  * "repository" checks the consistency of the
+    # repository.
+    #  * "archives" checks all of the archives.
+    #  * "data" verifies the integrity of the data
+    # within the archives and implies the "archives"
+    # check as well.
+    #  * "spot" checks that some percentage of source
+    # files are found in the most recent archive (with
+    # identical contents).
+    #  * "extract" does an extraction dry-run of the
+    # most recent archive.
+    #  * See "skip_actions" for disabling checks
+    # altogether.
+    # - name: spot
+
+      # How frequently to run this type of consistency
+      # check (as a best effort). The value is a number
+      # followed by a unit of time. E.g., "2 weeks" to
+      # run this consistency check no more than every
+      # two weeks for a given repository or "1 month" to
+      # run it no more than monthly. Defaults to
+      # "always": running this check every time checks
+      # are run.
+      # frequency: 2 weeks
+
+      # After the "frequency" duration has elapsed, only
+      # run this check if the current day of the week
+      # matches one of these values (the name of a day of
+      # the week in the current locale). "weekday" and
+      # "weekend" are also accepted. Defaults to running
+      # the check on any day of the week.
+      # only_run_on:
+          # - Saturday
+          # - Sunday
+
+      # The percentage delta between the source
+      # directories file count and the most recent backup
+      # archive file count that is allowed before the
+      # entire consistency check fails. This can catch
+      # problems like incorrect excludes, inadvertent
+      # deletes, etc. Required (and only valid) for the
+      # "spot" check.
+      # count_tolerance_percentage: 10
+
+      # The percentage of total files in the source
+      # directories to randomly sample and compare to
+      # their corresponding files in the most recent
+      # backup archive. Required (and only valid) for the
+      # "spot" check.
+      # data_sample_percentage: 1
+
+      # The percentage of total files in the source
+      # directories that can fail a spot check comparison
+      # without failing the entire consistency check. This
+      # can catch problems like source files that have
+      # been bulk-changed by malware, backups that have
+      # been tampered with, etc. The value must be lower
+      # than or equal to the "contents_sample_percentage".
+      # Required (and only valid) for the "spot" check.
+      # data_tolerance_percentage: 0.5
+
+      # Command to use instead of "xxh64sum" to hash
+      # source files, usually found in an OS package named
+      # "xxhash". Do not substitute with a different hash
+      # type (SHA, MD5, etc.) or the check will never
+      # succeed. Only valid for the "spot" check.
+      # xxh64sum_command: /usr/local/bin/xxh64sum
+
+      # How many seconds to check the repository before
+      # interrupting the check. Useful for splitting a
+      # long-running repository check into multiple
+      # partial checks. Defaults to no interruption. Only
+      # applies to the "repository" check, does not check
+      # the repository index, and is not compatible with a
+      # simultaneous "archives" check or "--repair" flag.
+      # max_duration: 3600
+
+# Paths or labels for a subset of the configured "repositories" (see
+# above) on which to run consistency checks. Handy in case some of
+# your repositories are very large, and so running consistency checks
+# on them would take too long. Defaults to running consistency checks
+# on all configured repositories.
+# check_repositories:
+    # - user@backupserver:sourcehostname.borg
+
+# Restrict the number of checked archives to the last n. Applies only
+# to the "archives" check. Defaults to checking all archives.
+# check_last: 3
+
+# Apply color to console output. Can be overridden with --no-color
+# command-line flag. Defaults to true.
+# color: false
+
+# List of one or more actions to skip running for this configuration
+# file, even if specified on the command-line (explicitly or
+# implicitly). This is handy for append-only configurations where you
+# never want to run "compact" or checkless configuration where you
+# want to skip "check". Defaults to not skipping any actions.
+# skip_actions:
+    # - compact
+
+# List of one or more shell commands or scripts to execute before all
+# the actions for each repository.
+# before_actions:
+    # - echo Starting actions.
+
+# List of one or more shell commands or scripts to execute before
+# creating a backup, run once per repository.
+# before_backup:
+    # - echo Starting a backup.
+
+# List of one or more shell commands or scripts to execute before
+# pruning, run once per repository.
+# before_prune:
+    # - echo Starting pruning.
+
+# List of one or more shell commands or scripts to execute before
+# compaction, run once per repository.
+# before_compact:
+    # - echo Starting compaction.
+
+# List of one or more shell commands or scripts to execute before
+# consistency checks, run once per repository.
+# before_check:
+    # - echo Starting checks.
+
+# List of one or more shell commands or scripts to execute before
+# extracting a backup, run once per repository.
+# before_extract:
+    # - echo Starting extracting.
+
+# List of one or more shell commands or scripts to execute after
+# creating a backup, run once per repository.
+after_backup:
+    - echo Finished a backup.
+
+# List of one or more shell commands or scripts to execute after
+# compaction, run once per repository.
+after_compact:
+    - echo Finished compaction.
+
+# List of one or more shell commands or scripts to execute after
+# pruning, run once per repository.
+after_prune:
+    - echo Finished pruning.
+
+# List of one or more shell commands or scripts to execute after
+# consistency checks, run once per repository.
+after_check:
+    - echo Finished checks.
+
+# List of one or more shell commands or scripts to execute after
+# extracting a backup, run once per repository.
+after_extract:
+    - echo Finished extracting.
+
+# List of one or more shell commands or scripts to execute after all
+# actions for each repository.
+after_actions:
+    - echo Finished actions.
+
+# List of one or more shell commands or scripts to execute when an
+# exception occurs during a "create", "prune", "compact", or "check"
+# action or an associated before/after hook.
+on_error:
+    - echo Error during create/prune/compact/check.
+
+# List of one or more shell commands or scripts to execute before
+# running all actions (if one of them is "create"). These are
+# collected from all configuration files and then run once before all
+# of them (prior to all actions).
+# before_everything:
+    # - echo Starting actions.
+
+# List of one or more shell commands or scripts to execute after
+# running all actions (if one of them is "create"). These are
+# collected from all configuration files and then run once after all
+# of them (after any action).
+# after_everything:
+    # - echo Completed actions.
+
+uptime_kuma:
+  push_url: http://osteiner.xyz:3001/api/push/vx0WbHS0BF
+  states:
+    # - start
+    - finish
+    - fail
+
+ntfy:
+    topic: QPqEwr8MExRRDjUJPL6ybNhK 
+    server: "https://ntfy.sh"
+    access_token: 
+
+    start:
+      title: raspi backup started
+      message: Watch this space...
+      tags: borgmatic
+      priority: min
+    finish:
+      title: raspi backup completed successfully
+      message: Nice!
+      tags: borgmatic,+1
+      priority: min
+    fail:
+      title: raspi backup failed
+      message: You should probably fix it
+      tags: borgmatic,-1,skull
+      priority: max
+    states:
+      # - start
+      # - finish
+      - fail
+
+# apprise:
+    # A list of Apprise services to publish to with URLs and
+    # labels. The labels are used for logging. A full list of
+    # services and their configuration can be found at
+    # https://github.com/caronc/apprise/wiki.
+    # services:
+        # - url: kodi://user@hostname
+          # label: kodi
+        # - url: line://Token@User
+          # label: line
+
+    # Send borgmatic logs to Apprise services as part the
+    # "finish", "fail", and "log" states. Defaults to true.
+    # send_logs: false
+
+    # Number of bytes of borgmatic logs to send to Apprise
+    # services. Set to 0 to send all logs and disable this
+    # truncation. Defaults to 1500.
+    # logs_size_limit: 100000
+
+    # start:
+        # Specify the message title. If left unspecified, no
+        # title is sent.
+        # title: Ping!
+
+        # Specify the message body.
+        # body: Starting backup process.
+
+    # finish:
+        # Specify the message title. If left unspecified, no
+        # title is sent.
+        # title: Ping!
+
+        # Specify the message body.
+        # body: Backups successfully made.
+
+    # fail:
+        # Specify the message title. If left unspecified, no
+        # title is sent.
+        # title: Ping!
+
+        # Specify the message body.
+        # body: Your backups have failed.
+
+    # log:
+        # Specify the message title. If left unspecified, no
+        # title is sent.
+        # title: Ping!
+
+        # Specify the message body.
+        # body: Here is some info about your backups.
+
+    # List of one or more monitoring states to ping for:
+    # "start", "finish", "fail", and/or "log". Defaults to
+    # pinging for failure only. For each selected state,
+    # corresponding configuration for the message title and body
+    # should be given. If any is left unspecified, a generic
+    # message is emitted instead.
+    # states:
+        # - start
+        # - finish
+
