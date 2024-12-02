@@ -105,6 +105,10 @@ alias gs="git status"
 alias gcm="git commit -m " ""
 alias gd="git diff"
 
+# Wireguard
+alias wd="sudo systemctl stop wg-quick@wg0"
+alias wu="sudo systemctl start wg-quick@wg0"
+
 # ==================== YAZI =================================================
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
