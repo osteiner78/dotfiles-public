@@ -3,7 +3,7 @@ services:
     container_name: linkding
     image: sissbruecker/linkding:latest-plus
     ports:
-      - 19090:9090
+      - 127.0.0.1:19090:9090
     volumes:
       - /opt/linkding/data:/etc/linkding/data
     environment:
