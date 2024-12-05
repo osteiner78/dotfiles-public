@@ -140,7 +140,7 @@ ntfy:
     tags: borgmatic,-1,skull
     priority: max
   states:
-    - start
+ #   - start
     - finish
     - fail
 
