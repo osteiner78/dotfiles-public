@@ -21,7 +21,15 @@ git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/powerlevel10k
 
 
 echo -e "================= Installing other tools ======================"
-sudo apt install stow btop tmux tree zoxide net-tools unzip git-diff -y
+sudo apt install stow -y
+sudo apt install btop -y
+sudo apt install tmux -y
+sudo apt install tree -y
+sudo apt install zoxide -y
+sudo apt install net-tools -y
+sudo apt install unzip -y
+sudo apt install git-diff -y
+sudo apt install gdu -y
 
 echo -e "================= Installing eza ====================="
 sudo apt install gpg -y

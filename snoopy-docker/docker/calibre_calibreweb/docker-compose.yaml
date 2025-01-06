@@ -14,9 +14,10 @@ services:
       # - CUSTOM_HTTPS_PORT=9191
     volumes:
       - /opt/calibre/config:/config
-      - /home/osteiner/books/:/books
-      # - /media/nvme/books:/books
-      - /home/osteiner/books-import:/import
+      - /opt/docker/calibre-books:/books
+      # - /media/nvme/books/:/books
+      - /home/osteiner/calibre-books-import/:/import
+      # - /media/nvme/books-import:/import
     ports:
       - 9090:8080
       - 9191:8181
@@ -34,7 +35,8 @@ services:
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
       - /opt/calibre-web/config:/config
-      - /home/osteiner/books:/books
+      - /opt/docker/calibre-books:/books
+      # - /media/nvme/books:/books
     ports:
       - 8083:8083
     restart: unless-stopped
