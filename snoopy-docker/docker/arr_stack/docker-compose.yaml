@@ -9,7 +9,8 @@ services:
       - DELUGE_LOGLEVEL=error #optional
     volumes:
       - /opt/deluge/config:/config
-      - /media/WDElements/data/torrents:/data/torrents
+      - /opt/docker/deluge-torrents:/data/torrents
+      # - /media/WDElements/data/torrents:/data/torrents
     ports:
       - 8112:8112
       - 6881:6881
@@ -28,6 +29,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /opt/radarr:/config
       - /media/WDElements/data:/data #optional
+      - /opt/docker/deluge-torrents:/data/torrents
+      # - /media/nvme/torrents/:/data/torrents
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -43,6 +46,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /opt/sonarr:/config:rw
       - /media/WDElements/data:/data #optional
+      - /opt/docker/deluge-torrents:/data/torrents
+      # - /media/nvme/torrents/:/data/torrents
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -59,6 +64,8 @@ services:
       - /opt/lidarr:/config:rw
       - /media/WDElements/data/:/data #optional
       # - /path/to/downloadclient-downloads:/downloads #optional
+      - /opt/docker/deluge-torrents:/data/torrents
+      # - /media/nvme/torrents/:/data/torrents
     ports:
       - 8686:8686
     restart: unless-stopped

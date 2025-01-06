@@ -16,4 +16,5 @@ services:
       - /dev/sda
       - /dev/sdb
       - /dev/sdc
-      - /dev/nvme0
+      - /dev/sdd
+      # - /dev/nvme0
