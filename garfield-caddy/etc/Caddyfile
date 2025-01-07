@@ -7,6 +7,13 @@
 # sure your domain's A/AAAA DNS records are properly pointed to
 # this machine's public IP, then replace ":80" below with your
 # domain name.
+{
+	log {
+		output file /var/log/access.log {
+			roll_local_time
+		}
+	}
+}
 
 # :80 {
 # Set this path to your site's directory.
@@ -25,6 +32,11 @@
 # Refer to the Caddy docs for more information:
 # https://caddyserver.com/docs/caddyfile
 
+# Garfield
+paperless.osteiner.xyz {
+	reverse_proxy localhost:8000
+}
+
 webmin-garfield.osteiner.xyz {
 	reverse_proxy localhost:10000
 }
@@ -34,10 +46,12 @@ portainer.osteiner.xyz {
 }
 
 kuma.osteiner.xyz {
+	log
 	reverse_proxy localhost:3001
 }
 
 linkding.osteiner.xyz {
+	log
 	reverse_proxy localhost:19090
 }
 
@@ -47,6 +61,11 @@ hoarder.osteiner.xyz {
 
 changedetection.osteiner.xyz {
 	reverse_proxy localhost:5000
+}
+
+# Asus router
+openvpn.osteiner.xyz {
+	reverse_proxy 192.168.1.1
 }
 
 # Raspi 
@@ -59,48 +78,49 @@ home.osteiner.xyz {
 }
 
 pihole.osteiner.xyz {
-	reverse_proxy 192.168.1.100/admin
+	reverse_proxy 192.168.1.100
 }
 
 # Snoopy
 webmin-snoopy.osteiner.xyz {
-	reverse_proxy 10.0.0.2:10000
+	reverse_proxy 192.168.1.101:10000
 }
 
 scrutiny.osteiner.xyz {
-	reverse_proxy 10.0.0.2:18080
+	reverse_proxy 192.168.1.101:18080
 }
 
 cloud.osteiner.xyz {
-	reverse_proxy 10.0.0.2:11000
+	reverse_proxy 192.168.1.101:11000
 }
 
-paperless.osteiner.xyz {
-	reverse_proxy 10.0.0.2:8000
-}
+# If paperless hosted in snoopy
+# paperless.osteiner.xyz {
+# 	reverse_proxy 10.0.0.2:8000
+# }
 
 photos.osteiner.xyz {
-	reverse_proxy 10.0.0.2:2283
+	reverse_proxy 192.168.1.101:2283
 }
 
 books.osteiner.xyz {
-	reverse_proxy 10.0.0.2:8083
+	reverse_proxy 192.168.1.101:8083
 }
 
 firefly.osteiner.xyz {
-	reverse_proxy 10.0.0.2:1080
+	reverse_proxy 192.168.1.101:1080
 }
 
 radarr.osteiner.xyz {
-	reverse_proxy 10.0.0.2:7878
+	reverse_proxy 192.168.1.101:7878
 }
 
 sonarr.osteiner.xyz {
-	reverse_proxy 10.0.0.2:8989
+	reverse_proxy 192.168.1.101:8989
 }
 
 lidarr.osteiner.xyz {
-	reverse_proxy 10.0.0.2:8686
+	reverse_proxy 192.168.1.101:8686
 }
 
 # *.osteiner.xyz, osteiner.xyz {

@@ -29,7 +29,7 @@ source_directories:
 repositories:
     # - path: ssh://user@backupserver/./sourcehostname.borg
     #   label: backupserver
-  - path: ssh://osteiner@10.0.0.2:39583/media/backups/borgbackup_garfield
+  - path: ssh://osteiner@192.168.1.101:39583/media/backups/borgbackup_garfield
     label: backupserver
 
 # Name of the archive. Borg placeholders can be used. See the output
@@ -102,10 +102,10 @@ exclude_caches: true
 # exclude_nodump: true
 
 # ======================= MONITORING ===================================
-
 uptime_kuma:
     push_url: http://osteiner.xyz:3001/api/push/FCaPWhGCIb
     states:
+        # - start
         - finish
         - fail
 
@@ -118,7 +118,7 @@ uptime_kuma:
 #         - finish
 #         - fail
 
-
+# ======================= NOTIFICATIONS ===================================
 ntfy:
   topic: QPqEwr8MExRRDjUJPL6ybNhK
   server: "https://ntfy.sh"
@@ -140,8 +140,8 @@ ntfy:
     tags: borgmatic,-1,skull
     priority: max
   states:
-    - start
-    - finish
+ #   - start
+    # - finish
     - fail
 
 <<: !include /etc/borgmatic.d/common/common.yaml
