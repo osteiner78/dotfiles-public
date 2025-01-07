@@ -1,0 +1,15 @@
+[Unit]
+Description=Borgmatic garfield
+ 
+[Service]
+Type=oneshot
+Nice=19
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+ExecStartPre=/usr/bin/borg break-lock ssh://osteiner@10.0.0.2:39583/media/backups/borgbackup_garfield
+;ExecStart=/home/osteiner/.local/bin/borgbackup-snoopy.sh
+ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /root/.local/bin/borgmatic --stats --verbosity -2 --syslog-verbosity 1 --log-file /var/log/borgbackup.log
+;User=osteiner
+;Group=osteiner
+
+AmbientCapabilities=CAP_DAC_READ_SEARCH
