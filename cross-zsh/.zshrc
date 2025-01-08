@@ -59,8 +59,9 @@ bindkey "^[[B" history-search-forward
 bindkey "OB" history-search-forward
 # bindkey "<Down>" history-beginning-search-forward
 
-EDITOR=/usr/local/bin/nvim
-SUDO_EDITOR=/usr/local/bin/nvim
+# Moved to .zshenv
+# EDITOR=/usr/local/bin/nvim
+# SUDO_EDITOR=/usr/local/bin/nvim
 
 # =================================== ALIASES ====================================================
 alias ".."="cd .." 
@@ -208,8 +209,8 @@ eval "$(zoxide init zsh)"
 alias cd="z"
 
 # ==================== PERL LOCALE ==========================
-LC_CTYPE=en_US.UTF-8
-LC_ALL=en_US.UTF-8
+# LC_CTYPE=en_US.UTF-8
+# LC_ALL=en_US.UTF-8
 
 # ==================== POWERLEVEL 10K ==========================
 # Load powerlevel10k theme - Cross-platform
@@ -234,8 +235,8 @@ elif [ "$(uname -s)" =  "Linux" ]; then
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
-path+=${HOME}/.local/bin
+# path+=${HOME}/.local/bin
 
 # For borgmatic
-path+=('/root/.local/bin/')
+# path+=('/root/.local/bin/')
 
