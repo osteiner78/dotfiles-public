@@ -29,8 +29,11 @@ source_directories:
 repositories:
     # - path: ssh://user@backupserver/./sourcehostname.borg
     #   label: backupserver
-  - path: ssh://osteiner@192.168.1.101:39583/media/backups/borgbackup_garfield
+  # - path: ssh://osteiner@192.168.1.101:39583/media/backups/borgbackup_garfield
+  - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_garfield
     label: backupserver
+    
+# relocated_repo_access_is_ok: true
 
 # Name of the archive. Borg placeholders can be used. See the output
 # of "borg help placeholders" for details. Defaults to
