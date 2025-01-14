@@ -28,7 +28,8 @@ source_directories:
 repositories:
   # - path: ssh://osteiner@snoopy/./media/backups/borgbackup_raspi/
   # - path: ssh://osteiner@192.168.1.101:39583/./media/backups/borgbackup_raspi/
-  - path: ssh://osteiner@snoopy/media/backups/borgbackup_raspi/
+  # - path: ssh://osteiner@snoopy/media/backups/borgbackup_raspi/
+  - path: /media/backups/borgbackup_raspi/
     label: backupserver
     # - path: /mnt/backup
     #   label: local
