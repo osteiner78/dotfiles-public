@@ -107,6 +107,10 @@ books.osteiner.xyz {
 	reverse_proxy 192.168.1.101:8083
 }
 
+books2.osteiner.xyz {
+	reverse_proxy 192.168.1.101:8084
+}
+
 firefly.osteiner.xyz {
 	reverse_proxy 192.168.1.101:1080
 }
