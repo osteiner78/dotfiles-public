@@ -1,4 +1,3 @@
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-# test
-# export PATH="/opt/homebrew/bin:$PATH"
+if [ "$(uname -s)" = "Darwin" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
