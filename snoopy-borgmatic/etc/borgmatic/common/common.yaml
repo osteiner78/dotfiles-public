@@ -171,7 +171,7 @@ match_archives: sh:{hostname}-*
 
 # Bypass Borg error about a repository that has been moved. Defaults
 # to not bypassing.
-# relocated_repo_access_is_ok: true
+relocated_repo_access_is_ok: true
 
 # Bypass Borg error about a previously unknown unencrypted repository.
 # Defaults to not bypassing.
