@@ -30,8 +30,7 @@ Port 39583
 # Authentication:
 
 #LoginGraceTime 20
-PermitRootLogin yes
-# PermitRootLogin no
+PermitRootLogin no
 #StrictModes yes
 MaxAuthTries 3
 #MaxSessions 10
