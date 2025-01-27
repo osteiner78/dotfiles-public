@@ -23,9 +23,12 @@ services:
     volumes:
       - romm_resources:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
       - romm_redis_data:/redis-data # Cached data for background tasks
-      - /opt/docker/romm/:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
-      - /opt/docker/romm/:/romm/assets # Uploaded saves, states, etc.
-      - /opt/docker/romm/:/romm/config # Path where config.yml is stored
+      # - /opt/docker/romm/:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      - /mnt/nfs/roms:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      # - /opt/docker/romm/:/romm/assets # Uploaded saves, states, etc.
+      - /mnt/nfs/roms:/romm/assets # Uploaded saves, states, etc.
+      # - /opt/docker/romm/:/romm/config # Path where config.yml is stored
+      - /mnt/nfs/roms:/romm/config # Path where config.yml is stored
     ports:
       - 2080:8080
     depends_on:
