@@ -11,7 +11,7 @@
 # are expanded. Do not backslash spaces in path names.
 source_directories:
     - /
-    - /media/nvme/
+    # - /media/nvme/
     # - /home/osteiner/
     # - /etc
     # - /var/log/syslog*
@@ -29,7 +29,7 @@ source_directories:
 repositories:
     # - path: ssh://user@backupserver/./sourcehostname.borg
     #   label: backupserver
-  - path: /media/backups/borgbackup_snoopy
+  - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
     label: local
 
 # Name of the archive. Borg placeholders can be used. See the output
@@ -46,6 +46,7 @@ archive_name_format: '{hostname}-{now:%Y-%m-%d@%H:%M}'
 # one of "patterns" and "source_directories" may be used.
 patterns:
     # - R /
+    - '- /mnt/*'
     - '- /home/*/.cache'
     - '- /var/tmp/*'
     - '- /var/cache/*'
@@ -66,6 +67,7 @@ exclude_patterns:
     - '/media/WDElements/'
     - '/media/RAID*'
     - '/media/backups'
+    - '/mnt/*'
     - '/home/*/cache/*'
     - '/var/run/*'
     - '/var/tmp/*'
