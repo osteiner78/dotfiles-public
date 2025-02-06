@@ -30,6 +30,7 @@ sudo apt install net-tools -y
 sudo apt install unzip -y
 sudo apt install git-diff -y
 sudo apt install gdu -y
+sudo apt install gcc -y
 
 echo -e "================= Installing eza ====================="
 sudo apt install gpg -y
