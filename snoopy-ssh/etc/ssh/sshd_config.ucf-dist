@@ -11,7 +11,7 @@
 
 Include /etc/ssh/sshd_config.d/*.conf
 
-Port 39583
+#Port 22
 #AddressFamily any
 #ListenAddress 0.0.0.0
 #ListenAddress ::
@@ -29,10 +29,10 @@ Port 39583
 
 # Authentication:
 
-#LoginGraceTime 20
-# PermitRootLogin no
+#LoginGraceTime 2m
+#PermitRootLogin prohibit-password
 #StrictModes yes
-MaxAuthTries 3
+#MaxAuthTries 6
 #MaxSessions 10
 
 #PubkeyAuthentication yes
@@ -54,21 +54,21 @@ MaxAuthTries 3
 #IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-PasswordAuthentication no 
-PermitEmptyPasswords no
+PasswordAuthentication no
+#PermitEmptyPasswords no
 
 # Change to yes to enable challenge-response passwords (beware issues with
 # some PAM modules and threads)
 KbdInteractiveAuthentication no
 
 # Kerberos options
-KerberosAuthentication no
+#KerberosAuthentication no
 #KerberosOrLocalPasswd yes
 #KerberosTicketCleanup yes
 #KerberosGetAFSToken no
 
 # GSSAPI options
-GSSAPIAuthentication no
+#GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 #GSSAPIStrictAcceptorCheck yes
 #GSSAPIKeyExchange no
@@ -84,24 +84,24 @@ GSSAPIAuthentication no
 # and KbdInteractiveAuthentication to 'no'.
 UsePAM yes
 
-AllowAgentForwarding no
-AllowTcpForwarding yes 
+#AllowAgentForwarding yes
+#AllowTcpForwarding yes
 #GatewayPorts no
-X11Forwarding no
+X11Forwarding yes
 #X11DisplayOffset 10
 #X11UseLocalhost yes
 #PermitTTY yes
 PrintMotd no
 #PrintLastLog yes
 #TCPKeepAlive yes
-PermitUserEnvironment no
+#PermitUserEnvironment no
 #Compression delayed
-ClientAliveInterval 120
+#ClientAliveInterval 0
 #ClientAliveCountMax 3
 #UseDNS no
 #PidFile /run/sshd.pid
 #MaxStartups 10:30:100
-PermitTunnel no
+#PermitTunnel no
 #ChrootDirectory none
 #VersionAddendum none
 
