@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [Unit]
 Description=Borgmatic garfield
  
@@ -7,28 +6,9 @@ Type=oneshot
 Nice=19
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7
-ExecStartPre=/usr/bin/borg break-lock ssh://osteiner@10.0.0.2:39583/media/backups/borgbackup_garfield
-;ExecStart=/home/osteiner/.local/bin/borgbackup-snoopy.sh
-ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /root/.local/bin/borgmatic --stats --verbosity -2 --syslog-verbosity 1 --log-file /var/log/borgbackup.log
+ExecStartPre=/usr/bin/borg break-lock ssh://pi@192.168.1.100:49237/media/backups/borgbackup_garfield
+ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /root/.local/bin/borgmatic --stats --verbosity 1 --syslog-verbosity 1 --log-file /var/log/borgbackup.log
 ;User=osteiner
 ;Group=osteiner
 
 AmbientCapabilities=CAP_DAC_READ_SEARCH
-||||||| c33e774
-=======
-[Unit]
-Description=Borgmatic garfield
- 
-[Service]
-Type=oneshot
-Nice=19
-IOSchedulingClass=best-effort
-IOSchedulingPriority=7
-ExecStartPre=/usr/bin/borg break-lock ssh://osteiner@192.168.1.101:39583/media/backups/borgbackup_garfield
-;ExecStart=/home/osteiner/.local/bin/borgbackup-snoopy.sh
-ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /root/.local/bin/borgmatic --stats --verbosity -2 --syslog-verbosity 1 --log-file /var/log/borgbackup.log
-;User=osteiner
-;Group=osteiner
-
-AmbientCapabilities=CAP_DAC_READ_SEARCH
->>>>>>> c1363d21bbaa32e23223a229f08a88adf9df38fa

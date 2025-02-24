@@ -1,0 +1,149 @@
+# Constants to use in the configuration file. All occurrences of the
+# constant name within curly braces will be replaced with the value.
+# For example, if you have a constant named "hostname" with the value
+# "myhostname", then the string "{hostname}" will be replaced with
+# "myhostname" in the configuration file.
+# constants:
+    # hostname: myhostname
+    # prefix: myprefix
+
+# List of source directories and files to back up. Globs and tildes
+# are expanded. Do not backslash spaces in path names.
+source_directories:
+    - /
+    # - /media/nvme/
+    # - /home/osteiner/
+    # - /etc
+    # - /var/log/syslog*
+    # - /home/user/path with spaces
+
+# A required list of local or remote repositories with paths and
+# optional labels (which can be used with the --repository flag to
+# select a repository). Tildes are expanded. Multiple repositories are
+# backed up to in sequence. Borg placeholders can be used. See the
+# output of "borg help placeholders" for details. See ssh_command for
+# SSH options like identity file or port. If systemd service is used,
+# then add local repository paths in the systemd service file to the
+# ReadWritePaths list. Prior to borgmatic 1.7.10, repositories was a
+# list of plain path strings.
+repositories:
+    # - path: ssh://user@backupserver/./sourcehostname.borg
+    #   label: backupserver
+  - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
+    label: local
+
+# Name of the archive. Borg placeholders can be used. See the output
+# of "borg help placeholders" for details. Defaults to
+# "{hostname}-{now:%Y-%m-%dT%H:%M:%S.%f}". When running actions like
+# rlist, info, or check, borgmatic automatically tries to match only
+# archives created with this name format.
+archive_name_format: '{hostname}-{now:%Y-%m-%d@%H:%M}'
+
+# Any paths matching these patterns are included/excluded from
+# backups. Globs are expanded. (Tildes are not.) See the output of
+# "borg help patterns" for more details. Quote any value if it
+# contains leading punctuation, so it parses correctly. Note that only
+# one of "patterns" and "source_directories" may be used.
+patterns:
+    # - R /
+    - '- /mnt/*'
+    - '- /home/*/.cache'
+    - '- /var/tmp/*'
+    - '- /var/cache/*'
+    - '- swap.img'
+
+# Read include/exclude patterns from one or more separate named files,
+# one pattern per line. Note that Borg considers this option
+# experimental. See the output of "borg help patterns" for more
+# details.
+# patterns_from:
+    # - /etc/borgmatic/patterns
+
+# Any paths matching these patterns are excluded from backups. Globs
+# and tildes are expanded. Note that a glob pattern must either start
+# with a glob or be an absolute path. Do not backslash spaces in path
+# names. See the output of "borg help patterns" for more details.
+exclude_patterns:
+    - '/media/WDElements/'
+    - '/media/RAID*'
+    - '/media/backups'
+    - '/mnt/*'
+    - '/home/*/cache/*'
+    - '/var/run/*'
+    - '/var/tmp/*'
+    - '/var/cache/*'
+    - 'swap.img'
+    - '/dev/*'
+    - '/proc/*'
+    - '/run/*'
+    - '/sys/*'
+    - '/tmp/*'
+
+# Read exclude patterns from one or more separate named files, one
+# pattern per line. See the output of "borg help patterns" for more
+# details.
+# exclude_from:
+    # - /etc/borgmatic/excludes
+
+# Exclude directories that contain a CACHEDIR.TAG file. See
+# http://www.brynosaurus.com/cachedir/spec.html for details. Defaults
+# to false.
+exclude_caches: true
+
+# Exclude directories that contain a file with the given filenames.
+# Defaults to not set.
+# exclude_if_present:
+    # - .nobackup
+
+# If true, the exclude_if_present filename is included in backups.
+# Defaults to false, meaning that the exclude_if_present filename is
+# omitted from backups.
+# keep_exclude_tags: true
+
+# Exclude files with the NODUMP flag. Defaults to false.
+# exclude_nodump: true
+
+# ======================= MONITORING ===================================
+
+uptime_kuma:
+    push_url: http://osteiner.xyz:3001/api/push/GFEyJa4cby
+    states:
+        - finish
+        - fail
+
+# apprise:
+#     services:
+#       - url: tgram://7830734772:AAHkpzRBdK2wta_QCWNOgjQ8hLI0HpI8ltw
+#         label: telegram 
+#     states:
+#         - start
+#         - finish
+#         - fail
+
+
+ntfy:
+  topic: QPqEwr8MExRRDjUJPL6ybNhK
+  server: "https://ntfy.sh"
+  access_token: 
+
+  start:
+    title: snoopy backup started
+    message: Watch this space...
+    tags: borgmatic
+    priority: min
+  finish:
+    title: snoopy backup completed successfully
+    message: Nice!
+    tags: borgmatic,+1
+    priority: min
+  fail:
+    title: snoopy backup failed
+    message: You should probably fix it
+    tags: borgmatic,-1,skull
+    priority: max
+  states:
+    # - start
+    # - finish
+    - fail
+
+<<: !include /etc/borgmatic.d/common/common.yaml
