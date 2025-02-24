@@ -1,21 +1,42 @@
 services:
-  deluge:
-    image: lscr.io/linuxserver/deluge:latest
-    container_name: deluge
+  # deluge:
+  #   image: lscr.io/linuxserver/deluge:latest
+  #   container_name: deluge
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Sao_Paulo
+  #     - DELUGE_LOGLEVEL=error #optional
+  #   volumes:
+  #     - /opt/deluge/config:/config
+  #     # - /opt/docker/deluge-torrents:/data/torrents
+  #     # - /mnt/nfs/torrents:/data/torrents
+  #     - /opt/docker/test:/data/torrents
+  #     # - /media/WDElements/data/torrents:/data/torrents
+  #   ports:
+  #     - 8112:8112
+  #     - 6881:6881
+  #     - 6881:6881/udp
+  #     - 58846:58846 #optional
+  #   restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/Sao_Paulo
-      - DELUGE_LOGLEVEL=error #optional
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8180
+      - TORRENTING_PORT=6881
     volumes:
-      - /opt/deluge/config:/config
-      - /opt/docker/deluge-torrents:/data/torrents
-      # - /media/WDElements/data/torrents:/data/torrents
+      - /opt/qbittorrent/appdata:/config
+      # - /mnt/nfs/torrents:/downloads #optional
+      - /mnt/nfs/torrents:/data/torrents #optional
     ports:
-      - 8112:8112
+      - 8180:8180
       - 6881:6881
       - 6881:6881/udp
-      - 58846:58846 #optional
     restart: unless-stopped
 
   radarr:
@@ -29,7 +50,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /opt/radarr:/config
       - /media/WDElements/data:/data #optional
-      - /opt/docker/deluge-torrents:/data/torrents
+      # - /opt/docker/deluge-torrents:/data/torrents
+      - /mnt/nfs/torrents:/data/torrents
       # - /media/nvme/torrents/:/data/torrents
     ports:
       - 7878:7878
@@ -46,7 +68,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /opt/sonarr:/config:rw
       - /media/WDElements/data:/data #optional
-      - /opt/docker/deluge-torrents:/data/torrents
+      # - /opt/docker/deluge-torrents:/data/torrents
+      - /mnt/nfs/torrents/:/data/torrents
       # - /media/nvme/torrents/:/data/torrents
     ports:
       - 8989:8989
@@ -64,7 +87,8 @@ services:
       - /opt/lidarr:/config:rw
       - /media/WDElements/data/:/data #optional
       # - /path/to/downloadclient-downloads:/downloads #optional
-      - /opt/docker/deluge-torrents:/data/torrents
+      # - /opt/docker/deluge-torrents:/data/torrents
+      - /mnt/nfs/torrents/:/data/torrents
       # - /media/nvme/torrents/:/data/torrents
     ports:
       - 8686:8686
