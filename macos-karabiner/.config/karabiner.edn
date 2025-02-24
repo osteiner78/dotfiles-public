@@ -32,7 +32,7 @@
 :profiles {
     :Default {
         :default true
-        :sim     50     ;; simultaneous key press threshold (def: 50)
+        :sim     100     ;; simultaneous key press threshold (def: 50)
                         ;; simlayer is implemented with to_if_alone and simultaneous key press feature
                         ;; if keydown event for two different keys are pressed within :sim ms, the keypresses are considered simultaneous
         :delay   2000    ;; to_delayed_action_delay_milliseconds (def: 500)
@@ -164,13 +164,14 @@
                 [:s :!Cb  :code]
                 [:s :!CTs :finder]
                 [:s :!CTs :mail]
+                [:s :!COs :notes]
                 [:s :!TSs :obsidian]
                 [:s :!CSl :safari]
                 [:s :!CO0 :pdf]
                 [:s :!SCl :snippetslab]
                 [:s [:!Qk :!Qb] :sublime]
-                [:s :!Cslash :things]    
-                [:s :!COs :notes]
+                [:s :!Cslash :things]
+                [:s :m :todoist]
                 ]}
 
         {:des "Hyper+space: Universal command palette"
@@ -221,7 +222,7 @@
                 [:d [:open "~/Downloads/"]]
                 [:i [:open "~/Documents/0.\\ Inbox/"]]
                 [:m [:alfred "menu bar search" "com.folded-paper.menu-bar-search"]]
-                [:p [:alfred "search processes" "de.chris-grieser.atop"]]
+                ; [:p [:alfred "search processes" "de.chris-grieser.atop"]]
                 [:t [:alfred "temp email" "com.vitorgalvao.alfred.temporaryemail"]]
                 ]}
 

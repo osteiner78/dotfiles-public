@@ -20,6 +20,8 @@ services:
       - IGDB_CLIENT_SECRET= # https://api-docs.igdb.com/#account-creation
       - MOBYGAMES_API_KEY= # https://www.mobygames.com/info/api/
       - STEAMGRIDDB_API_KEY= # https://github.com/rommapp/romm/wika-i/Generate-API-Keys#steamgriddb
+      - ROMM_AUTH_USERNAME=admin
+      - ROMM_AUTH_PASSWORD=admin # default: admin
     volumes:
       - romm_resources:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
       - romm_redis_data:/redis-data # Cached data for background tasks
