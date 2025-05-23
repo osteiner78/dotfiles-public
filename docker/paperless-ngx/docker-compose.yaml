@@ -1,0 +1,140 @@
+services:
+# Docker Compose file for running paperless from the docker container registry.
+# This file contains everything paperless needs to run.
+# Paperless supports amd64, arm and arm64 hardware.
+#
+# All compose files of paperless configure paperless in the following way:
+#
+# - Paperless is (re)started on system boot, if it was running before shutdown.
+# - Docker volumes for storing data are managed by Docker.
+# - Folders for importing and exporting files are created in the same directory
+#   as this file and mounted to the correct folders inside the container.
+# - Paperless listens on port 8000.
+#
+# In addition to that, this Docker Compose file adds the following optional
+# configurations:
+#
+# - Instead of SQLite (default), PostgreSQL is used as the database server.
+# - Apache Tika and Gotenberg servers are started with paperless and paperless
+#   is configured to use these services. These provide support for consuming
+#   Office documents (Word, Excel, Power Point and their LibreOffice counter-
+#   parts.
+#
+# To install and update paperless with this file, do the following:
+#
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.╰─                                                                           ─╯
+# - Run 'docker compose pull'.
+# - Run 'docker compose run --rm webserver createsuperuser' to create a user.
+# - Run 'docker compose up -d'.
+#
+# For more extensive installation and update instructions, refer to the
+# documentation.
+
+  broker:
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  db:
+    image: docker.io/library/postgres:16
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    ports:
+      - "8000:8000"
+    volumes:
+      - /home/osteiner/paperless-ngx/data/:/usr/src/paperless/data
+      - /home/osteiner/paperless-ngx/media/:/usr/src/paperless/media
+      - /home/osteiner/paperless-ngx/scripts/:/usr/src/paperless/scripts
+      # Line below does not work !!?? Permission denied
+      # - /media/nvme/paperless/scripts:/usr/src/paperless/scripts
+      - /home/osteiner/paperless-ngx/consume/:/usr/src/paperless/consume
+      - /home/osteiner/paperless-ngx/export/:/usr/src/paperless/export
+    env_file: .env
+    environment:
+      USERMAP_UID: 1000
+      USERMAP_GID: 1000
+      PAPERLESS_URL: https://paperless.osteiner.xyz
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+
+      # Optional services
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+
+      # Document consumption
+      PAPERLESS_PRE_CONSUME_SCRIPT: /usr/src/paperless/scripts/removepassword.py
+      PAPERLESS_POST_CONSUME_SCRIPT: /usr/src/paperless/scripts/push_notifications.sh
+      PAPERLESS_FILENAME_DATE_ORDER: 'Y-M-D' # To recognize dates in filenames
+      PAPERLESS_IGNORE_DATES: '27/07/1978, 26/12/1976, 10/06/2016, 23/07/2020'
+      PAPERLESS_DATE_ORDER: 'DMY' 
+      PAPERLESS_CONSUMER_POLLING: 10 # If set to 0 (disable polling) it will consume empty files from smb share as files are being created
+      PAPERLESS_CONSUMER_POLLING_DELAY: 5 
+
+      # Paths and folders
+      PAPERLESS_FILENAME_FORMAT: '{{correspondent}}/{{created_year}}-{{created_month}}-{{created_day}} - {{correspondent}} - {{title}}'
+
+      #OCR
+      PAPERLESS_OCR_LANGUAGES: por eng fra
+      PAPERLESS_OCR_LANGUAGE: por+eng
+      PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true, "continue_on_soft_render_error": true}' # To process signed documents and process pdf with ghostscript errors
+
+      # Software tweaks
+      PAPERLESS_TIME_ZONE: America/Sao_Paulo
+      PAPERLESS_TASK_WORKERS: 2 # Processes in parallel
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.7
+    restart: unless-stopped
+  #
+  #   # The gotenberg chromium route is used to convert .eml files. We do not
+  #   # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+  #
+  tika:
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+
+  paperless-ai:
+    image: clusterzx/paperless-ai
+    container_name: paperless-ai
+    network_mode: bridge
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges=true
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - PAPERLESS_AI_PORT=${PAPERLESS_AI_PORT:-3000}
+    ports:
+      - "3000:${PAPERLESS_AI_PORT:-3000}"
+    volumes:
+      - paperless-ai_data:/app/data
+
+volumes:
+  pgdata:
+    # external: true
+  redisdata:
+    # external: true
+  paperless-ai_data:

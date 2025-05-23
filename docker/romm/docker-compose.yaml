@@ -1,0 +1,58 @@
+version: "3"
+
+volumes:
+  mysql_data:
+  romm_resources:
+  romm_redis_data:
+
+services:
+  romm:
+    image: rommapp/romm:latest
+    container_name: romm
+    restart: unless-stopped
+    environment:
+      - DB_HOST=romm-db
+      - DB_NAME=romm # Should match MARIADB_DATABASE in mariadb
+      - DB_USER=romm-user # Should match MARIADB_USER in mariadb
+      - DB_PASSWD=erase-writers-GILES # Should match MARIADB_PASSWORD in mariadb
+      - ROMM_AUTH_SECRET_KEY= # Generate a key with `openssl rand -hex 32`
+      - IGDB_CLIENT_ID=d48hpsma8t5amuzhb73zfqrngm2fqj # Generate an ID and SECRET in IGDB
+      - IGDB_CLIENT_SECRET= # https://api-docs.igdb.com/#account-creation
+      - MOBYGAMES_API_KEY= # https://www.mobygames.com/info/api/
+      - STEAMGRIDDB_API_KEY= # https://github.com/rommapp/romm/wika-i/Generate-API-Keys#steamgriddb
+      - ROMM_AUTH_USERNAME=admin
+      - ROMM_AUTH_PASSWORD=admin # default: admin
+    volumes:
+      - romm_resources:/romm/resources # Resources fetched from IGDB (covers, screenshots, etc.)
+      - romm_redis_data:/redis-data # Cached data for background tasks
+      # - /opt/docker/romm/:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      - /mnt/nfs/roms:/romm/library # Your game library. Check https://github.com/rommapp/romm?tab=readme-ov-file#folder-structure for more details.
+      # - /opt/docker/romm/:/romm/assets # Uploaded saves, states, etc.
+      - /mnt/nfs/roms:/romm/assets # Uploaded saves, states, etc.
+      # - /opt/docker/romm/:/romm/config # Path where config.yml is stored
+      - /mnt/nfs/roms:/romm/config # Path where config.yml is stored
+    ports:
+      - 2080:8080
+    depends_on:
+      romm-db:
+        condition: service_healthy
+        restart: true
+
+  romm-db:
+    image: mariadb:latest
+    container_name: romm-db
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=erase-writers-GILES # Use a unique, secure password
+      - MARIADB_DATABASE=romm
+      - MARIADB_USER=romm-user
+      - MARIADB_PASSWORD=erase-writers-GILES
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 30s
+      start_interval: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5

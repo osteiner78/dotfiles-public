@@ -1,0 +1,73 @@
+---
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - ~/.homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+      - /dev/serial/by-id:/dev/serial/by-id
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+
+  mosquitto:
+        container_name: mosquitto
+        restart: always
+        image: eclipse-mosquitto
+        ports:
+            - "1883:1883"
+            - "9001:9001"
+        volumes: 
+            - /opt/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+            - /opt/mosquitto/data:/mosquitto/data
+            - /opt/mosquitto/log:/mosquitto/log
+        networks:
+            - default
+
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    image: koenkk/zigbee2mqtt
+    volumes:
+      - /opt/zigbee2mqtt/data:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      - 8080:8080
+    environment:
+      - TZ=America/Sao_Paulo
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    network_mode: host # to use 'localhost' in host computer
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiMDFhN2M0ODJiOTJjN2ZiY2I0MmY4YTQzYjEyNTRiNTciLCJ0IjoiOTA2NGM5NjQtMDI2OC00ZjNlLWIzOWYtZjE1Yjg5MWJlY2QxIiwicyI6Ik1qWTBaall3T0RndFpUSTFOaTAwWm1ZeExUa3lPVFV0TldJeE9ETTBNR1V3TVdJeSJ9
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      - "80:80/tcp"
+    environment:
+      TZ: 'America/Sao_Paulo'
+      # WEBPASSWORD: 'set a secure password here or it will be random'
+    # Volumes store your data between container upgrades
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    # cap_add:
+    #   - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+    restart: unless-stopped

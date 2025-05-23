@@ -1,0 +1,63 @@
+services:
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre
+    # security_opt:
+      # - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      # - PASSWORD= #optional
+      # - CLI_ARGS= #optional
+      # - CUSTOM_PORT=9090
+      # - CUSTOM_HTTPS_PORT=9191
+    volumes:
+      - /opt/calibre/config:/config
+      # - /opt/docker/calibre-books:/books
+      - /mnt/nfs/books:/books
+      # - /media/nvme/books/:/books
+      # - /home/osteiner/calibre-books-import/:/import
+      - /var/nfs/calibre-books-import/:/import
+      # - /media/nvme/books-import:/import
+    ports:
+      - 9090:8080
+      - 9191:8181
+      - 9091:8081
+    restart: unless-stopped
+
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - DOCKER_MODS=linuxserver/mods=universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - /opt/calibre-web/config:/config
+      # - /opt/docker/calibre-books:/books
+      - /mnt/nfs/books:/books
+      # - /media/nvme/books:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+
+  calibre-web-luisa:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web-luisa
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - DOCKER_MODS=linuxserver/mods=universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - /opt/calibre-web/config:/config
+      # - /opt/docker/calibre-books:/books
+      - /mnt/nfs/books:/books
+      # - /media/nvme/books:/books
+    ports:
+      - 8084:8083
+    restart: unless-stopped
