@@ -217,7 +217,10 @@
          :rules [[:left_command :left_command nil {:alone :!Ctab}]]}
 
         {:des "In Arc browser: left_control alone -> ctrl + tab to last tab"
-        :rules [[:left_control :left_control :arc {:alone :!Ttab}]]}
+        :rules [
+                [:left_control :left_control :arc {:alone :!Ttab}]
+                [:left_control :left_control :code {:alone :!Ttab}]
+                ]}
 
         {:des "okey mode"
         :rules[:o-mode
@@ -229,107 +232,107 @@
                 ]}
 
 ;;              ============== YABAI RULES =================
-        {:des "Yabai rules - Inside yabai layer (tab)"
-          :rules[:yabai-mode
-;;              Warp windows
-                [:j [:yabai "-m window --warp south"]]
-                [:k [:yabai "-m window --warp north"]]
-                [:h [:yabai "-m window --warp west"]]
-                [:l [:yabai "-m window --warp east"]]
+;;         {:des "Yabai rules - Inside yabai layer (tab)"
+;;           :rules[:yabai-mode
+;; ;;              Warp windows
+;;                 [:j [:yabai "-m window --warp south"]]
+;;                 [:k [:yabai "-m window --warp north"]]
+;;                 [:h [:yabai "-m window --warp west"]]
+;;                 [:l [:yabai "-m window --warp east"]]
 
-;;              Roate layout clockwise
-                [:r [:yabai "-m space --rotate 270"]]
+;; ;;              Roate layout clockwise
+;;                 [:r [:yabai "-m space --rotate 270"]]
 
-;;              Flip along x or y-axis
-                [:x [:yabai "-m space --mirror x-axis"]]
-                [:y [:yabai "-m space --mirror y-axis"]]
+;; ;;              Flip along x or y-axis
+;;                 [:x [:yabai "-m space --mirror x-axis"]]
+;;                 [:y [:yabai "-m space --mirror y-axis"]]
 
-;;              Balance out tree of windows (resize to occupy)
-                [:b [:yabai "-m space --balance"]]
+;; ;;              Balance out tree of windows (resize to occupy)
+;;                 [:b [:yabai "-m space --balance"]]
  
-;;              Maximize window
-                [:return_or_enter [:yabai "-m window --toggle zoom-fullscreen"]]
+;; ;;              Maximize window
+;;                 [:return_or_enter [:yabai "-m window --toggle zoom-fullscreen"]]
 
-;;              Toggle window float
-                [:t [:yabai "-m window --toggle float --grid 4:4:1:1:2:2"]]
+;; ;;              Toggle window float
+;;                 [:t [:yabai "-m window --toggle float --grid 4:4:1:1:2:2"]]
 
-;;              Toggle space layout (bsp/float)
-                ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')"]
-                ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(/opt/homebrew/bin/yabai -m query --spaces --space | jq -r 'if .type == 'bsp' then 'float' else 'bsp' end')"]
+;; ;;              Toggle space layout (bsp/float)
+;;                 ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')"]
+;;                 ;; [:!STv "/opt/homebrew/bin/yabai -m space --layout $(/opt/homebrew/bin/yabai -m query --spaces --space | jq -r 'if .type == 'bsp' then 'float' else 'bsp' end')"]
 
-;;              Toggle paddings
-                [:p [:yabai "-m space --toggle padding --toggle gap"]]
+;; ;;              Toggle paddings
+;;                 [:p [:yabai "-m space --toggle padding --toggle gap"]]
 
-;;              ============== YABAI - SPACES NAVIGATION =================
-;;              Move window to space #
-                [:1 [:yabai "-m window --space 1 ; /opt/homebrew/bin/yabai -m space --focus 1"]]
-                [:2 [:yabai "-m window --space 2 ; /opt/homebrew/bin/yabai -m space --focus 2"]]
-                [:3 [:yabai "-m window --space 3 ; /opt/homebrew/bin/yabai -m space --focus 3"]]
-                [:4 [:yabai "-m window --space 4 ; /opt/homebrew/bin/yabai -m space --focus 4"]]
-                [:5 [:yabai "-m window --space 5 ; /opt/homebrew/bin/yabai -m space --focus 5"]]
-                [:6 [:yabai "-m window --space 6 ; /opt/homebrew/bin/yabai -m space --focus 6"]]
-                [:7 [:yabai "-m window --space 7 ; /opt/homebrew/bin/yabai -m space --focus 7"]]
-                [:8 [:yabai "-m window --space 8 ; /opt/homebrew/bin/yabai -m space --focus 8"]]
-                [:9 [:yabai "-m window --space 9 ; /opt/homebrew/bin/yabai -m space --focus 9"]]
+;; ;;              ============== YABAI - SPACES NAVIGATION =================
+;; ;;              Move window to space #
+;;                 [:1 [:yabai "-m window --space 1 ; /opt/homebrew/bin/yabai -m space --focus 1"]]
+;;                 [:2 [:yabai "-m window --space 2 ; /opt/homebrew/bin/yabai -m space --focus 2"]]
+;;                 [:3 [:yabai "-m window --space 3 ; /opt/homebrew/bin/yabai -m space --focus 3"]]
+;;                 [:4 [:yabai "-m window --space 4 ; /opt/homebrew/bin/yabai -m space --focus 4"]]
+;;                 [:5 [:yabai "-m window --space 5 ; /opt/homebrew/bin/yabai -m space --focus 5"]]
+;;                 [:6 [:yabai "-m window --space 6 ; /opt/homebrew/bin/yabai -m space --focus 6"]]
+;;                 [:7 [:yabai "-m window --space 7 ; /opt/homebrew/bin/yabai -m space --focus 7"]]
+;;                 [:8 [:yabai "-m window --space 8 ; /opt/homebrew/bin/yabai -m space --focus 8"]]
+;;                 [:9 [:yabai "-m window --space 9 ; /opt/homebrew/bin/yabai -m space --focus 9"]]
 
-;;              Move window to Previous and Next space #
-                [:comma [:yabai "-m window --space prev ; /opt/homebrew/bin/yabai -m space --focus prev"]]
-                [:period [:yabai "-m window --space next ; /opt/homebrew/bin/yabai -m space --focus next"]]
+;; ;;              Move window to Previous and Next space #
+;;                 [:comma [:yabai "-m window --space prev ; /opt/homebrew/bin/yabai -m space --focus prev"]]
+;;                 [:period [:yabai "-m window --space next ; /opt/homebrew/bin/yabai -m space --focus next"]]
 
-;;              Alternate to recent space
-                [:x [:yabai "-m space --focus recent"]] ;; does not work
-                [:m [:yabai "-m space --focus prev"]]
-                [:slash [:yabai "-m space --focus next"]]
+;; ;;              Alternate to recent space
+;;                 [:x [:yabai "-m space --focus recent"]] ;; does not work
+;;                 [:m [:yabai "-m space --focus prev"]]
+;;                 [:slash [:yabai "-m space --focus next"]]
 
-;;              ============== YABAI - DISPLAY NAVIGATION =================
-;;              Move window to left and right display #
-                [:open_bracket [:yabai "-m window --display west ; /opt/homebrew/bin/yabai -m display --focus west"]]
-                [:close_bracket [:yabai "-m window --display east ; /opt/homebrew/bin/yabai -m display --focus east"]]
+;; ;;              ============== YABAI - DISPLAY NAVIGATION =================
+;; ;;              Move window to left and right display #
+;;                 [:open_bracket [:yabai "-m window --display west ; /opt/homebrew/bin/yabai -m display --focus west"]]
+;;                 [:close_bracket [:yabai "-m window --display east ; /opt/homebrew/bin/yabai -m display --focus east"]]
 
-;;              ====================== YABAI - SYSTEM ======================
-;;              Start/Stop yabai        
-                ; [:q ["/opt/homebrew/bin/yabai --stop-service"]]
-                ; [:w ["/opt/homebrew/bin/yabai --start-service"]]
-                ; [:q [[:yabai "--stop-service"] [:notification "Stopped" "Yabai"]]]
-                ; [:w ["/opt/homebrew/bin/yabai --start-service" [:notification "Started Yabai"] ]]
-                [:q
-                  ["/opt/homebrew/bin/yabai --stop-service" [:noti :stop "Stopped Yabai"] ]
-                  nil
-                 {:delayed {:invoked  [:noti :stop]
-                            :canceled [:noti :stop]}}]
-                [:e
-                  ["/opt/homebrew/bin/yabai --start-service" [:noti :start "Started Yabai"] ]
-                  nil
-                 {:delayed {:invoked  [:noti :start]
-                            :canceled [:noti :start]}}]
-                ; [:q [[:notification "Stopped" "Yabai"]]] 
-                ;; [:w [[:yabai "--start-service"] [:notification "Started" "Yabai"]]]
-                ;; [:v [["/opt/homebrew/bin/yabai w--restart-service"] [:notification "Retarted" "Yabai"]]]
-]}
+;; ;;              ====================== YABAI - SYSTEM ======================
+;; ;;              Start/Stop yabai        
+;;                 ; [:q ["/opt/homebrew/bin/yabai --stop-service"]]
+;;                 ; [:w ["/opt/homebrew/bin/yabai --start-service"]]
+;;                 ; [:q [[:yabai "--stop-service"] [:notification "Stopped" "Yabai"]]]
+;;                 ; [:w ["/opt/homebrew/bin/yabai --start-service" [:notification "Started Yabai"] ]]
+;;                 [:q
+;;                   ["/opt/homebrew/bin/yabai --stop-service" [:noti :stop "Stopped Yabai"] ]
+;;                   nil
+;;                  {:delayed {:invoked  [:noti :stop]
+;;                             :canceled [:noti :stop]}}]
+;;                 [:e
+;;                   ["/opt/homebrew/bin/yabai --start-service" [:noti :start "Started Yabai"] ]
+;;                   nil
+;;                  {:delayed {:invoked  [:noti :start]
+;;                             :canceled [:noti :start]}}]
+;;                 ; [:q [[:notification "Stopped" "Yabai"]]] 
+;;                 ;; [:w [[:yabai "--start-service"] [:notification "Started" "Yabai"]]]
+;;                 ;; [:v [["/opt/homebrew/bin/yabai w--restart-service"] [:notification "Retarted" "Yabai"]]]
+;; ]}
 
-        {:des "Yabai rules - Outside yabai layer (tab)"
-        :rules[
-;;              ============== YABAI - WINDOWS NAVIGATION =================
-;;              Change window focus within space - Alt/Option
-                [:!Oj [:yabai "-m window --focus south"]]
-                [:!Ok [:yabai "-m window --focus north"]]
-                [:!Oh [:yabai "-m window --focus west"]]
-                [:!Ol [:yabai "-m window --focus east"]]
+;;         {:des "Yabai rules - Outside yabai layer (tab)"
+;;         :rules[
+;; ;;              ============== YABAI - WINDOWS NAVIGATION =================
+;; ;;              Change window focus within space - Alt/Option
+;;                 [:!Oj [:yabai "-m window --focus south"]]
+;;                 [:!Ok [:yabai "-m window --focus north"]]
+;;                 [:!Oh [:yabai "-m window --focus west"]]
+;;                 [:!Ol [:yabai "-m window --focus east"]]
 
-;;              Move window and split - Ctrl+Alt
-                [:!TOj [:yabai "-m window --swap south"]]
-                [:!TOk [:yabai "-m window --swap north"]]
-                [:!TOh [:yabai "-m window --swap west"]]
-                [:!TOl [:yabai "-m window --swap east"]]
+;; ;;              Move window and split - Ctrl+Alt
+;;                 [:!TOj [:yabai "-m window --swap south"]]
+;;                 [:!TOk [:yabai "-m window --swap north"]]
+;;                 [:!TOh [:yabai "-m window --swap west"]]
+;;                 [:!TOl [:yabai "-m window --swap east"]]
 
-;;              ============== YABAI - DISPLAY NAVIGATION =================
-;;              Change focus between external displays # - Control
-                [:!Oopen_bracket [:yabai "-m display --focus west"]]
-                [:!Oclose_bracket [:yabai "-m display --focus east"]]
+;; ;;              ============== YABAI - DISPLAY NAVIGATION =================
+;; ;;              Change focus between external displays # - Control
+;;                 [:!Oopen_bracket [:yabai "-m display --focus west"]]
+;;                 [:!Oclose_bracket [:yabai "-m display --focus east"]]
 
-;;              ====================== TEST ======================
-                ; [:!F9 "echo $PATH >> ~/test.log"]
-        ]}
+;; ;;              ====================== TEST ======================
+;;                 ; [:!F9 "echo $PATH >> ~/test.log"]
+;;         ]}
 ]}
 
 
