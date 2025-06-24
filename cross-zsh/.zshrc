@@ -239,4 +239,4 @@ fi
 
 # For borgmatic
 # path+=('/root/.local/bin/')
-
+path+=('/opt/nvim')

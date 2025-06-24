@@ -6,7 +6,7 @@ Type=oneshot
 Nice=19
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7
-ExecStartPre=/usr/bin/borg break-lock ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
+;ExecStartPre=/usr/bin/borg break-lock ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
 ExecStart=systemd-inhibit --who="borgmatic" --what="sleep:shutdown" --why="Prevent interrupting scheduled backup" /root/.local/bin/borgmatic --stats --verbosity 1 --syslog-verbosity 1 --log-file /var/log/borgbackup.log
 ;User=osteiner
 ;Group=osteiner
