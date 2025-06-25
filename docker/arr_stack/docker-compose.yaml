@@ -26,17 +26,19 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Americas/Sao_Paulo
       - WEBUI_PORT=8180
-      - TORRENTING_PORT=6881
+      # - TORRENTING_PORT=30090
     volumes:
       - /opt/qbittorrent/appdata:/config
       # - /mnt/nfs/torrents:/downloads #optional
       - /mnt/nfs/torrents:/data/torrents #optional
     ports:
       - 8180:8180
-      - 6881:6881
-      - 6881:6881/udp
+      # - 6881:6881
+      # - 6881:6881/udp
+      - 30090:30090
+      - 30090:30090/udp
     restart: unless-stopped
 
   radarr:

@@ -30,7 +30,7 @@ Port 39583
 # Authentication:
 
 #LoginGraceTime 20
-# PermitRootLogin no
+PermitRootLogin yes 
 #StrictModes yes
 MaxAuthTries 3
 #MaxSessions 10
@@ -54,7 +54,7 @@ MaxAuthTries 3
 #IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-PasswordAuthentication no 
+PasswordAuthentication yes 
 PermitEmptyPasswords no
 
 # Change to yes to enable challenge-response passwords (beware issues with
