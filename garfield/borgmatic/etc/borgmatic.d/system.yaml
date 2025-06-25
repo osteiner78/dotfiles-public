@@ -30,7 +30,9 @@ repositories:
     # - path: ssh://user@backupserver/./sourcehostname.borg
     #   label: backupserver
   # - path: ssh://osteiner@192.168.1.101:39583/media/backups/borgbackup_garfield
-  - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_garfield
+  #- path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_garfield
+  #  label: backupserver
+  - path: /mnt/nfs/borgbackup/borgbackup_garfield
     label: backupserver
     
 # relocated_repo_access_is_ok: true

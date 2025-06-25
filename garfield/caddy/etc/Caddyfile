@@ -9,7 +9,7 @@
 # domain name.
 {
 	log {
-		output file /var/log/access.log {
+		output file /var/log/caddy/access.log {
 			roll_local_time
 		}
 	}
@@ -33,26 +33,10 @@
 # https://caddyserver.com/docs/caddyfile
 
 # Garfield
-paperless.osteiner.xyz {
-	reverse_proxy localhost:8000
-}
-
-webmin-garfield.osteiner.xyz {
-	reverse_proxy localhost:10000
-}
-
-portainer.osteiner.xyz {
-	reverse_proxy localhost:9443
-}
-
+# webmin-garfield.osteiner.xyz {
 kuma.osteiner.xyz {
 	log
 	reverse_proxy localhost:3001
-}
-
-linkding.osteiner.xyz {
-	log
-	reverse_proxy localhost:19090
 }
 
 hoarder.osteiner.xyz {
@@ -63,42 +47,28 @@ changedetection.osteiner.xyz {
 	reverse_proxy localhost:5000
 }
 
+obsidian.osteiner.xyz {
+	reverse_proxy localhost:5984
+}
 # Asus router
-openvpn.osteiner.xyz {
-	reverse_proxy 192.168.1.1
-}
+# openvpn.osteiner.xyz {
+#         reverse_proxy 192.168.1.1:80
+# }
 
-# Raspi 
-webmin-raspi.osteiner.xyz {
-	reverse_proxy 192.168.1.100:10000
-}
-
+# Raspi
 home.osteiner.xyz {
 	reverse_proxy 192.168.1.100:8123
 }
 
 pihole.osteiner.xyz {
-	reverse_proxy 192.168.1.100
+	reverse_proxy 192.168.1.100:80
 }
 
-# Snoopy
-webmin-snoopy.osteiner.xyz {
-	reverse_proxy 192.168.1.101:10000
+zigbee.osteiner.xyz {
+	reverse_proxy 192.168.1.100:8080
 }
 
-scrutiny.osteiner.xyz {
-	reverse_proxy 192.168.1.101:18080
-}
-
-cloud.osteiner.xyz {
-	reverse_proxy 192.168.1.101:11000
-}
-
-# If paperless hosted in snoopy
-# paperless.osteiner.xyz {
-# 	reverse_proxy 10.0.0.2:8000
-# }
-
+# Snoopy (VM 101)
 photos.osteiner.xyz {
 	reverse_proxy 192.168.1.101:2283
 }
@@ -111,22 +81,41 @@ books2.osteiner.xyz {
 	reverse_proxy 192.168.1.101:8084
 }
 
-firefly.osteiner.xyz {
-	reverse_proxy 192.168.1.101:1080
+audiobooks.osteiner.xyz {
+	reverse_proxy 192.168.1.101:13378
 }
 
-radarr.osteiner.xyz {
-	reverse_proxy 192.168.1.101:7878
+# VM 106 (jellyfin)
+jellyfin.osteiner.xyz {
+	reverse_proxy 192.168.1.106:8096
 }
 
-sonarr.osteiner.xyz {
-	reverse_proxy 192.168.1.101:8989
+# VM 202 (openwebui)
+openwebui.osteiner.xyz {
+	reverse_proxy 192.168.1.202:8080
 }
 
-lidarr.osteiner.xyz {
-	reverse_proxy 192.168.1.101:8686
+# VM 203 (freshrss)
+rss.osteiner.xyz {
+	reverse_proxy 192.168.1.203
 }
 
-# *.osteiner.xyz, osteiner.xyz {
-# 	reverse_proxy 10.0.0.2:80
+# VM 204 (navidrome)
+# navidrome.osteiner.xyz {
+# 	reverse_proxy 192.168.1.204:4533
 # }
+
+# VM 205 (nextcloud)
+cloud.osteiner.xyz {
+	reverse_proxy 192.168.1.205:11000
+}
+
+# VM 206 (paperless-ngx)
+paperless.osteiner.xyz {
+	reverse_proxy 192.168.1.206:8000
+}
+
+# VM 208 (dawarich)
+dawarich.osteiner.xyz {
+	reverse_proxy 192.168.1.208:3000
+}
