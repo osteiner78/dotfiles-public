@@ -29,7 +29,9 @@ source_directories:
 repositories:
     # - path: ssh://user@backupserver/./sourcehostname.borg
     #   label: backupserver
-  - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
+  # - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
+    # label: local
+  - path: /mnt/nfs/borgbackup/borgbackup_snoopy
     label: local
 
 # Name of the archive. Borg placeholders can be used. See the output
