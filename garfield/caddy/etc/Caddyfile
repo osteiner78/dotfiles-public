@@ -1,0 +1,132 @@
+# The Caddyfile is an easy way to configure your Caddy web server.
+#
+# Unless the file starts with a global options block, the first
+# uncommented line is always the address of your site.
+#
+# To use your own domain name (with automatic HTTPS), first make
+# sure your domain's A/AAAA DNS records are properly pointed to
+# this machine's public IP, then replace ":80" below with your
+# domain name.
+{
+	log {
+		output file /var/log/access.log {
+			roll_local_time
+		}
+	}
+}
+
+# :80 {
+# Set this path to your site's directory.
+# root * /usr/share/caddy
+
+# Enable the static file server.
+# file_server
+
+# Another common task is to set up a reverse proxy:
+# reverse_proxy localhost:8080
+
+# Or serve a PHP site through php-fpm:
+# php_fastcgi localhost:9000
+# }
+
+# Refer to the Caddy docs for more information:
+# https://caddyserver.com/docs/caddyfile
+
+# Garfield
+paperless.osteiner.xyz {
+	reverse_proxy localhost:8000
+}
+
+webmin-garfield.osteiner.xyz {
+	reverse_proxy localhost:10000
+}
+
+portainer.osteiner.xyz {
+	reverse_proxy localhost:9443
+}
+
+kuma.osteiner.xyz {
+	log
+	reverse_proxy localhost:3001
+}
+
+linkding.osteiner.xyz {
+	log
+	reverse_proxy localhost:19090
+}
+
+hoarder.osteiner.xyz {
+	reverse_proxy localhost:3000
+}
+
+changedetection.osteiner.xyz {
+	reverse_proxy localhost:5000
+}
+
+# Asus router
+openvpn.osteiner.xyz {
+	reverse_proxy 192.168.1.1
+}
+
+# Raspi 
+webmin-raspi.osteiner.xyz {
+	reverse_proxy 192.168.1.100:10000
+}
+
+home.osteiner.xyz {
+	reverse_proxy 192.168.1.100:8123
+}
+
+pihole.osteiner.xyz {
+	reverse_proxy 192.168.1.100
+}
+
+# Snoopy
+webmin-snoopy.osteiner.xyz {
+	reverse_proxy 192.168.1.101:10000
+}
+
+scrutiny.osteiner.xyz {
+	reverse_proxy 192.168.1.101:18080
+}
+
+cloud.osteiner.xyz {
+	reverse_proxy 192.168.1.101:11000
+}
+
+# If paperless hosted in snoopy
+# paperless.osteiner.xyz {
+# 	reverse_proxy 10.0.0.2:8000
+# }
+
+photos.osteiner.xyz {
+	reverse_proxy 192.168.1.101:2283
+}
+
+books.osteiner.xyz {
+	reverse_proxy 192.168.1.101:8083
+}
+
+books2.osteiner.xyz {
+	reverse_proxy 192.168.1.101:8084
+}
+
+firefly.osteiner.xyz {
+	reverse_proxy 192.168.1.101:1080
+}
+
+radarr.osteiner.xyz {
+	reverse_proxy 192.168.1.101:7878
+}
+
+sonarr.osteiner.xyz {
+	reverse_proxy 192.168.1.101:8989
+}
+
+lidarr.osteiner.xyz {
+	reverse_proxy 192.168.1.101:8686
+}
+
+# *.osteiner.xyz, osteiner.xyz {
+# 	reverse_proxy 10.0.0.2:80
+# }
