@@ -85,6 +85,10 @@ audiobooks.osteiner.xyz {
 	reverse_proxy 192.168.1.101:13378
 }
 
+kavita.osteiner.xyz {
+	reverse_proxy 192.168.1.101:5000
+}
+
 # VM 106 (jellyfin)
 jellyfin.osteiner.xyz {
 	reverse_proxy 192.168.1.106:8096
