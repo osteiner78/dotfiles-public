@@ -1,0 +1,92 @@
+# Constants to use in the configuration file. All occurrences of the
+# constant name within curly braces will be replaced with the value.
+# For example, if you have a constant named "hostname" with the value
+# "myhostname", then the string "{hostname}" will be replaced with
+# "myhostname" in the configuration file.
+# constants:
+    # hostname: myhostname
+    # prefix: myprefix
+
+# List of source directories and files to back up. Globs and tildes
+# are expanded. Do not backslash spaces in path names.
+source_directories:
+    - /
+    # - /media/nvme/
+    # - /home/osteiner/
+    # - /etc
+    # - /var/log/syslog*
+    # - /home/user/path with spaces
+
+
+# Name of the archive. Borg placeholders can be used. See the output
+# of "borg help placeholders" for details. Defaults to
+# "{hostname}-{now:%Y-%m-%dT%H:%M:%S.%f}". When running actions like
+# rlist, info, or check, borgmatic automatically tries to match only
+# archives created with this name format.
+archive_name_format: '{hostname}-{now:%Y-%m-%d@%H:%M}'
+
+# Any paths matching these patterns are included/excluded from
+# backups. Globs are expanded. (Tildes are not.) See the output of
+# "borg help patterns" for more details. Quote any value if it
+# contains leading punctuation, so it parses correctly. Note that only
+# one of "patterns" and "source_directories" may be used.
+patterns:
+    # - R /
+    - '- /mnt/*'
+    - '- /home/*/.cache'
+    - '- /var/tmp/*'
+    - '- /var/cache/*'
+    - '- swap.img'
+
+# Read include/exclude patterns from one or more separate named files,
+# one pattern per line. Note that Borg considers this option
+# experimental. See the output of "borg help patterns" for more
+# details.
+# patterns_from:
+    # - /etc/borgmatic/patterns
+
+# Any paths matching these patterns are excluded from backups. Globs
+# and tildes are expanded. Note that a glob pattern must either start
+# with a glob or be an absolute path. Do not backslash spaces in path
+# names. See the output of "borg help patterns" for more details.
+exclude_patterns:
+    - '/media/WDElements/'
+    - '/media/RAID*'
+    - '/media/backups'
+    - '/mnt/*'
+    - '/home/*/cache/*'
+    - '/var/run/*'
+    - '/var/tmp/*'
+    - '/var/cache/*'
+    - 'swap.img'
+    - '/dev/*'
+    - '/proc/*'
+    - '/run/*'
+    - '/sys/*'
+    - '/tmp/*'
+
+# Read exclude patterns from one or more separate named files, one
+# pattern per line. See the output of "borg help patterns" for more
+# details.
+# exclude_from:
+    # - /etc/borgmatic/excludes
+
+# Exclude directories that contain a CACHEDIR.TAG file. See
+# http://www.brynosaurus.com/cachedir/spec.html for details. Defaults
+# to false.
+exclude_caches: true
+
+# Exclude directories that contain a file with the given filenames.
+# Defaults to not set.
+# exclude_if_present:
+    # - .nobackup
+
+# If true, the exclude_if_present filename is included in backups.
+# Defaults to false, meaning that the exclude_if_present filename is
+# omitted from backups.
+# keep_exclude_tags: true
+
+# Exclude files with the NODUMP flag. Defaults to false.
+# exclude_nodump: true
+
+<<: !include /etc/borgmatic/common/common.yaml

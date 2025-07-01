@@ -1,0 +1,4 @@
+# ~/dotfiles/espanso/config/base.yml
+# This public file tells espanso to load our private snippets.
+# The 'private.yml' file will be symlinked from our private repo.
+parent: private.yml
