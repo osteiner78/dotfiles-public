@@ -98,6 +98,4 @@ exclude_caches: true
 # Exclude files with the NODUMP flag. Defaults to false.
 # exclude_nodump: true
 
-<<:
-  - !include /etc/borgmatic.d/common/common.yaml
-  - !include /etc/borgmatic.d/secrets.yaml
+<<: !include /etc/borgmatic/common/common.yaml
