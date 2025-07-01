@@ -1,0 +1,55 @@
+[user]
+	name = Oliver Steiner
+	email = osteiner@gmail.com
+	username = osteiner78
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEgnP7ER5amem+5Br7dYQ2pJzUJfZzrFj1VduZW8O9pu
+
+[include]
+	path = ~/themes.gitconfig
+    
+[core]
+	editor = nvim
+	pager = delta
+
+[diff]
+	# tool = meld
+	colorMoved = default
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	side-by-side = true
+	line-numebers = true
+	dark = true
+	features = arctic-fox 
+	navigate = true    # use n and N to move between diff sections
+
+    # delta detects terminal colors automatically; set one of these to disable auto-detection
+    # dark = true
+    # light = true
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	colorMoved = default
+
+; [filter "remove-cloudflared-token"]
+; clean = "sed -e 's/^token = .*/token = FILTERED' "
+;
+; [filter "remove-openai-key"]
+; clean = "sed -e 's/^openai = .*/token = FILTERED' "
+;
+; [filter "remove-paperless-key"]
+; clean = "sed -e 's/^paperless-secret-key = .*/token = FILTERED' "
+
+; [gpg]
+  ; format = ssh
+	; program = gpg1
+
+; [gpg "ssh"]
+  ; program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+; [commit]
+  ; gpgsign = true
