@@ -26,15 +26,7 @@ source_directories:
 # then add local repository paths in the systemd service file to the
 # ReadWritePaths list. Prior to borgmatic 1.7.10, repositories was a
 # list of plain path strings.
-repositories:
-    # - path: ssh://user@backupserver/./sourcehostname.borg
-    #   label: backupserver
-  # - path: ssh://osteiner@192.168.1.101:39583/media/backups/borgbackup_garfield
-  #- path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_garfield
-  #  label: backupserver
-  - path: /mnt/nfs/borgbackup/borgbackup_garfield
-    label: backupserver
-    
+
 # relocated_repo_access_is_ok: true
 
 # Name of the archive. Borg placeholders can be used. See the output
@@ -106,47 +98,6 @@ exclude_caches: true
 # Exclude files with the NODUMP flag. Defaults to false.
 # exclude_nodump: true
 
-# ======================= MONITORING ===================================
-uptime_kuma:
-    push_url: http://osteiner.xyz:3001/api/push/FCaPWhGCIb
-    states:
-        # - start
-        - finish
-        - fail
-
-# apprise:
-#     services:
-#       - url: tgram://7830734772:AAHkpzRBdK2wta_QCWNOgjQ8hLI0HpI8ltw
-#         label: telegram 
-#     states:
-#         - start
-#         - finish
-#         - fail
-
-# ======================= NOTIFICATIONS ===================================
-ntfy:
-  topic: QPqEwr8MExRRDjUJPL6ybNhK
-  server: "https://ntfy.sh"
-  access_token: 
-
-  start:
-    title: garfield backup started
-    message: Watch this space...
-    tags: borgmatic
-    priority: min
-  finish:
-    title: garfield backup completed successfully
-    message: Nice!
-    tags: borgmatic,+1
-    priority: min
-  fail:
-    title: garfield backup failed
-    message: You should probably fix it
-    tags: borgmatic,-1,skull
-    priority: max
-  states:
- #   - start
-    # - finish
-    - fail
-
-<<: !include /etc/borgmatic.d/common/common.yaml
+<<:
+  - !include /etc/borgmatic.d/common/common.yaml
+  - !include /etc/borgmatic.d/secrets.yaml

@@ -48,8 +48,8 @@ services:
     restart: unless-stopped
     command: tunnel --no-autoupdate run
     network_mode: host # to use 'localhost' in host computer
-    environment:
-      - TUNNEL_TOKEN=eyJhIjoiMDFhN2M0ODJiOTJjN2ZiY2I0MmY4YTQzYjEyNTRiNTciLCJ0IjoiOTA2NGM5NjQtMDI2OC00ZjNlLWIzOWYtZjE1Yjg5MWJlY2QxIiwicyI6Ik1qWTBaall3T0RndFpUSTFOaTAwWm1ZeExUa3lPVFV0TldJeE9ETTBNR1V3TVdJeSJ9
+    env_file:
+    - .env
 
   pihole:
     container_name: pihole

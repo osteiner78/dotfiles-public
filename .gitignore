@@ -2,3 +2,4 @@
 *.DS_Store
 .env
 lazy-lock.json
+~/.local/share/nvim/lazy/

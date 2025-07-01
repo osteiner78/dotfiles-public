@@ -8,7 +8,8 @@
 
 [flavor]
 # use = "gruvbox-dark"
-use = "catppuccin-mocha"
-# use = "tokyo-night"
+# use = "catppuccin-mocha"
+use = "tokyo-night"
+dark = "tokyo-night"
 
 
