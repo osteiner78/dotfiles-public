@@ -17,22 +17,6 @@ source_directories:
     # - /var/log/syslog*
     # - /home/user/path with spaces
 
-# A required list of local or remote repositories with paths and
-# optional labels (which can be used with the --repository flag to
-# select a repository). Tildes are expanded. Multiple repositories are
-# backed up to in sequence. Borg placeholders can be used. See the
-# output of "borg help placeholders" for details. See ssh_command for
-# SSH options like identity file or port. If systemd service is used,
-# then add local repository paths in the systemd service file to the
-# ReadWritePaths list. Prior to borgmatic 1.7.10, repositories was a
-# list of plain path strings.
-repositories:
-    # - path: ssh://user@backupserver/./sourcehostname.borg
-    #   label: backupserver
-  # - path: ssh://pi@192.168.1.100:49237/media/backups/borgbackup_snoopy
-    # label: local
-  - path: /mnt/nfs/borgbackup/borgbackup_snoopy
-    label: local
 
 # Name of the archive. Borg placeholders can be used. See the output
 # of "borg help placeholders" for details. Defaults to
@@ -105,47 +89,6 @@ exclude_caches: true
 # Exclude files with the NODUMP flag. Defaults to false.
 # exclude_nodump: true
 
-# ======================= MONITORING ===================================
-
-uptime_kuma:
-    push_url: http://osteiner.xyz:3001/api/push/GFEyJa4cby
-    states:
-        - finish
-        - fail
-
-# apprise:
-#     services:
-#       - url: tgram://7830734772:AAHkpzRBdK2wta_QCWNOgjQ8hLI0HpI8ltw
-#         label: telegram 
-#     states:
-#         - start
-#         - finish
-#         - fail
-
-
-ntfy:
-  topic: QPqEwr8MExRRDjUJPL6ybNhK
-  server: "https://ntfy.sh"
-  access_token: 
-
-  start:
-    title: snoopy backup started
-    message: Watch this space...
-    tags: borgmatic
-    priority: min
-  finish:
-    title: snoopy backup completed successfully
-    message: Nice!
-    tags: borgmatic,+1
-    priority: min
-  fail:
-    title: snoopy backup failed
-    message: You should probably fix it
-    tags: borgmatic,-1,skull
-    priority: max
-  states:
-    # - start
-    # - finish
-    - fail
-
-<<: !include /etc/borgmatic.d/common/common.yaml
+<<:
+  - !include /etc/borgmatic/common/common.yaml
+  - !include /etc/borgmatic/secrets.yaml

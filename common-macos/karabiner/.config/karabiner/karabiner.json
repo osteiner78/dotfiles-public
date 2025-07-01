@@ -1,16 +1,9 @@
 {
-  "global" : {
-    "ask_for_confirmation_before_quitting" : true,
-    "check_for_updates_on_startup" : true,
-    "show_in_menu_bar" : true,
-    "show_profile_name_in_menu_bar" : false,
-    "unsafe_ui" : false
-  },
   "profiles" : [ {
     "complex_modifications" : {
       "parameters" : {
-        "basic.simultaneous_threshold_milliseconds" : 25,
-        "basic.to_delayed_action_delay_milliseconds" : 500,
+        "basic.simultaneous_threshold_milliseconds" : 100,
+        "basic.to_delayed_action_delay_milliseconds" : 2000,
         "basic.to_if_alone_timeout_milliseconds" : 1000,
         "basic.to_if_held_down_threshold_milliseconds" : 500
       },
@@ -35,26 +28,6 @@
           } ],
           "to_if_alone" : [ {
             "key_code" : "escape"
-          } ]
-        }, {
-          "type" : "basic",
-          "to" : [ {
-            "set_variable" : {
-              "name" : "yabai-mode",
-              "value" : 1
-            }
-          } ],
-          "from" : {
-            "key_code" : "tab"
-          },
-          "to_after_key_up" : [ {
-            "set_variable" : {
-              "name" : "yabai-mode",
-              "value" : 0
-            }
-          } ],
-          "to_if_alone" : [ {
-            "key_code" : "tab"
           } ]
         } ]
       }, {
@@ -113,10 +86,24 @@
           "type" : "basic"
         }, {
           "from" : {
+            "key_code" : "e"
+          },
+          "to" : [ {
+            "key_code" : "e",
+            "modifiers" : [ "fn" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
             "key_code" : "f"
           },
           "to" : [ {
-            "shell_command" : "open ~"
+            "shell_command" : "open /System/Library/CoreServices/Finder.app && osascript -e 'tell application \"Finder\" to activate'"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -165,6 +152,19 @@
           "type" : "basic"
         }, {
           "from" : {
+            "key_code" : "n"
+          },
+          "to" : [ {
+            "shell_command" : "open -a /Applications/SnippetsLab.app"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
             "key_code" : "o"
           },
           "to" : [ {
@@ -181,7 +181,20 @@
             "key_code" : "p"
           },
           "to" : [ {
-            "shell_command" : "open -a /Applications/'PDF Expert'.app"
+            "shell_command" : "open -a ~/Applications/Paperless-ngx.app"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "q"
+          },
+          "to" : [ {
+            "shell_command" : "open -a /Applications/Dash.app"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -194,7 +207,7 @@
             "key_code" : "t"
           },
           "to" : [ {
-            "shell_command" : "open -a /Applications/iTerm.app"
+            "shell_command" : "open -a /Applications/Alacritty.app"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -204,10 +217,10 @@
           "type" : "basic"
         }, {
           "from" : {
-            "key_code" : "grave_accent_and_tilde"
+            "key_code" : "return_or_enter"
           },
           "to" : [ {
-            "shell_command" : "open -a /Applications/iTerm.app"
+            "shell_command" : "open -a /Applications/Alacritty.app"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -243,6 +256,23 @@
           "type" : "basic"
         }, {
           "from" : {
+            "key_code" : "delete_or_backspace",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "q",
+            "modifiers" : [ "left_command", "left_control" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
             "key_code" : "equal_sign"
           },
           "to" : [ {
@@ -256,65 +286,114 @@
           "type" : "basic"
         } ]
       }, {
-        "description" : "Home and End keys",
+        "description" : "Screenshots with hyperkey",
         "manipulators" : [ {
           "from" : {
-            "key_code" : "home"
+            "key_code" : "4"
           },
           "to" : [ {
-            "key_code" : "left_arrow",
-            "modifiers" : [ "left_command" ]
+            "key_code" : "4",
+            "modifiers" : [ "left_command", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
           } ],
           "type" : "basic"
         }, {
           "from" : {
-            "key_code" : "end"
+            "key_code" : "5"
           },
           "to" : [ {
-            "key_code" : "right_arrow",
-            "modifiers" : [ "left_command" ]
+            "key_code" : "5",
+            "modifiers" : [ "left_command", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
           } ],
           "type" : "basic"
         } ]
       }, {
-        "description" : "Next/Previous tab",
+        "description" : "Page Up/Page Down with hyperkey",
         "manipulators" : [ {
           "from" : {
-            "key_code" : "page_up",
-            "modifiers" : {
-              "mandatory" : [ "right_option" ]
-            }
+            "key_code" : "down_arrow"
           },
           "to" : [ {
-            "key_code" : "open_bracket",
-            "modifiers" : [ "right_command", "right_shift" ]
+            "key_code" : "page_down"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
           } ],
           "type" : "basic"
         }, {
           "from" : {
-            "key_code" : "page_down",
-            "modifiers" : {
-              "mandatory" : [ "right_option" ]
-            }
+            "key_code" : "up_arrow"
           },
           "to" : [ {
-            "key_code" : "close_bracket",
-            "modifiers" : [ "right_command", "right_shift" ]
+            "key_code" : "page_up"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
           } ],
           "type" : "basic"
-        } ]
-      }, {
-        "description" : "left_command alone -> ⌘ + tab to last app",
-        "manipulators" : [ {
-          "to_if_alone" : [ {
-            "key_code" : "tab",
-            "modifiers" : [ "left_command" ]
-          } ],
+        }, {
           "from" : {
-            "key_code" : "left_command"
+            "key_code" : "period"
           },
           "to" : [ {
-            "key_code" : "left_command"
+            "key_code" : "page_down"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "comma"
+          },
+          "to" : [ {
+            "key_code" : "page_up"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "j"
+          },
+          "to" : [ {
+            "key_code" : "page_down"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "k"
+          },
+          "to" : [ {
+            "key_code" : "page_up"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
           } ],
           "type" : "basic"
         } ]
@@ -394,6 +473,40 @@
           },
           "to" : [ {
             "key_code" : "s",
+            "modifiers" : [ "left_command", "left_control" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.apple\\.mail$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "s"
+          },
+          "to" : [ {
+            "key_code" : "s",
+            "modifiers" : [ "left_command", "left_option" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.apple\\.Notes$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "s"
+          },
+          "to" : [ {
+            "key_code" : "s",
             "modifiers" : [ "left_control", "left_shift" ]
           } ],
           "conditions" : [ {
@@ -444,6 +557,23 @@
             "key_code" : "s"
           },
           "to" : [ {
+            "key_code" : "l",
+            "modifiers" : [ "left_command", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.renfei\\.SnippetsLab$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "s"
+          },
+          "to" : [ {
             "key_code" : "k",
             "modifiers" : [ "right_command" ]
           }, {
@@ -481,8 +611,7 @@
             "key_code" : "s"
           },
           "to" : [ {
-            "key_code" : "s",
-            "modifiers" : [ "left_command", "left_option" ]
+            "key_code" : "m"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -490,7 +619,7 @@
             "type" : "variable_if"
           }, {
             "type" : "frontmost_application_if",
-            "bundle_identifiers" : [ "^com\\.apple\\.Notes$" ]
+            "bundle_identifiers" : [ "^com\\.todoist\\.mac\\.Todoist$" ]
           } ],
           "type" : "basic"
         } ]
@@ -564,595 +693,478 @@
             "bundle_identifiers" : [ "^com\\.sublimetext\\.4$" ]
           } ],
           "type" : "basic"
-        } ]
-      }, {
-        "description" : "Hyper+{page_up/page_down}",
-        "manipulators" : [ {
+        }, {
           "from" : {
-            "key_code" : "period"
+            "key_code" : "spacebar"
           },
           "to" : [ {
-            "key_code" : "page_down"
+            "key_code" : "f",
+            "modifiers" : [ "left_command" ]
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
             "value" : 1,
             "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.culturedcode\\.ThingsMac$" ]
           } ],
           "type" : "basic"
         }, {
           "from" : {
-            "key_code" : "comma"
+            "key_code" : "spacebar"
           },
           "to" : [ {
-            "key_code" : "page_up"
+            "key_code" : "k",
+            "modifiers" : [ "right_command" ]
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
             "value" : 1,
             "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.todoist\\.mac\\.Todoist$" ]
           } ],
           "type" : "basic"
         } ]
       }, {
-        "description" : "Yabai rules - Inside yabai layer (tab)",
+        "description" : "Hyper: Arc Browser (l: Little Arc - u: copy URL as markdown - z: Reopen last closed tab)",
         "manipulators" : [ {
           "from" : {
-            "key_code" : "j"
+            "key_code" : "grave_accent_and_tilde",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
           },
           "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --warp south"
+            "key_code" : "p",
+            "modifiers" : [ "left_command", "left_control", "left_option" ]
           } ],
           "conditions" : [ {
-            "name" : "yabai-mode",
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^company\\.thebrowser\\.Browser$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "l",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "n",
+            "modifiers" : [ "left_command", "left_option" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^company\\.thebrowser\\.Browser$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "u",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "c",
+            "modifiers" : [ "left_command", "left_option", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^company\\.thebrowser\\.Browser$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "z",
+            "modifiers" : {
+              "optional" : [ "any" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "t",
+            "modifiers" : [ "left_command", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^company\\.thebrowser\\.Browser$" ]
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "Home and End keys",
+        "manipulators" : [ {
+          "from" : {
+            "key_code" : "home"
+          },
+          "to" : [ {
+            "key_code" : "left_arrow",
+            "modifiers" : [ "left_command" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "end"
+          },
+          "to" : [ {
+            "key_code" : "right_arrow",
+            "modifiers" : [ "left_command" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "home",
+            "modifiers" : {
+              "mandatory" : [ "right_shift" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "left_arrow",
+            "modifiers" : [ "left_command", "right_shift" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "end",
+            "modifiers" : {
+              "mandatory" : [ "right_shift" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "right_arrow",
+            "modifiers" : [ "left_command", "right_shift" ]
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "Next/Previous tab (on 100% keyboard)",
+        "manipulators" : [ {
+          "from" : {
+            "key_code" : "page_up",
+            "modifiers" : {
+              "mandatory" : [ "right_option" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "open_bracket",
+            "modifiers" : [ "right_command", "right_shift" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "page_down",
+            "modifiers" : {
+              "mandatory" : [ "right_option" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "close_bracket",
+            "modifiers" : [ "right_command", "right_shift" ]
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "Next/Previous tab (on YK75)",
+        "manipulators" : [ {
+          "from" : {
+            "key_code" : "page_up",
+            "modifiers" : {
+              "mandatory" : [ "right_control" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "open_bracket",
+            "modifiers" : [ "right_command", "right_shift" ]
+          } ],
+          "conditions" : [ {
+            "identifiers" : [ {
+              "vendor_id" : 1452,
+              "product_id" : 591
+            } ],
+            "type" : "device_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "page_down",
+            "modifiers" : {
+              "mandatory" : [ "right_control" ]
+            }
+          },
+          "to" : [ {
+            "key_code" : "close_bracket",
+            "modifiers" : [ "right_command", "right_shift" ]
+          } ],
+          "conditions" : [ {
+            "identifiers" : [ {
+              "vendor_id" : 1452,
+              "product_id" : 591
+            } ],
+            "type" : "device_if"
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "left_command alone -> ⌘ + tab to last app",
+        "manipulators" : [ {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_command" ]
+          } ],
+          "from" : {
+            "key_code" : "left_command"
+          },
+          "to" : [ {
+            "key_code" : "left_command"
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "In Arc browser: left_control alone -> ctrl + tab to last tab",
+        "manipulators" : [ {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_control" ]
+          } ],
+          "from" : {
+            "key_code" : "left_control"
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "conditions" : [ {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^company\\.thebrowser\\.Browser$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_control" ]
+          } ],
+          "from" : {
+            "key_code" : "left_control"
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "conditions" : [ {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.visualstudio\\.code\\.oss$", "^com\\.microsoft\\.VSCode(Insiders)?$", "^com\\.microsoft\\.VSCode?$" ]
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "okey mode",
+        "manipulators" : [ {
+          "from" : {
+            "key_code" : "d"
+          },
+          "to" : [ {
+            "shell_command" : "open ~/Downloads/"
+          } ],
+          "conditions" : [ {
+            "name" : "o-mode",
             "value" : 1,
             "type" : "variable_if"
           } ],
           "type" : "basic"
         }, {
-          "from" : {
-            "key_code" : "k"
+          "type" : "basic",
+          "parameters" : {
+            "basic.simultaneous_threshold_milliseconds" : 250
           },
           "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --warp north"
+            "set_variable" : {
+              "name" : "o-mode",
+              "value" : 1
+            }
+          }, {
+            "shell_command" : "open ~/Downloads/"
+          } ],
+          "from" : {
+            "simultaneous" : [ {
+              "key_code" : "o"
+            }, {
+              "key_code" : "d"
+            } ],
+            "simultaneous_options" : {
+              "detect_key_down_uninterruptedly" : true,
+              "key_down_order" : "strict",
+              "key_up_order" : "strict_inverse",
+              "key_up_when" : "any",
+              "to_after_key_up" : [ {
+                "set_variable" : {
+                  "name" : "o-mode",
+                  "value" : 0
+                }
+              } ]
+            }
+          }
+        }, {
+          "from" : {
+            "key_code" : "i"
+          },
+          "to" : [ {
+            "shell_command" : "open ~/Documents/0.\\ Inbox/"
           } ],
           "conditions" : [ {
-            "name" : "yabai-mode",
+            "name" : "o-mode",
             "value" : 1,
             "type" : "variable_if"
           } ],
           "type" : "basic"
         }, {
-          "from" : {
-            "key_code" : "h"
+          "type" : "basic",
+          "parameters" : {
+            "basic.simultaneous_threshold_milliseconds" : 250
           },
           "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --warp west"
+            "set_variable" : {
+              "name" : "o-mode",
+              "value" : 1
+            }
+          }, {
+            "shell_command" : "open ~/Documents/0.\\ Inbox/"
           } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
           "from" : {
-            "key_code" : "l"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --warp east"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "r"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --rotate 270"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "x"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --mirror x-axis"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "y"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --mirror y-axis"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "e"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --balance"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "return_or_enter"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --toggle zoom-fullscreen"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "t"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --toggle float --grid 4:4:1:1:2:2"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "p"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --toggle padding --toggle gap"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "1"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 1 ; /opt/homebrew/bin/yabai -m space --focus 1"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "2"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 2 ; /opt/homebrew/bin/yabai -m space --focus 2"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "3"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 3 ; /opt/homebrew/bin/yabai -m space --focus 3"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "4"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 4 ; /opt/homebrew/bin/yabai -m space --focus 4"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "5"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 5 ; /opt/homebrew/bin/yabai -m space --focus 5"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "6"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 6 ; /opt/homebrew/bin/yabai -m space --focus 6"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "7"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 7 ; /opt/homebrew/bin/yabai -m space --focus 7"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "8"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 8 ; /opt/homebrew/bin/yabai -m space --focus 8"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "9"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space 9 ; /opt/homebrew/bin/yabai -m space --focus 9"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "comma"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space prev ; /opt/homebrew/bin/yabai -m space --focus prev"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "period"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --space next ; /opt/homebrew/bin/yabai -m space --focus next"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "x"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --focus recent"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
+            "simultaneous" : [ {
+              "key_code" : "o"
+            }, {
+              "key_code" : "i"
+            } ],
+            "simultaneous_options" : {
+              "detect_key_down_uninterruptedly" : true,
+              "key_down_order" : "strict",
+              "key_up_order" : "strict_inverse",
+              "key_up_when" : "any",
+              "to_after_key_up" : [ {
+                "set_variable" : {
+                  "name" : "o-mode",
+                  "value" : 0
+                }
+              } ]
+            }
+          }
         }, {
           "from" : {
             "key_code" : "m"
           },
           "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --focus prev"
+            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"menu bar search\" in workflow \"com.folded-paper.menu-bar-search\" with argument \"\"'"
           } ],
           "conditions" : [ {
-            "name" : "yabai-mode",
+            "name" : "o-mode",
             "value" : 1,
             "type" : "variable_if"
           } ],
           "type" : "basic"
         }, {
-          "from" : {
-            "key_code" : "slash"
+          "type" : "basic",
+          "parameters" : {
+            "basic.simultaneous_threshold_milliseconds" : 250
           },
           "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m space --focus next"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "open_bracket"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --display west ; /opt/homebrew/bin/yabai -m display --focus west"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "close_bracket"
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --display east ; /opt/homebrew/bin/yabai -m display --focus east"
-          } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "q"
-          },
-          "to" : [ {
-            "shell_command" : "/opt/homebrew/bin/yabai --stop-service"
+            "set_variable" : {
+              "name" : "o-mode",
+              "value" : 1
+            }
           }, {
-            "shell_command" : "osascript -e 'display notification \"Stopped\" with title \"Yabai\"'"
+            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"menu bar search\" in workflow \"com.folded-paper.menu-bar-search\" with argument \"\"'"
+          } ],
+          "from" : {
+            "simultaneous" : [ {
+              "key_code" : "o"
+            }, {
+              "key_code" : "m"
+            } ],
+            "simultaneous_options" : {
+              "detect_key_down_uninterruptedly" : true,
+              "key_down_order" : "strict",
+              "key_up_order" : "strict_inverse",
+              "key_up_when" : "any",
+              "to_after_key_up" : [ {
+                "set_variable" : {
+                  "name" : "o-mode",
+                  "value" : 0
+                }
+              } ]
+            }
+          }
+        }, {
+          "from" : {
+            "key_code" : "t"
+          },
+          "to" : [ {
+            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"temp email\" in workflow \"com.vitorgalvao.alfred.temporaryemail\" with argument \"\"'"
           } ],
           "conditions" : [ {
-            "name" : "yabai-mode",
+            "name" : "o-mode",
             "value" : 1,
             "type" : "variable_if"
           } ],
           "type" : "basic"
         }, {
-          "from" : {
-            "key_code" : "w"
+          "type" : "basic",
+          "parameters" : {
+            "basic.simultaneous_threshold_milliseconds" : 250
           },
           "to" : [ {
-            "shell_command" : "/opt/homebrew/bin/yabai --start-service"
+            "set_variable" : {
+              "name" : "o-mode",
+              "value" : 1
+            }
           }, {
-            "shell_command" : "osascript -e 'display notification \"Started\" with title \"Yabai\"'"
+            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"temp email\" in workflow \"com.vitorgalvao.alfred.temporaryemail\" with argument \"\"'"
           } ],
-          "conditions" : [ {
-            "name" : "yabai-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        } ]
-      }, {
-        "description" : "Yabai rules - Outside yabai layer (tab)",
-        "manipulators" : [ {
           "from" : {
-            "key_code" : "j",
-            "modifiers" : {
-              "mandatory" : [ "left_option" ]
+            "simultaneous" : [ {
+              "key_code" : "o"
+            }, {
+              "key_code" : "t"
+            } ],
+            "simultaneous_options" : {
+              "detect_key_down_uninterruptedly" : true,
+              "key_down_order" : "strict",
+              "key_up_order" : "strict_inverse",
+              "key_up_when" : "any",
+              "to_after_key_up" : [ {
+                "set_variable" : {
+                  "name" : "o-mode",
+                  "value" : 0
+                }
+              } ]
             }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --focus south"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "k",
-            "modifiers" : {
-              "mandatory" : [ "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --focus north"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "h",
-            "modifiers" : {
-              "mandatory" : [ "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --focus west"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "l",
-            "modifiers" : {
-              "mandatory" : [ "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --focus east"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "j",
-            "modifiers" : {
-              "mandatory" : [ "left_control", "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --swap south"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "k",
-            "modifiers" : {
-              "mandatory" : [ "left_control", "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --swap north"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "h",
-            "modifiers" : {
-              "mandatory" : [ "left_control", "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --swap west"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "l",
-            "modifiers" : {
-              "mandatory" : [ "left_control", "left_option" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m window --swap east"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "open_bracket",
-            "modifiers" : {
-              "mandatory" : [ "left_control" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m display --focus west"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "close_bracket",
-            "modifiers" : {
-              "mandatory" : [ "left_control" ]
-            }
-          },
-          "to" : [ {
-            "shell_command" : "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai -m display --focus east"
-          } ],
-          "type" : "basic"
+          }
         } ]
       } ]
     },
     "devices" : [ {
-      "mouse_swap_xy" : false,
       "identifiers" : {
-        "is_game_pad" : false,
         "is_keyboard" : true,
-        "is_pointing_device" : false,
-        "product_id" : 834,
-        "vendor_id" : 1452
-      },
-      "fn_function_keys" : [ ],
-      "ignore" : false,
-      "disable_built_in_keyboard_if_exists" : false,
-      "mouse_flip_vertical_wheel" : false,
-      "game_pad_swap_sticks" : false,
-      "mouse_flip_horizontal_wheel" : false,
-      "manipulate_caps_lock_led" : true,
-      "mouse_flip_y" : false,
-      "mouse_swap_wheels" : false,
-      "simple_modifications" : [ ],
-      "treat_as_built_in_keyboard" : false,
-      "mouse_flip_x" : false
-    }, {
-      "mouse_swap_xy" : false,
-      "identifiers" : {
-        "is_game_pad" : false,
-        "is_keyboard" : false,
-        "is_pointing_device" : true,
-        "product_id" : 834,
-        "vendor_id" : 1452
-      },
-      "fn_function_keys" : [ ],
-      "ignore" : true,
-      "disable_built_in_keyboard_if_exists" : false,
-      "mouse_flip_vertical_wheel" : false,
-      "game_pad_swap_sticks" : false,
-      "mouse_flip_horizontal_wheel" : false,
-      "manipulate_caps_lock_led" : false,
-      "mouse_flip_y" : false,
-      "mouse_swap_wheels" : false,
-      "simple_modifications" : [ ],
-      "treat_as_built_in_keyboard" : false,
-      "mouse_flip_x" : false
-    }, {
-      "mouse_swap_xy" : false,
-      "identifiers" : {
-        "is_game_pad" : false,
-        "is_keyboard" : true,
-        "is_pointing_device" : false,
         "product_id" : 50475,
         "vendor_id" : 1133
       },
-      "fn_function_keys" : [ ],
-      "ignore" : false,
-      "disable_built_in_keyboard_if_exists" : false,
-      "mouse_flip_vertical_wheel" : false,
-      "game_pad_swap_sticks" : false,
-      "mouse_flip_horizontal_wheel" : false,
-      "manipulate_caps_lock_led" : true,
-      "mouse_flip_y" : false,
-      "mouse_swap_wheels" : false,
       "simple_modifications" : [ {
         "from" : {
           "key_code" : "non_us_backslash"
@@ -1160,147 +1172,13 @@
         "to" : [ {
           "key_code" : "grave_accent_and_tilde"
         } ]
-      } ],
-      "treat_as_built_in_keyboard" : false,
-      "mouse_flip_x" : false
-    }, {
-      "mouse_swap_xy" : false,
-      "identifiers" : {
-        "is_game_pad" : false,
-        "is_keyboard" : false,
-        "is_pointing_device" : true,
-        "product_id" : 50475,
-        "vendor_id" : 1133
-      },
-      "fn_function_keys" : [ ],
-      "ignore" : true,
-      "disable_built_in_keyboard_if_exists" : false,
-      "mouse_flip_vertical_wheel" : false,
-      "game_pad_swap_sticks" : false,
-      "mouse_flip_horizontal_wheel" : false,
-      "manipulate_caps_lock_led" : false,
-      "mouse_flip_y" : false,
-      "mouse_swap_wheels" : false,
-      "simple_modifications" : [ ],
-      "treat_as_built_in_keyboard" : false,
-      "mouse_flip_x" : false
-    }, {
-      "mouse_swap_xy" : false,
-      "identifiers" : {
-        "is_game_pad" : false,
-        "is_keyboard" : false,
-        "is_pointing_device" : true,
-        "product_id" : 613,
-        "vendor_id" : 76
-      },
-      "fn_function_keys" : [ ],
-      "ignore" : true,
-      "disable_built_in_keyboard_if_exists" : false,
-      "mouse_flip_vertical_wheel" : false,
-      "game_pad_swap_sticks" : false,
-      "mouse_flip_horizontal_wheel" : false,
-      "manipulate_caps_lock_led" : false,
-      "mouse_flip_y" : false,
-      "mouse_swap_wheels" : false,
-      "simple_modifications" : [ ],
-      "treat_as_built_in_keyboard" : false,
-      "mouse_flip_x" : false
-    } ],
-    "fn_function_keys" : [ {
-      "from" : {
-        "key_code" : "f1"
-      },
-      "to" : [ {
-        "consumer_key_code" : "display_brightness_decrement"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f2"
-      },
-      "to" : [ {
-        "consumer_key_code" : "display_brightness_increment"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f3"
-      },
-      "to" : [ {
-        "apple_vendor_keyboard_key_code" : "mission_control"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f4"
-      },
-      "to" : [ {
-        "apple_vendor_keyboard_key_code" : "spotlight"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f5"
-      },
-      "to" : [ {
-        "consumer_key_code" : "dictation"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f6"
-      },
-      "to" : [ {
-        "key_code" : "f6"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f7"
-      },
-      "to" : [ {
-        "consumer_key_code" : "rewind"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f8"
-      },
-      "to" : [ {
-        "consumer_key_code" : "play_or_pause"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f9"
-      },
-      "to" : [ {
-        "consumer_key_code" : "fast_forward"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f10"
-      },
-      "to" : [ {
-        "consumer_key_code" : "mute"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f11"
-      },
-      "to" : [ {
-        "consumer_key_code" : "volume_decrement"
-      } ]
-    }, {
-      "from" : {
-        "key_code" : "f12"
-      },
-      "to" : [ {
-        "consumer_key_code" : "volume_increment"
       } ]
     } ],
     "name" : "Default",
-    "parameters" : {
-      "delay_milliseconds_before_open_device" : 1000
-    },
     "selected" : true,
-    "simple_modifications" : [ ],
     "virtual_hid_keyboard" : {
       "country_code" : 0,
-      "indicate_sticky_modifier_keys_state" : true,
-      "mouse_key_xy_scale" : 100
+      "keyboard_type_v2" : "ansi"
     }
   } ]
 }
