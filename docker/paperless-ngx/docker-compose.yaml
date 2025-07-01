@@ -42,10 +42,7 @@ services:
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: paperless
-      POSTGRES_USER: paperless
-      POSTGRES_PASSWORD: paperless
+    env_file: .env
 
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
@@ -82,7 +79,6 @@ services:
       PAPERLESS_PRE_CONSUME_SCRIPT: /usr/src/paperless/scripts/removepassword.py
       PAPERLESS_POST_CONSUME_SCRIPT: /usr/src/paperless/scripts/push_notifications.sh
       PAPERLESS_FILENAME_DATE_ORDER: 'Y-M-D' # To recognize dates in filenames
-      PAPERLESS_IGNORE_DATES: '27/07/1978, 26/12/1976, 10/06/2016, 23/07/2020'
       PAPERLESS_DATE_ORDER: 'DMY' 
       PAPERLESS_CONSUMER_POLLING: 10 # If set to 0 (disable polling) it will consume empty files from smb share as files are being created
       PAPERLESS_CONSUMER_POLLING_DELAY: 5 
