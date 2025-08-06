@@ -38,26 +38,26 @@ services:
     volumes:
       - /opt/calibre-web/config:/config
       # - /opt/docker/calibre-books:/books
-      - /mnt/nfs/books:/books
+      - /mnt/nfs/books/Luisa Library/:/books
       # - /media/nvme/books:/books
     ports:
       - 8083:8083
     restart: unless-stopped
 
-  calibre-web-luisa:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web-luisa
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Sao_Paulo
-      - DOCKER_MODS=linuxserver/mods=universal-calibre #optional
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
-    volumes:
-      - /opt/calibre-web/config:/config
-      # - /opt/docker/calibre-books:/books
-      - /mnt/nfs/books:/books
-      # - /media/nvme/books:/books
-    ports:
-      - 8084:8083
-    restart: unless-stopped
+  # calibre-web-luisa:
+  #   image: lscr.io/linuxserver/calibre-web:latest
+  #   container_name: calibre-web-luisa
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Sao_Paulo
+  #     - DOCKER_MODS=linuxserver/mods=universal-calibre #optional
+  #     - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+  #   volumes:
+  #     - /opt/calibre-web/config:/config
+  #     # - /opt/docker/calibre-books:/books
+  #     - /mnt/nfs/books:/books
+  #     # - /media/nvme/books:/books
+  #   ports:
+  #     - 8084:8083
+  #   restart: unless-stopped

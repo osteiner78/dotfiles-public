@@ -32,7 +32,8 @@ services:
     volumes:
       - /opt/qbittorrent/appdata:/config
       # - /mnt/nfs/torrents:/downloads #optional
-      - /mnt/nfs/torrents:/data/torrents #optional
+      # - /mnt/nfs/torrents:/data/torrents #optional
+      - /mnt/nfs/torrents:/downloads #optional
     ports:
       - 8180:8180
       # - 6881:6881
@@ -54,7 +55,8 @@ services:
       - /mnt/nfs/videos:/data #optional
       # - /media/WDElements/data:/data #optional
       # - /opt/docker/deluge-torrents:/data/torrents
-      - /mnt/nfs/torrents:/data/torrents
+      # - /mnt/nfs/torrents:/data/torrents
+      - /mnt/nfs/torrents:/downloads
       # - /media/nvme/torrents/:/data/torrents
     ports:
       - 7878:7878
@@ -73,7 +75,7 @@ services:
       - /mnt/nfs/videos:/data #optional
       # - /media/WDElements/data:/data #optional
       # - /opt/docker/deluge-torrents:/data/torrents
-      - /mnt/nfs/torrents/:/data/torrents
+      - /mnt/nfs/torrents/:/downloads
       # - /media/nvme/torrents/:/data/torrents
     ports:
       - 8989:8989
