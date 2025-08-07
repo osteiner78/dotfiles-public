@@ -1,13 +1,12 @@
---left
+-- Left items
 require("items.apple")
-require("items.spaces")
+require("items.menu_spaces_toggle")
 require("items.menus")
+require("items.spaces")
+require("items.front_apps")
 
---center
-require("items.notifications")
-
---right (reverse order)
-require("items.calendar")
+-- Right items
+require("items.message")
 require("items.widgets")
-require("items.wifi")
-require("items.media")
+
+-- require("items.media")

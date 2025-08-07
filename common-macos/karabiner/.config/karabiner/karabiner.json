@@ -194,19 +194,6 @@
             "key_code" : "q"
           },
           "to" : [ {
-            "shell_command" : "open -a /Applications/Dash.app"
-          } ],
-          "conditions" : [ {
-            "name" : "hyper-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "t"
-          },
-          "to" : [ {
             "shell_command" : "open -a /Applications/Alacritty.app"
           } ],
           "conditions" : [ {
@@ -247,6 +234,32 @@
           },
           "to" : [ {
             "shell_command" : "open -a /Applications/Whatsapp.app"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "x"
+          },
+          "to" : [ {
+            "shell_command" : "open -a ~/Applications/ChatGPT.app"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "z"
+          },
+          "to" : [ {
+            "shell_command" : "open -a ~/Applications/Gemini.app"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -456,6 +469,23 @@
           },
           "to" : [ {
             "key_code" : "s",
+            "modifiers" : [ "left_command", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^company\\.thebrowser\\.dia" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "s"
+          },
+          "to" : [ {
+            "key_code" : "s",
             "modifiers" : [ "left_command", "left_control" ]
           } ],
           "conditions" : [ {
@@ -620,6 +650,23 @@
           }, {
             "type" : "frontmost_application_if",
             "bundle_identifiers" : [ "^com\\.todoist\\.mac\\.Todoist$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "s"
+          },
+          "to" : [ {
+            "key_code" : "c",
+            "modifiers" : [ "left_command", "left_option" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "app.zen-browser.zen" ]
           } ],
           "type" : "basic"
         } ]
@@ -1052,96 +1099,6 @@
               "key_code" : "o"
             }, {
               "key_code" : "i"
-            } ],
-            "simultaneous_options" : {
-              "detect_key_down_uninterruptedly" : true,
-              "key_down_order" : "strict",
-              "key_up_order" : "strict_inverse",
-              "key_up_when" : "any",
-              "to_after_key_up" : [ {
-                "set_variable" : {
-                  "name" : "o-mode",
-                  "value" : 0
-                }
-              } ]
-            }
-          }
-        }, {
-          "from" : {
-            "key_code" : "m"
-          },
-          "to" : [ {
-            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"menu bar search\" in workflow \"com.folded-paper.menu-bar-search\" with argument \"\"'"
-          } ],
-          "conditions" : [ {
-            "name" : "o-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "type" : "basic",
-          "parameters" : {
-            "basic.simultaneous_threshold_milliseconds" : 250
-          },
-          "to" : [ {
-            "set_variable" : {
-              "name" : "o-mode",
-              "value" : 1
-            }
-          }, {
-            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"menu bar search\" in workflow \"com.folded-paper.menu-bar-search\" with argument \"\"'"
-          } ],
-          "from" : {
-            "simultaneous" : [ {
-              "key_code" : "o"
-            }, {
-              "key_code" : "m"
-            } ],
-            "simultaneous_options" : {
-              "detect_key_down_uninterruptedly" : true,
-              "key_down_order" : "strict",
-              "key_up_order" : "strict_inverse",
-              "key_up_when" : "any",
-              "to_after_key_up" : [ {
-                "set_variable" : {
-                  "name" : "o-mode",
-                  "value" : 0
-                }
-              } ]
-            }
-          }
-        }, {
-          "from" : {
-            "key_code" : "t"
-          },
-          "to" : [ {
-            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"temp email\" in workflow \"com.vitorgalvao.alfred.temporaryemail\" with argument \"\"'"
-          } ],
-          "conditions" : [ {
-            "name" : "o-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "type" : "basic",
-          "parameters" : {
-            "basic.simultaneous_threshold_milliseconds" : 250
-          },
-          "to" : [ {
-            "set_variable" : {
-              "name" : "o-mode",
-              "value" : 1
-            }
-          }, {
-            "shell_command" : "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"temp email\" in workflow \"com.vitorgalvao.alfred.temporaryemail\" with argument \"\"'"
-          } ],
-          "from" : {
-            "simultaneous" : [ {
-              "key_code" : "o"
-            }, {
-              "key_code" : "t"
             } ],
             "simultaneous_options" : {
               "detect_key_down_uninterruptedly" : true,
