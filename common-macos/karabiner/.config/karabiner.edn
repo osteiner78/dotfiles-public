@@ -59,7 +59,7 @@
 
 :templates {    
         :activate "osascript -e 'tell application \"%s\" to activate'"
-        :alfred "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"%s\" in workflow \"%s\" with argument \"%s\"'"
+        ; :alfred "osascript -e 'tell application id \"com.runningwithcrayons.Alfred\" to run trigger \"%s\" in workflow \"%s\" with argument \"%s\"'"
         :launch "open -a %s"
         ;; :openFinder "open \"/System/Library/CoreServices/Finder.app\"" ;; "openFinder" to switch to the Finder
         :notification "osascript -e 'display notification \"%s\" with title \"%s\"'"    ;; Display notification
@@ -67,7 +67,7 @@
         ; :open_folder "osascript -e 'tell application \"Finder\"\n set target of Finder window 1 to POSIX file \"%s\" \nend tell'"
         ; :show        "osascript -e 'set appName to \"%s\"\nset startIt to false\ntell application \"System Events\"\n  if not (exists process appName) then\n    set startIt to true\n  else\n    set frontmost of process appName to true\n  end if\nend tell\nif startIt then\n  tell application appName to activate\nend if'\n"
         ;; :yabai "/opt/homebrew/bin/yabai %s" ;; Should not need to specify full path, something wrong in $PATH definition
-        :yabai "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai %s"
+        ; :yabai "PATH=/run/current-system/sw/bin:/opt/homebrew/bin:/usr/local/bin:$PATH yabai %s"
                                                                                                 ;; notifcation "text" "title"
 }
 
@@ -77,6 +77,7 @@
         :code           ["^com\\.visualstudio\\.code\\.oss$"
                         "^com\\.microsoft\\.VSCode(Insiders)?$"
                         "^com\\.microsoft\\.VSCode?$"]
+        :dia            ["^company\\.thebrowser\\.dia"]
         :finder         ["^com\\.apple\\.finder$"]
         :mail           ["^com\\.apple\\.mail$"]
         :notes          ["^com\\.apple\\.Notes$"]
@@ -87,6 +88,7 @@
         :sublime        ["^com\\.sublimetext\\.4$"]
         :things         ["^com\\.culturedcode\\.ThingsMac$"]
         :todoist        ["^com\\.todoist\\.mac\\.Todoist$"]
+        :zen            ["app.zen-browser.zen"]
 }
 
 ;; layers are basically "hyper" keys
@@ -102,7 +104,7 @@
 ;; or keys like z which are used less often
 :simlayers {
               :o-mode {:key :o}
-              :yabai-mode {:key :w} 
+              ; :yabai-mode {:key :w} 
 ;;          :yabai-mode {:key :left_shift :modi {:mandatory :left_control}}    
 }
 
@@ -131,14 +133,16 @@
                 [:n [:launch "/Applications/SnippetsLab.app"]]
                 [:o [:launch "/Applications/Obsidian.app"]]
                 [:p [:launch "~/Applications/Paperless-ngx.app"]]
-                [:q [:launch "/Applications/Dash.app"]]
+                ; [:q [:launch "/Applications/Dash.app"]]
                 ;; [:s [:launch "/Applications/Dash.app"]] ;; conflicts with universal sidebar
                 ;; [:t [:launch "/Applications/iTerm.app"]]
-                [:t [:launch "/Applications/Alacritty.app"]]
+                [:q [:launch "/Applications/Alacritty.app"]]
                 [:return_or_enter [:launch "/Applications/Alacritty.app"]]
                 ; [:grave_accent_and_tilde [:launch "/Applications/Alacritty.app/"]]
                 [:v [:launch "/Applications/'Visual Studio Code'.app"]]
                 [:w [:launch "/Applications/Whatsapp.app"]]
+                [:x [:launch "~/Applications/ChatGPT.app"]]
+                [:z [:launch "~/Applications/Gemini.app"]]
                 [:##delete_or_backspace :!CTq]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
 
@@ -155,7 +159,7 @@
                 [:period :page_down]
                 [:comma :page_up]
                 [:j :page_down]
-                [:k :page_up]     
+                [:k :page_up]
                 ]}
 
         {:des "Hyper+S: Universal sidebar toggle"
@@ -163,6 +167,7 @@
                 [:s :!CSd :1password]
                 [:s :!Cs  :arc]
                 [:s :!Cb  :code]
+                [:s :!CSs :dia]
                 [:s :!CTs :finder]
                 [:s :!CTs :mail]
                 [:s :!COs :notes]
@@ -173,6 +178,7 @@
                 [:s [:!Qk :!Qb] :sublime]
                 [:s :!Cslash :things]
                 [:s :m :todoist]
+                [:s :!COc :zen]
                 ]}
 
         {:des "Hyper+space: Universal command palette"
@@ -226,9 +232,9 @@
         :rules[:o-mode
                 [:d [:open "~/Downloads/"]]
                 [:i [:open "~/Documents/0.\\ Inbox/"]]
-                [:m [:alfred "menu bar search" "com.folded-paper.menu-bar-search"]]
+                ; [:m [:alfred "menu bar search" "com.folded-paper.menu-bar-search"]]
                 ; [:p [:alfred "search processes" "de.chris-grieser.atop"]]
-                [:t [:alfred "temp email" "com.vitorgalvao.alfred.temporaryemail"]]
+                ; [:t [:alfred "temp email" "com.vitorgalvao.alfred.temporaryemail"]]
                 ]}
 
 ;;              ============== YABAI RULES =================

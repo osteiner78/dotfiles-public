@@ -89,7 +89,7 @@ alias 9='cd -9'
 
 # alias ll="ls -lah"
 # alias ls="eza -a --color=always --long --icons=always --no-user"
-alias ll="eza -lah --color=always --long --icons=always"
+alias ll="eza -lah --group --color=always --long --icons=always"
 
 alias vim="nvim"
 alias c="clear"
@@ -255,3 +255,7 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
