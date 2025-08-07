@@ -11,6 +11,15 @@
 
 Include /etc/ssh/sshd_config.d/*.conf
 
+# When systemd socket activation is used (the default), the socket
+# configuration must be re-generated after changing Port, AddressFamily, or
+# ListenAddress.
+#
+# For changes to take effect, run:
+#
+#   systemctl daemon-reload
+#   systemctl restart ssh.socket
+#
 #Port 22
 #AddressFamily any
 #ListenAddress 0.0.0.0
@@ -30,7 +39,7 @@ Include /etc/ssh/sshd_config.d/*.conf
 # Authentication:
 
 #LoginGraceTime 2m
-#PermitRootLogin prohibit-password
+PermitRootLogin yes
 #StrictModes yes
 #MaxAuthTries 6
 #MaxSessions 10
@@ -54,7 +63,7 @@ Include /etc/ssh/sshd_config.d/*.conf
 #IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-PasswordAuthentication no
+#PasswordAuthentication yes
 #PermitEmptyPasswords no
 
 # Change to yes to enable challenge-response passwords (beware issues with
