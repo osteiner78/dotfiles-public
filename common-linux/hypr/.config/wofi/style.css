@@ -1,0 +1,46 @@
+/* ~/.config/wofi/style.css */
+
+window {
+    margin: 0;
+    padding: 0;
+    border: 0px solid rgba(203, 159, 114, 0.705);
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.8);
+    color: #ffffff;
+    font-family: "SF Pro Display";
+    font-size: 17px;
+}
+
+#input {
+    margin: 8px;
+    padding: 6px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.1);
+    color: #ffffff;
+}
+
+#entry {
+    padding: 4px;
+    margin: 4px; border-radius: 5px;
+    background-color: transparent;
+    color: #ffffff;
+}
+
+#entry:selected {
+    background-color: rgba(81, 73, 209, 0.5);
+    color: #000000;
+}seudo, 
+bind = $mainMod, S, togglesplit, 
+bind = $mainMod, Z, fullscreen
+bind = $mainMod, L, exec, hyprlock
+
+#outer-box, #inner-box, #scroll {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+#img {
+    margin-right: 8px;
+}
