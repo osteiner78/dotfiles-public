@@ -95,6 +95,17 @@ require("lazy-plugins")
 vim.cmd.colorscheme("tokyonight-storm")
 -- vim.cmd.colorscheme("gruvbox-material")
 
+vim.filetype.add({
+  extension = {
+    hypr = "hyprlang",
+    conf = "hyprlang",
+  },
+  filename = {
+    ["hyprland.conf"] = "hyprlang",
+    ["hyprland.hypr"] = "hyprlang",
+    ["hypridle.conf"] = "hyprlang",
+  },
+})
 -- ===========================================================================================================
 -- [[ BASIC AUTOCOMMANDS ]]
 --  See `:help lua-guide-autocommands`

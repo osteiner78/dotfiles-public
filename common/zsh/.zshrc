@@ -96,6 +96,7 @@ alias c="clear"
 
 # To run obsidian in hidpi in wayland
 # alias obsidian="OBSIDIAN_USE_WAYLAND=1 ~/AppImages/gearlever_obsidian_7947f7.appimage --no-sandbox -enable-features=UseOzonePlatform -ozone-platform=wayland %U"
+alias code='code --enable-features=UseOzonePlatform --ozone-platform=wayland'
 
 # Tmux
 alias ta="tmux new-session -A -s ${USER} >/dev/null 2>&1"
