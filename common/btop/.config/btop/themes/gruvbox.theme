@@ -1,0 +1,39 @@
+
+# Gruvbox (dark) for btop - softer yellow
+
+theme[main_bg]="#282828"
+theme[main_fg]="#ebdbb2"
+theme[title]="#d79921"
+
+theme[hi_fg]="#d79921"
+theme[selected_bg]="#3c3836"
+theme[selected_fg]="#ebdbb2"
+theme[inactive_fg]="#a89984"
+
+theme[cpu_box]="#83a598"
+theme[mem_box]="#8ec07c"
+theme[net_box]="#d3869b"
+theme[proc_box]="#fe8019"
+theme[div_line]="#504945"
+
+theme[proc_misc]="#ebdbb2"
+
+# CPU
+theme[cpu_start]="#b8bb26"
+theme[cpu_mid]=""
+theme[cpu_end]="#d79921"
+
+# Temperatures
+theme[temp_start]="#8ec07c"
+theme[temp_mid]=""
+theme[temp_end]="#fb4934"
+
+# Memory/Disk meters
+theme[free_start]="#8ec07c";   theme[free_mid]="";   theme[free_end]="#8ec07c"
+theme[cached_start]="#83a598"; theme[cached_mid]=""; theme[cached_end]="#83a598"
+theme[available_start]="#b8bb26"; theme[available_mid]=""; theme[available_end]="#b8bb26"
+theme[used_start]="#fb4934";   theme[used_mid]="";   theme[used_end]="#fb4934"
+
+# Network graphs
+theme[download_start]="#83a598"; theme[download_mid]=""; theme[download_end]="#d3869b"
+theme[upload_start]="#d3869b";   theme[upload_mid]="";   theme[upload_end]="#83a598"

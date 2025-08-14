@@ -12,6 +12,7 @@
   /* font-family: CaskaydiaMono Nerd Font; */
   font-family: SF Pro Display; 
   font-size: 16px;
+  font-weight: 500;
 }
 
 .modules-left {
@@ -52,3 +53,17 @@
 tooltip {
   padding: 2px;
 }
+tooltip label {
+  font-size: 14px;
+  font-weight: normal;
+  padding: 0;
+}
+
+/* Volume drawer + slider */
+.vol-drawer { margin-left: 6px; }
+#custom-vol-button { padding: 0 10px; margin: 0 7.5px; }
+#pulseaudio-slider { min-width: 140px; padding: 0 8px; }
+#pulseaudio-slider > scale { min-height: 12px; }
+#pulseaudio-slider > scale trough    { background: #504945; border-radius: 4px; }
+#pulseaudio-slider > scale highlight { background: #d79921; border-radius: 4px; }  /* softer yellow */
+#pulseaudio-slider > scale slider    { background: #ebdbb2; border-radius: 50%; min-width: 12px; min-height: 12px; }
