@@ -1,9 +1,9 @@
 {
-  "reload_style_on_change": true,
+"reload_style_on_change": true,
   "layer": "top",
   "position": "top",
   "spacing": 0,
-  "height": 35,
+  "height": 30,
   "modules-left": [
     "custom/omarchy",
     "hyprland/workspaces"
@@ -16,7 +16,7 @@
     "group/tray-expander",
     "bluetooth",
     "network",
-    "pulseaudio",
+    "group/volume",
     "cpu",
     "battery"
   ],
@@ -45,7 +45,7 @@
       "6": [],
       "7": [],
       "8": [],
-      "9": [],
+      "9": []
     }
   },
   "custom/omarchy": {
@@ -63,7 +63,7 @@
   "cpu": {
     "interval": 5,
     "format": "󰍛",
-    "on-click": "alacritty -e btop"
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t Activity -e btop'",
   },
   "clock": {
     "format": "{:%A %H:%M}",
@@ -77,12 +77,13 @@
     "format-wifi" : "{icon}",
     "format-ethernet" : "󰀂",
     "format-disconnected" : "󰖪",
-    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-wifi": "󰤨 {ifname} @ {essid}\nIP: {ipaddr}\nStrength: {signalStrength}%\nFreq: {frequency}MHz\nUp: {bandwidthUpBits} Down: {bandwidthDownBits}",
     "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
     "tooltip-format-disconnected": "Disconnected",
     "interval": 3,
     "nospacing": 1,
-    "on-click": "alacritty --class=Impala -e impala"
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t WiFiPicker -e ~/.local/bin/wifi-scanner.sh'",
+    "on-click-right": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -e $HOME/.local/bin/network-launcher.sh'"
   },
   "battery": {
     "format": "{capacity}% {icon}",
@@ -111,12 +112,13 @@
     "format-disabled": "󰂲",
     "format-connected": "",
     "tooltip-format": "Devices connected: {num_connections}",
-    "on-click": "blueberry"
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t BluetoothManager -e ~/.local/bin/bluetui'",
+    "on-click-right": "blueman-manager"
   },
   "pulseaudio": {
     "format": "{icon}",
     "on-click": "alacritty --class=Wiremix -e wiremix",
-    "on-click-right": "pamixer -t",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "tooltip-format": "Playing at {volume}%",
     "scroll-step": 5,
     "format-muted": "󰝟",
@@ -124,17 +126,41 @@
       "default": ["", "", ""]
     }
   },
-  "group/tray-expander": {
+  "group/volume": {
     "orientation": "inherit",
     "drawer": {
-      "transition-duration": 600,
-      "children-class": "tray-group-item"
+      "transition-duration": 800,
+      "children-class": "vol-drawer"
     },
     "modules": [
-      "custom/expand-icon",
-    "tray"
-    ]
+      "custom/vol-button",
+      "pulseaudio/slider"
+     ]
+    },
+  
+    "custom/vol-button": {
+    "format": "",
+    "tooltip": false,
+    "on-click": "waybar-msg module group/volume toggle",
+    "on-scroll-up":   "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 2%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
   },
+    "pulseaudio/slider": {
+      "min": 0,
+      "max": 100,
+      "step": 2
+    },
+    "group/tray-expander": {
+      "orientation": "inherit",
+      "drawer": {
+        "transition-duration": 600,
+        "children-class": "tray-group-item"
+      },
+      "modules": [
+        "custom/expand-icon",
+      "tray"
+      ]
+    },
   "custom/expand-icon": {
     "format": " ",
     "tooltip": false

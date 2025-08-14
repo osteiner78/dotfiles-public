@@ -1,0 +1,43 @@
+
+# ~/.config/swaylock/config
+
+# --- General behavior ---
+ignore-empty-password
+show-failed-attempts
+
+# --- Indicator appearance ---
+indicator-radius=120
+indicator-thickness=7
+indicator-idle-visible
+
+# --- Gruvbox earthy palette (high contrast) ---
+# Inside of indicator (dark brownish background)
+inside-color=282828
+# inside-color=3C3836CC
+# Ring color (deep brown)
+ring-color=AF3A03FF
+# Line between inside and ring (hidden)
+line-color=00000000
+# Key press highlight (bright orange)
+key-hl-color=FE8019FF
+# Backspace highlight (red)
+bs-hl-color=CC241DFF
+# Text color (light beige)
+text-color=EBDBB2FF
+
+# --- Wrong password state ---
+inside-wrong-color=3C3836CC
+ring-wrong-color=CC241DFF
+text-wrong-color=EBDBB2FF
+
+# --- Verifying state ---
+inside-ver-color=3C3836CC
+ring-ver-color=FFD75FFF   # brighter yellow
+text-ver-color=EBDBB2FF
+
+# --- Separator ---
+separator-color=00000000
+
+# --- Font ---
+font=JetBrainsMono Nerd Font
+font-size=36

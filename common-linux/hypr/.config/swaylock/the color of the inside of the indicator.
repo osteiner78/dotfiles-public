@@ -1,0 +1,197 @@
+[4mswaylock[24m(1)                              General Commands Manual                             [4mswaylock[24m(1)
+
+[1mNAME[0m
+       swaylock - Screen locker for Wayland
+
+[1mSYNOPSIS[0m
+       [4mswaylock[24m [options...]
+
+       Locks your Wayland session.
+
+[1mOPTIONS[0m
+       [1m-C, --config [22m<path>
+           The  config file to use. By default, the following paths are checked: [4m$HOME/.swaylock/config[24m,
+           [4m$XDG_CONFIG_HOME/swaylock/config[24m, and [4mSYSCONFDIR/swaylock/config[24m. All flags aside  from  this
+           one  are  valid options in the configuration file using the format [4mlong-option=value[24m. For op‐
+           tions such as [4mignore-empty-password[24m, just supply the [4mlong-option[24m. All leading  dashes  should
+           be omitted and the equals sign is required for flags that take an argument.
+
+       [1m-d, --debug[0m
+           Enable debugging output.
+
+       [1m-e, --ignore-empty-password[0m
+           When an empty password is provided, do not validate it.
+
+       [1m-F, --show-failed-attempts[0m
+           Show current count of failed authentication attempts.
+
+       [1m-f, --daemonize[0m
+           Detach from the controlling terminal after locking.
+
+           Note: this is the default behavior of i3lock.
+
+       [1m-R, --ready-fd [22m<fd>
+           File descriptor to send readiness notifications to.
+
+           When  the  session has been locked, a single newline is written to the FD. At this point, the
+           compositor guarantees that no security sensitive content is visible on-screen.
+
+       [1m-h, --help[0m
+           Show help message and quit.
+
+       [1m-v, --version[0m
+           Show the version number and quit.
+
+[1mAPPEARANCE[0m
+       [1m-u, --no-unlock-indicator[0m
+           Disable the unlock indicator.
+
+       [1m-i, --image [22m[[<output>]:]<path>
+           Display the given image, optionally only on the given output. Use  -c  to  set  a  background
+           color.  If  the path potentially contains a ':', prefix it with another ':' to prevent inter‐
+           preting part of it as <output>.
+
+       [1m-k, --show-keyboard-layout[0m
+           Display the current xkb layout while typing.
+
+       [1m-K, --hide-keyboard-layout[0m
+           Force hiding the current xkb layout while typing, even if more than one layout is  configured
+           or the show-keyboard-layout option is set.
+
+       [1m-L, --disable-caps-lock-text[0m
+           Disable the Caps Lock text.
+
+       [1m-l, --indicator-caps-lock[0m
+           Show the current Caps Lock state also on the indicator.
+
+       [1m-s, --scaling[0m
+           Image scaling mode: [4mstretch[24m, [4mfill[24m, [4mfit[24m, [4mcenter[24m, [4mtile[24m, [4msolid_color[24m. Use [4msolid_color[24m to display
+           only the background color, even if a background image is specified.
+
+       [1m-t, --tiling[0m
+           Same as --scaling=tile.
+
+       [1m-c, --color [22m<rrggbb[aa]>
+           Turn  the  screen  into  the given color instead of white. If -i is used, this sets the back‐
+           ground of the image to the given color. Defaults to white (FFFFFF).
+
+       [1m--bs-hl-color [22m<rrggbb[aa]>
+           Sets the color of backspace highlight segments.
+
+       [1m--caps-lock-bs-hl-color [22m<rrggbb[aa]>
+           Sets the color of backspace highlight segments when Caps Lock is active.
+
+       [1m--caps-lock-key-hl-color [22m<rrggbb[aa]>
+           Sets the color of the key press highlight segments when Caps Lock is active.
+
+       [1m--font [22m<font>
+           Sets the font of the text.
+
+       [1m--font-size [22m<size>
+           Sets a fixed font size for the indicator text.
+
+       [1m--indicator-idle-visible[0m
+           Sets the indicator to show even if idle.
+
+       [1m--indicator-radius [22m<radius>
+           Sets the indicator radius. The default value is 50.
+
+       [1m--indicator-thickness [22m<thickness>
+           Sets the indicator thickness. The default value is 10.
+
+       [1m--indicator-x-position [22m<x>
+           Sets the horizontal position of the indicator.
+
+       [1m--indicator-y-position [22m<y>
+           Sets the vertical position of the indicator.
+
+       [1m--inside-color [22m<rrggbb[aa]>
+           Sets the color of the inside of the indicator.
+
+       [1m--inside-clear-color [22m<rrggbb[aa]>
+           Sets the color of the inside of the indicator when cleared.
+
+       [1m--inside-caps-lock-color [22m<rrggbb[aa]>
+           Sets the color of the inside of the indicator when Caps Lock is active.
+
+       [1m--inside-ver-color [22m<rrggbb[aa]>
+           Sets the color of the inside of the indicator when verifying.
+
+       [1m--inside-wrong-color [22m<rrggbb[aa]>
+           Sets the color of the inside of the indicator when invalid.
+
+       [1m--key-hl-color [22m<rrggbb[aa]>
+           Sets the color of the key press highlight segments.
+
+       [1m--layout-bg-color [22m<rrggbb[aa]>
+           Sets the background color of the box containing the layout text.
+
+       [1m--layout-border-color [22m<rrggbb[aa]>
+           Sets the color of the border of the box containing the layout text.
+
+       [1m--layout-text-color [22m<rrggbb[aa]>
+           Sets the color of the layout text.
+
+       [1m--line-color [22m<rrggbb[aa]>
+           Sets the color of the line between the inside and ring.
+
+       [1m--line-clear-color [22m<rrggbb[aa]>
+           Sets the color of the line between the inside and ring when cleared.
+
+       [1m--line-caps-lock-color [22m<rrggbb[aa]>
+           Sets the color of the line between the inside and ring when Caps Lock is active.
+
+       [1m--line-ver-color [22m<rrggbb[aa]>
+           Sets the color of the line between the inside and ring when verifying.
+
+       [1m--line-wrong-color [22m<rrggbb[aa]>
+           Sets the color of the line between the inside and ring when invalid.
+
+       [1m-n, --line-uses-inside[0m
+           Use the inside color for the line between the inside and ring.
+
+       [1m-r, --line-uses-ring[0m
+           Use the ring color for the line between the inside and ring.
+
+       [1m--ring-color [22m<rrggbb[aa]>
+           Sets the color of the ring of the indicator when typing or idle.
+
+       [1m--ring-clear-color [22m<rrggbb[aa]>
+           Sets the color of the ring of the indicator when cleared.
+
+       [1m--ring-caps-lock-color [22m<rrggbb[aa]>
+           Sets the color of the ring of the indicator when Caps Lock is active.
+
+       [1m--ring-ver-color [22m<rrggbb[aa]>
+           Sets the color of the ring of the indicator when verifying.
+
+       [1m--ring-wrong-color [22m<rrggbb[aa]>
+           Sets the color of the ring of the indicator when invalid.
+
+       [1m--separator-color [22m<rrggbb[aa]>
+           Sets the color of the lines that separate highlight segments.
+
+       [1m--text-color [22m<rrggbb[aa]>
+           Sets the color of the text.
+
+       [1m--text-clear-color [22m<rrggbb[aa]>
+           Sets the color of the text when cleared.
+
+       [1m--text-caps-lock-color [22m<rrggbb[aa]>
+           Sets the color of the text when Caps Lock is active.
+
+       [1m--text-ver-color [22m<rrggbb[aa]>
+           Sets the color of the text when verifying.
+
+       [1m--text-wrong-color [22m<rrggbb[aa]>
+           Sets the color of the text when invalid.
+
+[1mSIGNALS[0m
+       [1mSIGUSR1[0m
+           Unlock the screen and exit.
+
+[1mAUTHORS[0m
+       Maintained by Drew DeVault <sir@cmpwn.com>, who is assisted by other  open  source  contributors.
+       For more information about swaylock development, see https://github.com/swaywm/swaylock.
+
+                                               2025-03-23                                    [4mswaylock[24m(1)

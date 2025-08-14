@@ -7,9 +7,9 @@
 # : Flavor {{{
 
 [flavor]
-# use = "gruvbox-dark"
+use = "gruvbox-dark"
 # use = "catppuccin-mocha"
-use = "tokyo-night"
-dark = "tokyo-night"
+# use = "tokyo-night"
+# dark = "tokyo-night"
 
 
