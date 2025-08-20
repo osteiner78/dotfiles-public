@@ -10,8 +10,8 @@
   border-radius: 0;
   min-height: 0;
   /* font-family: CaskaydiaMono Nerd Font; */
-  font-family: SF Pro Display; 
-  font-size: 16px;
+  font-family: "SF Pro Display", "JetBrainsMono Nerd Font Propo";
+  font-size: 17px;
   font-weight: 500;
 }
 
@@ -60,10 +60,21 @@ tooltip label {
 }
 
 /* Volume drawer + slider */
-.vol-drawer { margin-left: 6px; }
-#custom-vol-button { padding: 0 10px; margin: 0 7.5px; }
+.vol-drawer { margin-left: 3px; }
+#custom-vol-button { padding: 0 10px; margin: 0 5.5px; }
 #pulseaudio-slider { min-width: 140px; padding: 0 8px; }
 #pulseaudio-slider > scale { min-height: 12px; }
 #pulseaudio-slider > scale trough    { background: #504945; border-radius: 4px; }
 #pulseaudio-slider > scale highlight { background: #d79921; border-radius: 4px; }  /* softer yellow */
 #pulseaudio-slider > scale slider    { background: #ebdbb2; border-radius: 50%; min-width: 12px; min-height: 12px; }
+
+
+#custom-weather .emoji {
+  font-family: "Noto Color Emoji", "SF Pro Display", "JetBrainsMono Nerd Font Propo", sans-serif;
+  font-size: 16px;
+}
+
+#custom-health { padding: 0 6px; }
+#custom-health.ok   { color: #a3be8c; }
+#custom-health.warn { color: #ebcb8b; }
+#custom-health.bad  { color: #bf616a; }

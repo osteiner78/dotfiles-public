@@ -1,0 +1,8 @@
+[Unit]
+Description=Battery watcher (notify on low/critical)
+; After=graphical-session.target
+; Wants=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash %h/.local/bin/battery-watch.sh

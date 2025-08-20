@@ -3,7 +3,7 @@
 - [ ] Add Panel (volume, )
 - [ ] Add better lockscreen (hyprlock)
 - [ ] Clight (light sensor)out
-- [ ] Gruvbox theme for hyprland
+- [x] Gruvbox theme for hyprland
 - [x] Install login manager font
 - [x] Setup hibernation
 - [x] setup snoopy+raspi ssh
@@ -22,10 +22,11 @@
 
 ## Debug:
 - [ ] Volume up/down
+- [ ] swayOSD + caps lock
 
 ## Theming:
 - [ ] waybar theming
 - [x] try other astronaut 
 - [ ] try to install sugar candy sddm
-- [ ] wofi layout
+- [x] wofi layout
 - [ ] Plymouth (https://github.com/adi1090x/plymouth-themes?tab=readme-ov-filehttps://github.com/adi1090x/plymouth-themes?tab=readme-ov-file)

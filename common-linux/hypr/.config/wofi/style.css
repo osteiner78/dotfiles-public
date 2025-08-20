@@ -1,46 +1,72 @@
-/* ~/.config/wofi/style.css */
 
+/* ~/.config/wofi/style.css — Gruvbox Dark (calm aqua) */
+
+/* Palette */
+@define-color gb-bg        #282828;
+@define-color gb-bg-alt    #3c3836;
+@define-color gb-border    #504945;
+@define-color gb-fg        #d4be98;   /* matches your Waybar text */
+@define-color gb-accent    #d79921;   /* aqua */
+@define-color gb-accent-2  #b57614;   /* deeper aqua */
+
+/* Window */
 window {
-    margin: 0;
-    padding: 0;
-    border: 0px solid rgba(203, 159, 114, 0.705);
-    border-radius: 10px;
-    background-color: rgba(0,0,0,0.8);
-    color: #ffffff;
-    font-family: "SF Pro Display";
-    font-size: 17px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid @gb-border;
+  border-radius: 4px;
+  background-color: alpha(@gb-bg, 0.94);
+  color: @gb-fg;
+  font-family: "SF Pro Display";
+  font-size: 16px;              /* slightly smaller = cleaner */
 }
 
+/* Input (shown in non-dmenu; harmless if hidden) */
 #input {
-    margin: 8px;
-    padding: 6px;
-    border: none;
-    border-radius: 5px;
-    background-color: rgba(0,0,0,0.1);
-    color: #ffffff;
+  margin: 10px;
+  padding: 8px 10px;
+  border: 1px solid @gb-border;
+  border-radius: 8px;
+  background-color: @gb-bg-alt;
+  color: @gb-fg;
+  outline: none;                 /* remove GTK focus outline */
+  border: none;                   /* remove any border */
+  box-shadow: none;               /* remove any box shadow */
 }
 
+/* List entries */
 #entry {
-    padding: 4px;
-    margin: 4px; border-radius: 5px;
-    background-color: transparent;
-    color: #ffffff;
+  padding: 8px 12px;
+  margin: 4px 8px;
+  border-radius: 8px;
+  background-color: transparent;
+  color: @gb-fg;
 }
 
+/* Hover (subtle) */
+#entry:hover {
+  background-color: alpha(@gb-bg-alt, 0.75);
+}
+
+/* Selected entry: calm aqua highlight, not blinding */
 #entry:selected {
-    background-color: rgba(81, 73, 209, 0.5);
-    color: #000000;
-}seudo, 
-bind = $mainMod, S, togglesplit, 
-bind = $mainMod, Z, fullscreen
-bind = $mainMod, L, exec, hyprlock
-
-#outer-box, #inner-box, #scroll {
-    margin: 0;
-    padding: 0;
-    background-color: transparent;
+  background-color: alpha(@gb-bg-alt, 0.9);
+  color: @gb-fg;
+  border: 1px solid @gb-accent;
+  box-shadow: inset 0 0 0 1px @gb-accent-2;
 }
 
-#img {
-    margin-right: 8px;
+/* Layout boxes */
+#outer-box, #inner-box, #scroll {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+/* App icon spacing */
+#img { margin-right: 10px; }
+
+*:focus {
+  outline: none;
+  box-shadow: none;
 }

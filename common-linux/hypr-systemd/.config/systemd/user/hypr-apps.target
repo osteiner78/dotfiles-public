@@ -1,0 +1,7 @@
+[Unit]
+Description=User services for Hyprland session
+Requires=graphical-session.target
+After=graphical-session.target
+
+[Install]
+; WantedBy=default.target

@@ -85,6 +85,11 @@ What is Kickstart?
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 
+vim.cmd([[
+  filetype plugin indent on
+  syntax enable
+]])
+
 require("options")
 require("keymaps")
 require("autocommands")
@@ -92,20 +97,21 @@ require("lazy-bootstrap")
 require("lazy-plugins")
 
 -- Set colorscheme
-vim.cmd.colorscheme("tokyonight-storm")
--- vim.cmd.colorscheme("gruvbox-material")
+-- vim.cmd.colorscheme("tokyonight-storm")
+vim.cmd.colorscheme("gruvbox-material")
 
 vim.filetype.add({
-  extension = {
-    hypr = "hyprlang",
-    conf = "hyprlang",
-  },
-  filename = {
-    ["hyprland.conf"] = "hyprlang",
-    ["hyprland.hypr"] = "hyprlang",
-    ["hypridle.conf"] = "hyprlang",
-  },
+	extension = {
+		hypr = "hyprlang",
+		conf = "hyprlang",
+	},
+	filename = {
+		["hyprland.conf"] = "hyprlang",
+		["hyprland.hypr"] = "hyprlang",
+		["hypridle.conf"] = "hyprlang",
+	},
 })
+
 -- ===========================================================================================================
 -- [[ BASIC AUTOCOMMANDS ]]
 --  See `:help lua-guide-autocommands`
