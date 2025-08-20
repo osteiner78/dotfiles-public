@@ -1,4 +1,4 @@
--- [[ Basic Keymaps ]]
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -8,6 +8,17 @@ vim.keymap.set("n", ";", ":", { desc = "Use semicolon for commands" })
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
+
+-- Always delete to the black hole (trash) unless explicitly told otherwise
+vim.keymap.set({"n", "v"}, "d", '"_d')
+vim.keymap.set({"n", "v"}, "c", '"_c')
+vim.keymap.set("n", "x", '"_x')
+
+-- Special shortcuts if you DO want to delete and yank
+vim.keymap.set({"n", "v"}, "<leader>d", "d")  -- delete into clipboard/register
+vim.keymap.set({"n", "v"}, "<leader>c", "c")  -- change into clipboard/register
+
+
 
 -- [[ Window Navigation ]]
 -- Use CTRL+<hjkl> to switch between windows
@@ -42,20 +53,18 @@ vim.keymap.set("n", "\\", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file [E]xp
 vim.keymap.set("n", "<leader>o", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "[O]pen file in explorer" })
 
 -- [[ UI & Utilities ]] -- Mnemonic: [u]tils or [u]i
--- --- NOTE: Moved line number toggles here to resolve LSP conflict with <leader>rn
 vim.keymap.set("n", "<leader>un", "<cmd>set nu!<CR>", { desc = "Toggle [U]I line [N]umbers" })
 vim.keymap.set("n", "<leader>ur", "<cmd>set rnu!<CR>", { desc = "Toggle [U]I [R]elative Numbers" })
--- --- NOTE: Removed <leader>ch. Your telescope config already has <leader>fk to find keymaps, which is better.
 
 -- [[ Commenting ]]
 vim.keymap.set("n", "<leader>/", "gcc", { desc = "Toggle comment", remap = true })
 vim.keymap.set("v", "<leader>/", "gc", { desc = "Toggle comment", remap = true })
 
 -- [[ Diagnostics ]]
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
-vim.keymap.set("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show [D]iagnostic [E]rror messages" })
-vim.keymap.set("n", "<leader>dq", vim.diagnostic.setloclist, { desc = "Open [D]iagnostic [Q]uickfix list" })
+-- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
+-- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
+-- vim.keymap.set("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show [D]iagnostic [E]rror messages" })
+-- vim.keymap.set("n", "<leader>dq", vim.diagnostic.setloclist, { desc = "Open [D]iagnostic [Q]uickfix list" })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which

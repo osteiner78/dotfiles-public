@@ -1,0 +1,12 @@
+[Unit]
+Description=Periodic check of macSMC battery status
+PartOf=hyprland-session.target
+
+[Timer]
+OnBootSec=5
+OnUnitActiveSec=7
+AccuracySec=1
+Unit=hypr-power-apply.service
+
+[Install]
+WantedBy=hyprland-session.target

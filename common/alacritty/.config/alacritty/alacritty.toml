@@ -11,6 +11,7 @@ opacity=0.85
 blur=true
 
 [font]
+# normal.family = "JetBrainsMono Nerd Font Mono" # -- > glyphs are rendered small
 normal.family = "JetBrainsMono NF"
 # normal.family = "MesloLGS NF"
 # normal.family = "Inconsolata"

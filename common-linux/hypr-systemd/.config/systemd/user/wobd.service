@@ -1,0 +1,17 @@
+[Unit]
+Description=Wob daemon (FIFO -> wob)
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/osteiner/.local/bin/wobd.sh
+Restart=always
+RestartSec=0.5
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+# Optional: log to journal with script's xtrace
+# ExecStart=/bin/bash -lc 'set -xe; /home/osteiner/.local/bin/wobd.sh'
+
+[Install]
+WantedBy=graphical-session.target
+
