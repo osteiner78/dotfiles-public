@@ -74,6 +74,7 @@
 :applications{
         :1password      ["^com\\.1password\\.1password$"]
         :arc            ["^company\\.thebrowser\\.Browser$"]
+        :chatgpt        ["com.apple.Safari.WebApp.FAB13EE8-7E2B-40F3-A531-4768092813F4"]
         :code           ["^com\\.visualstudio\\.code\\.oss$"
                         "^com\\.microsoft\\.VSCode(Insiders)?$"
                         "^com\\.microsoft\\.VSCode?$"]
@@ -166,6 +167,7 @@
         :rules [:hyper-mode
                 [:s :!CSd :1password]
                 [:s :!Cs  :arc]
+                [:s :!CSs  :chatgpt]
                 [:s :!Cb  :code]
                 [:s :!CSs :dia]
                 [:s :!CTs :finder]

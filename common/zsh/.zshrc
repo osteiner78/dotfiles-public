@@ -23,9 +23,9 @@ fi
 
 # ============================== ZSHRC DEFAULTS =================================
 # (Legacy promptinit kept to preserve your original behavior)
-autoload -Uz promptinit
-promptinit
-prompt adam1
+# autoload -Uz promptinit
+# promptinit
+# prompt adam1
 
 # History & completion behavior
 setopt histignorealldups sharehistory
@@ -35,23 +35,18 @@ setopt completealiases
 bindkey -e
 
 # History file and size
-HISTSIZE=5000
-SAVEHIST=5000
+HISTSIZE=20000
+SAVEHIST=20000
 HISTFILE=~/.zsh_history
-
-# ----- Completion system (first pass; keep order) -----
-autoload -Uz compinit
-compinit
 
 # Completion styles (kept as-is; grouped)
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' group-name ''
-zstyle ':completion:*' menu select=2
 command -v dircolors >/dev/null 2>&1 && eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' list-colors ''
+# zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
 zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
 zstyle ':completion:*' menu select=long
@@ -100,7 +95,7 @@ alias td="tmux detach"
 
 # Git QoL
 alias gs="git status"
-gcm() { git commit -m "$*"; }
+alias gcm='git commit -m'
 alias gd="git diff"
 
 # Wireguard
@@ -117,17 +112,6 @@ function y() {
   rm -f -- "$tmp"
 }
 
-# ==================== NNN =================================================
-# (kept commented; unchanged)
-# alias n="nnn -dHieo -Pp"
-# alias n="nnn -dDHioU -Pp"
-# export NNN_BMS="c:$HOME/.config/;n:/media/nvme/;D:$HOME/Downloads/"
-# export NNN_COLORS='2314'
-# export NNN_PLUG="p:preview-tui;c:fzcd;a:autojump"
-# export NNN_USE_EDITOR=1
-# export NNN_RESTRICT_NAV_OPEN=1
-# export NNN_FIFO=/tmp/nnn.fifo
-
 # ==================== FZF =================================================
 # (Order preserved exactly)
 export FZF_DEFAULT_COMMAND='fd --hidden --follow --strip-cwd-prefix --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache'
@@ -143,10 +127,13 @@ _gen_fzf_default_opts() {
   local color04='#bdae93' color05='#d5c4a1' color06='#ebdbb2' color07='#fbf1c7'
   local color08='#fb4934' color09='#fe8019' color0A='#fabd2f' color0B='#b8bb26'
   local color0C='#8ec07c' color0D='#83a598' color0E='#d3869b' color0F='#d65d0e'
-  export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"\
-  " --color=bg+:$color01,bg:$color00,spinner:$color0C,hl:$color0D"\
-  " --color=fg:$color04,header:$color0D,info:$color0A,pointer:$color0C"\
-  " --color=marker:$color0C,fg+:$color06,prompt:$color0A,hl+:$color0D"
+
+  local opts="$FZF_DEFAULT_OPTS \
+--color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D} \
+--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C} \
+--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
+
+  export FZF_DEFAULT_OPTS="$opts"
 }
 _gen_fzf_default_opts
 
@@ -155,40 +142,47 @@ export FZF_CTRL_T_OPTS="--preview='$show_file_or_dir_preview'"
 export FZF_ALT_C_OPTS="--preview='eza --tree --color=always {} | head -200'"
 
 # ============== FZF-TAB =================
-# (Order preserved exactly)
-fpath=(~/.zsh/plugins/fzf-tab $fpath)
 
-if [[ -n $TMUX ]] && (( $+commands[fzf-tmux] )); then
-  zstyle ':fzf-tab:*' fzf-command 'fzf-tmux -p 80%,70%'
-else
-  zstyle ':fzf-tab:*' fzf-command fzf
-fi
-
-zstyle ':fzf-tab:*' fzf-preview 'if [[ -d $realpath ]]; then eza --tree --color=always $realpath | head -200; else bat --style=numbers --color=always $realpath; fi'
-zstyle ':completion:*:git-checkout:*' sort false
-zstyle ':completion:*:descriptions' format '[%d]'
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-zstyle ':fzf-tab:*' switch-group '<' '>'
-zstyle ':fzf-tab:complete:z:*' fzf-preview 'eza -1 --color=always $realpath'
-
-# (Second compinit kept because your working setup had it here too)
-autoload -U compinit
+# ----- Standard zsh completion system -----
+autoload -Uz compinit
 compinit
 
-# Load fzf-tab plugin (manual install)
-[[ -r ~/.zsh/plugins/fzf-tab/fzf-tab.zsh ]] && source ~/.zsh/plugins/fzf-tab/fzf-tab.zsh
+fzf_tab_plugin="$HOME/.zsh/fzf-tab/fzf-tab.zsh"
+
+# If fzf-tab is present -> configure everything
+if [[ -r "$fzf_tab_plugin" ]]; then
+    fpath=(~/.zsh/fzf-tab $fpath)
+
+    if [[ -n $TMUX ]] && (( $+commands[fzf-tmux] )); then
+      zstyle ':fzf-tab:*' fzf-command 'fzf-tmux -p 80%,70%'
+    else
+      zstyle ':fzf-tab:*' fzf-command fzf
+    fi
+
+    zstyle ':fzf-tab:*' fzf-preview 'if [[ -d $realpath ]]; then eza --tree --color=always $realpath | head -200; else bat --style=numbers --color=always $realpath; fi'
+    zstyle ':completion:*:git-checkout:*' sort false
+    zstyle ':completion:*:descriptions' format '[%d]'
+    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+    zstyle ':completion:*' menu no
+    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+    zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+    zstyle ':fzf-tab:*' use-fzf-default-opts yes
+    zstyle ':fzf-tab:*' switch-group '<' '>'
+    zstyle ':fzf-tab:complete:z:*' fzf-preview 'eza -1 --color=always $realpath'
+
+    # Load fzf-tab plugin
+    source "$fzf_tab_plugin"
+
+    # Make sure fzf-tab owns TAB (after everything else)
+    if (( ${+functions[fzf-tab-complete]} )); then
+        bindkey -M emacs '^I' fzf-tab-complete
+        bindkey -M viins '^I' fzf-tab-complete
+    fi
+fi
 
 # Load fzf keybindings (Ctrl-R / Ctrl-T / Alt-C etc.)
 # Keep this after fzf-tab — your working order.
 source <(fzf --zsh)
-
-# Make sure fzf-tab owns TAB (after everything else)
-bindkey -M emacs '^I' fzf-tab-complete
-bindkey -M viins '^I' fzf-tab-complete
 
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
@@ -218,8 +212,8 @@ fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
 # (Kept as-is; order preserved)
-# path+=${HOME}/.local/bin
-# path+=('/root/.local/bin/')
+path+=${HOME}/.local/bin
+path+=('/root/.local/bin/')
 path+=('/opt/nvim')
 
 # >>> conda initialize >>>
@@ -240,3 +234,5 @@ fi
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"
 [[ -s "$NVM_DIR/bash_completion" ]] && . "$NVM_DIR/bash_completion"
+
+(( ! ${+functions[p10k]} )) || p10k finalize

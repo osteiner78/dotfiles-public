@@ -451,6 +451,23 @@
             "key_code" : "s"
           },
           "to" : [ {
+            "key_code" : "s",
+            "modifiers" : [ "left_command", "left_shift" ]
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          }, {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "com.apple.Safari.WebApp.FAB13EE8-7E2B-40F3-A531-4768092813F4" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "from" : {
+            "key_code" : "s"
+          },
+          "to" : [ {
             "key_code" : "b",
             "modifiers" : [ "left_command" ]
           } ],
