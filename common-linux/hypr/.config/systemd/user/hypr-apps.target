@@ -4,4 +4,5 @@ Requires=graphical-session.target
 After=graphical-session.target
 
 [Install]
+WantedBy=hyprland-session.target
 ; WantedBy=default.target
