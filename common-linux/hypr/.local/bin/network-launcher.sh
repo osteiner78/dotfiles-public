@@ -16,7 +16,7 @@ add_item() {
 # Define items IN THE ORDER YOU WANT
 add_item "wifi-scanner (simple wifi selection script)" "$HOME/.local/bin/wifi-scanner.sh"
 add_item "netscanner (Terminal Network scanner & diagnostic tool)" "sudo $HOME/.local/bin/netscanner"
-add_item "trippy (A network diagnostic tool)" "sudo $HOME/.cargo/bin/trip www.osteiner.xyz"
+add_item "trippy (A network diagnostic tool)" "sudo $HOME/.local/bin/trip www.osteiner.xyz"
 
 # One-shot selection — 'q' or ESC aborts
 sel=$(printf '%s\n' "${ORDER[@]}" | \

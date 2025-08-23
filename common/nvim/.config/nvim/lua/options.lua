@@ -47,9 +47,6 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.breakindent = true
 vim.opt.autoindent = true -- copy indent from current line when starting new one
 
--- Save undo history
-vim.opt.undofile = true
-
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -72,3 +69,14 @@ vim.opt.list = true
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
+
+-- No swapfiles (no more E325)
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.writebackup = false
+
+-- Persistent undo instead (crash-safe)
+vim.opt.undofile = true
+local undodir = vim.fn.stdpath("data") .. "/undo"
+vim.fn.mkdir(undodir, "p")
+vim.opt.undodir = undodir

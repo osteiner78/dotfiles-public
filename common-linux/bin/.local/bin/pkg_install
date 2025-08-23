@@ -14,5 +14,4 @@ pkg_name=$(dnf repoquery --available --qf "%{name}\n" | fzf "${fzf_args[@]}")
 if [[ -n "$pkg_name" ]]; then
   sudo dnf install "$pkg_name"
   sudo updatedb
-  omarchy-show-done
 fi

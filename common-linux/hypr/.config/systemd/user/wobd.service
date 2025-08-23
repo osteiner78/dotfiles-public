@@ -1,0 +1,19 @@
+# ~/.config/systemd/user/wobd.service
+[Unit]
+Description=Wob daemon (FIFO -> wob)
+After=graphical-session.target
+PartOf=hypr-apps.target
+
+[Service]
+Type=simple
+Environment=XDG_RUNTIME_DIR=%t
+Environment=PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+ExecStart=/home/osteiner/.local/bin/wobd.sh
+ExecStopPost=/usr/bin/rm -f %t/wobpipe
+Restart=on-failure
+RestartSec=0.1
+TimeoutStopSec=2s
+KillMode=control-group
+
+[Install]
+WantedBy=hypr-apps.target

@@ -1,0 +1,168 @@
+console_title_template = '{{ .Folder }}'
+version = 3
+final_space = true
+
+[upgrade]
+  source = 'cdn'
+  interval = '168h'
+  auto = false
+  notice = false
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+  newline = true
+
+  [[blocks.segments]]
+    template = '{{ if .WSL }}WSL at{{ end }} {{.Icon}} '
+    foreground = '#000000' # pure white
+    # background = '#3A3A3A'
+    # background = '#fbf1c7' # gruvbox bg0
+    background = '#ebdbb2' # gruvbox bg1
+    # background = '#d9d9d9' # copied from p10k
+    type = 'os'
+    style = 'powerline'
+
+  [[blocks.segments]]
+    template = ' {{ .Path }} '
+    foreground = '#282828' # gruvbox fg0
+    powerline_symbol = ''
+    background = '#458588' # gruvbox blue
+    # background = '#d79921' # gruvbox yellow
+    # background = '#72a4b9' # copied from p10k
+    type = 'path'
+    style = 'powerline'
+
+    [blocks.segments.properties]
+      style = 'full'
+
+  [[blocks.segments]]
+    leading_diamond = ''
+    trailing_diamond = ''
+    template = ' {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
+    foreground = '#282828'
+    powerline_symbol = ''
+    background = '#98971A'
+    type = 'git'
+    style = 'powerline'
+    background_templates = ['{{ if or (.Working.Changed) (.Staging.Changed) }}#edc486{{ end }}', '{{ if and (gt .Ahead 0) (gt .Behind 0) }}#ff4500{{ end }}', '{{ if gt .Ahead 0 }}#B388FF{{ end }}', '{{ if gt .Behind 0 }}#B388FF{{ end }}']
+
+    [blocks.segments.properties]
+      branch_icon = ' '
+      branch_identical_icon = '●'
+      branch_template = '{{ trunc 25 .Branch }}'
+      fetch_status = true
+
+  [[blocks.segments]]
+    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
+    foreground = '#111111'
+    powerline_symbol = ''
+    background = '#8ED1F7'
+    type = 'go'
+    style = 'powerline'
+
+    [blocks.segments.properties]
+      fetch_version = true
+
+  [[blocks.segments]]
+    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
+    foreground = '#111111'
+    powerline_symbol = ''
+    background = '#4063D8'
+    type = 'julia'
+    style = 'powerline'
+
+    [blocks.segments.properties]
+      fetch_version = true
+
+  [[blocks.segments]]
+    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
+    foreground = '#111111'
+    powerline_symbol = ''
+    background = '#FFDE57'
+    type = 'python'
+    style = 'powerline'
+
+    [blocks.segments.properties]
+      display_mode = 'files'
+      fetch_virtual_env = false
+
+  [[blocks.segments]]
+    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
+    foreground = '#ffffff'
+    powerline_symbol = ''
+    background = '#AE1401'
+    type = 'ruby'
+    style = 'powerline'
+
+    [blocks.segments.properties]
+      display_mode = 'files'
+      fetch_version = true
+
+  [[blocks.segments]]
+    template = ' {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
+    foreground = '#ffffff'
+    powerline_symbol = ''
+    background = '#FEAC19'
+    type = 'azfunc'
+    style = 'powerline'
+
+    [blocks.segments.properties]
+      display_mode = 'files'
+      fetch_version = false
+
+  [[blocks.segments]]
+    template = '  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }} '
+    foreground = '#ffffff'
+    powerline_symbol = ''
+    type = 'aws'
+    style = 'powerline'
+    background_templates = ['{{if contains "default" .Profile}}#FFA400{{end}}', '{{if contains "jan" .Profile}}#f1184c{{end}}']
+
+    [blocks.segments.properties]
+      display_default = false
+
+  [[blocks.segments]]
+    template = '  '
+    foreground = '#111111'
+    powerline_symbol = ''
+    background = '#ffff66'
+    type = 'root'
+    style = 'powerline'
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'right'
+  # filler = '.'
+
+  [[blocks.segments]]
+    type = "time"
+    style = "diamond"
+    foreground = "#282828" # gruvbox fg0
+    background = "#665c54" # gruvbox fg3
+    # background = "#928374" # gruvbox gray
+    leading_diamond = ""
+    # style = "plain"
+    # foreground = "#d79921"
+    # foreground = "#655c54"
+
+  [[blocks.segments]]
+    type = "session"
+    style = "diamond"
+    foreground = "#282828" # gruvbox fg0
+    background = "#504945" # gruvbox fg2
+    leading_diamond = ""
+
+
+[[blocks]]
+  type = 'prompt'
+  alignment = 'left'
+  newline = true
+
+  [[blocks.segments]]
+    type = "status"
+    style = "plain"
+    foreground = "#d5c4a1" # gruvbox bg2
+    template = " "
+    [blocks.segments.properties]
+      always_enabled = true

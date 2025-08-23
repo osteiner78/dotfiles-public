@@ -1,8 +1,8 @@
 # ============================== POWERLEVEL 10K =================================
 # Keep instant prompt near the top to avoid flicker.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
 
 # ==================== AUTOSTART TMUX WHEN SSH =========================
 # Auto-attach/create tmux for interactive SSH sessions.
@@ -12,14 +12,14 @@ fi
 
 # ==================== POWERLEVEL 10K ==========================
 # Load p10k theme per-OS (guarded).
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  [[ -r /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme ]] \
-    && source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-elif [[ "$(uname -s)" == "Linux" ]]; then
-  [[ -r ~/powerlevel10k/powerlevel10k.zsh-theme ]] \
-    && source ~/powerlevel10k/powerlevel10k.zsh-theme
-fi
-[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+#if [[ "$(uname -s)" == "Darwin" ]]; then
+#  [[ -r /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme ]] \
+#    && source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+#elif [[ "$(uname -s)" == "Linux" ]]; then
+#  [[ -r ~/powerlevel10k/powerlevel10k.zsh-theme ]] \
+#    && source ~/powerlevel10k/powerlevel10k.zsh-theme
+#fi
+#[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # ============================== ZSHRC DEFAULTS =================================
 # (Legacy promptinit kept to preserve your original behavior)
@@ -101,6 +101,11 @@ alias gd="git diff"
 # Wireguard
 alias wd="sudo systemctl stop wg-quick@wg0"
 alias wu="sudo systemctl start wg-quick@wg0"
+
+# ==================== ENVIRONMENT =================================================
+# Tell systemctl not to use a pager
+export SYSTEMD_PAGER=cat
+export SYSTEMD_LESS=
 
 # ==================== YAZI =================================================
 function y() {
@@ -204,10 +209,10 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   [[ -r "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] \
     && source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 elif [[ "$(uname -s)" == "Linux" ]]; then
-  [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
-    && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
   [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
     && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+    && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
@@ -235,4 +240,5 @@ export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"
 [[ -s "$NVM_DIR/bash_completion" ]] && . "$NVM_DIR/bash_completion"
 
-(( ! ${+functions[p10k]} )) || p10k finalize
+# (( ! ${+functions[p10k]} )) || p10k finalize
+eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
