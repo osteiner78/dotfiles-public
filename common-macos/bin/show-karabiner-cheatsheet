@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Minimal popup (WKWebView) — centered, floating, close with Esc or q
+HTML="${1:-$HOME/.config/karabiner/keybinds-cheatsheet.html}"
+
+CHEATSHEET_PATH="$HTML" osascript -l JavaScript <<'JXA'
+ObjC.import('Cocoa'); ObjC.import('WebKit');
+
+function run() {
+  const env = $.NSProcessInfo.processInfo.environment;
+  const raw = env.objectForKey('CHEATSHEET_PATH');
+  const path = $(raw ? ObjC.unwrap(raw) : '~/.config/karabiner/keybinds-cheatsheet.html').stringByExpandingTildeInPath;
+
+  const app = $.NSApplication.sharedApplication;
+  app.setActivationPolicy($.NSApplicationActivationPolicyRegular);
+
+  const W=750, H=920, sf=$.NSScreen.mainScreen.frame;
+  const r=$.NSMakeRect((sf.size.width-W)/2, (sf.size.height-H)/2, W, H);
+
+  const style=$.NSWindowStyleMaskTitled|$.NSWindowStyleMaskClosable|$.NSWindowStyleMaskResizable;
+  const win=$.NSWindow.alloc.initWithContentRectStyleMaskBackingDefer(r, style, $.NSBackingStoreBuffered, false);
+  win.title=$('Karabiner Cheatsheet');
+  win.setLevel($.NSFloatingWindowLevel);
+
+  const web=$.WKWebView.alloc.initWithFrameConfiguration(r, $.WKWebViewConfiguration.alloc.init);
+  web.setAutoresizingMask($.NSViewWidthSizable|$.NSViewHeightSizable);
+
+  if ($.NSFileManager.defaultManager.fileExistsAtPath(path)) {
+    const url=$.NSURL.fileURLWithPath(path), dir=url.URLByDeletingLastPathComponent;
+    web.loadFileURLAllowingReadAccessToURL(url, dir);
+  } else {
+    const html = '<!doctype html><meta charset="utf-8"><title>Not found</title><body style="font:14px -apple-system;">Missing: '+ObjC.wrap(path)+'</body>';
+    web.loadHTMLString_baseURL($(html), null);
+  }
+
+  win.contentView=web;
+  win.makeKeyAndOrderFront(app);
+  app.activateIgnoringOtherApps(true);
+
+  // Quit when window closes
+  const delegate=$.NSObject.alloc.init;
+  delegate.applicationShouldTerminateAfterLastWindowClosed=()=>true;
+  app.delegate=delegate;
+
+  // Install key monitor: Esc (keyCode 53) or 'q' (keyCode 12)
+  $.NSEvent.addLocalMonitorForEventsMatchingMaskHandler(
+    $.NSEventMaskKeyDown,
+    (e) => {
+      const code = e.keyCode;
+      if (code === 53 || code === 12) { // Esc or 'q'
+        app.terminate(null);
+        return null;
+      }
+      return e;
+    }
+  );
+
+  app.run();
+}
+JXA
