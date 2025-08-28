@@ -1,0 +1,108 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Karabiner Cheatsheet</title>
+<style>
+  :root { --fg:#111; --muted:#666; --bg:#fff; --card:#f7f7f7; --accent:#222; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#eaeaea; --muted:#a0a0a0; --bg:#0e0e0f; --card:#161618; --accent:#eaeaea; }
+  }
+  html,body { margin:0; padding:0; background:var(--bg); color:var(--fg); font:13px/1.35 -apple-system,BlinkMacSystemFont,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif; }
+  .wrap{ max-width:700px; margin:18px auto 28px; padding:0 14px; }
+  header{ display:flex; align-items:baseline; gap:14px; margin-bottom:10px; }
+  h1{ font-size:18px; margin:0; }
+  .legend{ color:var(--muted); font-size:12px; }
+  .section{ break-inside: avoid; margin:10px 0 14px; padding:10px 12px; background:var(--card); border-radius:10px; }
+  .section > h2{ font-size:13px; margin:0 0 8px; color:var(--accent); }
+  /* Two page columns for density */
+  .columns{ column-count:2; column-gap:18px; }
+  /* Rows: key → action on a single line */
+  .row{ display:flex; gap:4px; padding:2px 0; align-items:baseline; }
+  .key{ white-space:nowrap; min-width:90px; font-weight:600; text-transform:lowercase; }
+  .muted{ color:var(--muted) }
+  code.k{ padding:1px 6px; border-radius:6px; background:rgba(127,127,127,.15); }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Karabiner Keybinds</h1>
+    <div class="legend muted">Legend: ⌘ Cmd, ⌥ Opt, ⌃ Ctrl, ⇧ Shift, ⇪ Caps</div>
+  </header>
+
+  <div class="columns">
+    <div class="section">
+      <h2>Hyper (⇪) — App Launchers</h2>
+      <div class="row"><div class="key"><code class="k">return</code></div><div>alacritty: new window</div></div>
+      <div class="row"><div class="key"><code class="k">1</code></div><div>1password</div></div>
+      <div class="row"><div class="key"><code class="k">a</code></div><div>arc</div></div>
+      <div class="row"><div class="key"><code class="k">c</code></div><div>calendar</div></div>
+      <div class="row"><div class="key"><code class="k">d</code></div><div>dark mode toggle</div></div>
+      <div class="row"><div class="key"><code class="k">e</code></div><div>emoji</div></div>
+      <div class="row"><div class="key"><code class="k">f</code></div><div>finder</div></div>
+      <div class="row"><div class="key"><code class="k">g</code></div><div>gmail</div></div>
+      <div class="row"><div class="key"><code class="k">m</code></div><div>google maps</div></div>
+      <div class="row"><div class="key"><code class="k">n</code></div><div>snippetslab</div></div>
+      <div class="row"><div class="key"><code class="k">o</code></div><div>obsidian</div></div>
+      <div class="row"><div class="key"><code class="k">p</code></div><div>paperless-ngx</div></div>
+      <div class="row"><div class="key"><code class="k">q</code></div><div>alacritty</div></div>
+      <div class="row"><div class="key"><code class="k">t</code></div><div>things3</div></div>
+      <div class="row"><div class="key"><code class="k">v</code></div><div>vscode</div></div>
+      <div class="row"><div class="key"><code class="k">w</code></div><div>whatsapp</div></div>
+      <div class="row"><div class="key"><code class="k">x</code></div><div>gemini</div></div>
+      <div class="row"><div class="key"><code class="k">z</code></div><div>chatgpt</div></div>
+      <div class="row"><div class="key"><code class="k">=</code></div><div>soulver 3</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Hyper — Utilities</h2>
+      <div class="row"><div class="key"><code class="k">4</code></div><div>screenshot area (⇧⌘4)</div></div>
+      <div class="row"><div class="key"><code class="k">5</code></div><div>screenshot window (⇧⌘5)</div></div>
+      <div class="row"><div class="key"><code class="k">s</code></div><div>universal sidebar toggle (contextual: 1password, arc, finder, notes, obsidian, safari, mail, snippetslab, sublime, things, todoist, zen)</div></div>
+      <div class="row"><div class="key"><code class="k">space</code></div><div>command palette (arc, obsidian, vscode, sublime, things, todoist)</div></div>
+      <div class="row"><div class="key"><code class="k">`</code></div><div>arc: ⌘⌃⌥p</div></div>
+      <div class="row"><div class="key"><code class="k">l</code></div><div>arc: little arc</div></div>
+      <div class="row"><div class="key"><code class="k">u</code></div><div>arc: ⌘⌥⇧c (copy url)</div></div>
+      <div class="row"><div class="key"><code class="k">z</code></div><div>arc: arc library</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Tap-to-Toggle</h2>
+      <div class="row"><div class="key"><code class="k">left ⌘ (alone)</code></div><div>⇧⌥⌘tab → last app</div></div>
+      <div class="row"><div class="key"><code class="k">left ⌃ (alone)</code></div><div>⌃tab → last tab (arc / vscode)</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Nav Mode (Spacebar)</h2>
+      <div class="row"><div class="key"><code class="k">h j k l</code></div><div>← ↓ ↑ →</div></div>
+      <div class="row"><div class="key"><code class="k">⇧/⌃k</code></div><div>page up</div></div>
+      <div class="row"><div class="key"><code class="k">⇧/⌃j</code></div><div>page down</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Yabai Mode (⌥L / ⌥R)</h2>
+      <div class="row"><div class="key"><code class="k">return</code></div><div>alacritty new window</div></div>
+      <div class="row"><div class="key"><code class="k">h j k l</code></div><div>focus ← ↓ ↑ →</div></div>
+      <div class="row"><div class="key"><code class="k">[ / ]</code></div><div>focus prev / next window</div></div>
+      <div class="row"><div class="key"><code class="k">⇧h j k l</code></div><div>swap ← ↓ ↑ →</div></div>
+      <div class="row"><div class="key"><code class="k">r</code></div><div>rotate layout</div></div>
+      <div class="row"><div class="key"><code class="k">x / y</code></div><div>mirror x / y</div></div>
+      <div class="row"><div class="key"><code class="k">f</code></div><div>toggle fullscreen</div></div>
+      <div class="row"><div class="key"><code class="k">v</code></div><div>toggle float</div></div>
+      <div class="row"><div class="key"><code class="k">p</code></div><div>toggle padding & gaps</div></div>
+      <div class="row"><div class="key"><code class="k">b / ⇧b</code></div><div>borders (normal / glow)</div></div>
+      <div class="row"><div class="key"><code class="k">, / .</code></div><div>focus prev / next space</div></div>
+      <div class="row"><div class="key"><code class="k">⇧, / ⇧.</code></div><div>move window prev / next space</div></div>
+      <div class="row"><div class="key"><code class="k">1–9</code></div><div>focus space n</div></div>
+      <div class="row"><div class="key"><code class="k">⇧1–9</code></div><div>move window → space n</div></div>
+      <div class="row"><div class="key"><code class="k">[ / ]</code></div><div>focus display ← / →</div></div>
+      <div class="row"><div class="key"><code class="k">⇧]</code></div><div>move window → east display</div></div>
+      <div class="row"><div class="key"><code class="k">q</code></div><div>restart yabai</div></div>
+    </div>
+
+    <div class="section">
+      <h2>External Keyboards</h2>
+      <div class="row"><div class="key"><code class="k">home / end</code></div><div>⌘← / ⌘→</div></div>
+      <div class="row"><div class="key"><code class="k">⌥home / ⌥end</code></div><div>⌃⌘← / ⌃⌘→</div></div>
+      <div class="row"><div class="key"><code class="k">⌥pgup / ⌥pgdn</code></div><div>⌃⌥[ / ⌃⌥]</div></div>
+      <div class="row"><div class="key"><code class="k">⌘pgup / ⌘pgdn (yk75)</code></div><div>⌃⌥[ / ⌃⌥]</div></div>
+    </div>
+  </div>
+</div>

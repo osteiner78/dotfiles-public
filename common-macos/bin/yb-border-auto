@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# yb-border-auto-zoom-debug — JankyBorders width from Yabai zoom/native state
+set -euo pipefail
+
+Y="/opt/homebrew/bin/yabai"
+JQ="/opt/homebrew/bin/jq"
+B="${BORDERS_BIN:-/opt/homebrew/bin/borders}"
+
+THICK="${THICK:-9.0}"   # when zoom/native fullscreen
+THIN="${THIN:-5.0}"     # otherwise
+DEBUG="${DEBUG:-1}"     # logs on by default for this debug version
+
+log(){ if [ "${DEBUG:-0}" = "1" ]; then printf '[yb-border-auto] %s\n' "$*"; fi; return 0; }
+
+W="$("$Y" -m query --windows --window 2>/dev/null || true)"
+if [ -z "$W" ]; then
+  log "no focused window → borders width=$THIN"
+  "$B" width="$THIN"; exit 0
+fi
+
+# Coerce booleans to 0/1 so bash can compare reliably
+read -r ID APP ZOOM NATIVE <<<"$(echo "$W" | "$JQ" -r '
+  [
+    .id,
+    .app,
+    ((."has-fullscreen-zoom" // false) | if . then 1 else 0 end),
+    ((."is-native-fullscreen" // false) | if . then 1 else 0 end)
+  ] | @tsv
+')"
+
+log "id=$ID app=$APP zoom_flag=$ZOOM native_flag=$NATIVE"
+
+if [ "$ZOOM" -eq 1 ] || [ "$NATIVE" -eq 1 ]; then
+  log "→ detected zoom/native → set borders width=$THICK"
+  "$B" width="$THICK"
+else
+  log "→ not zoom/native → set borders width=$THIN"
+  "$B" width="$THIN"
+fi

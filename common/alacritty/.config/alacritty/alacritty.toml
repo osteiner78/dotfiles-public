@@ -7,8 +7,11 @@ padding.x = 5
 padding.y = 5
 
 decorations = "Buttonless"
-opacity=0.85
+opacity=0.90
+# blur=false
 blur=true
+
+dynamic_title=false
 
 [font]
 # normal.family = "JetBrainsMono Nerd Font Mono" # -- > glyphs are rendered small
@@ -17,7 +20,7 @@ normal.family = "JetBrainsMono NF"
 # normal.family = "Inconsolata"
 
 #regular
-size = 12
+size = 14
 
 #for video
 # size = 35.0

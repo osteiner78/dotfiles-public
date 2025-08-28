@@ -69,7 +69,11 @@ return {
 		-- vim.keymap.set("n", "<leader>ffa", "<cmd>Telescope find_files follow=true no_ignore=true<CR>", { desc = "[F]ind [a]ll [f]iles in cwd" })
 		-- Find files
 		vim.keymap.set("n", "<leader>ffa", function()
-			builtin.find_files()
+			builtin.find_files({
+            hidden = true,       -- include dotfiles
+            follow = true,       -- follow symlinks
+            })
+
 		end, { desc = "[F]ind [f]iles - [A]ll in cwd" })
 
 		--  Recent files
@@ -81,7 +85,6 @@ return {
             cwd = "~/.config",
             hidden = true,       -- include dotfiles
             follow = true,       -- follow symlinks
-
           })
         end, { desc = "[F]ind [f]iles - ~/.[c]onfig" })
 
