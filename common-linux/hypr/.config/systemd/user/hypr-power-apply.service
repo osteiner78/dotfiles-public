@@ -1,0 +1,9 @@
+[Unit]
+Description=Apply Hyprland visual profile based on macSMC battery status
+After=hyprland-session.target
+PartOf=hyprland-session.target
+
+[Service]
+Type=oneshot
+# Run through bash so env/path is sane; Hypr env is already imported in your config
+ExecStart=/usr/bin/env bash -lc '%h/.config/hypr/scripts/visual-profile.sh --auto'

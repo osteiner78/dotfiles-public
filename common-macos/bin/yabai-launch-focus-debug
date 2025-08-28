@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# Launch an app quietly, wait for its first real window, then focus that window.
+# Logs -> /tmp/yabai-launch-focus.log  (override with $LOGFILE)
+
+set -euo pipefail
+
+# --- defaults ---
+APP=""
+TIMEOUT=6            # Arc can take >3s cold; be generous
+FRONT=0
+DEBUG=0
+LOGFILE="${LOGFILE:-/tmp/yabai-launch-focus.log}"
+YABAI="/opt/homebrew/bin/yabai"
+JQ="/opt/homebrew/bin/jq"
+
+log() { printf '%s | %s\n' "$(date '+%F %T')" "$*" | tee -a "$LOGFILE" >/dev/null; }
+
+usage() {
+  cat <<'USAGE'
+yabai-launch-focus --app "Arc" [--timeout 8] [--front] [-d]
+USAGE
+}
+
+# --- args ---
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --app)      APP="${2:-}"; shift 2;;
+    --timeout|-T) TIMEOUT="${2:-6}"; shift 2;;
+    --front)    FRONT=1; shift;;
+    -d|--debug) DEBUG=1; shift;;
+    -h|--help)  usage; exit 0;;
+    *) log "ERR unknown arg: $1"; usage; exit 2;;
+  esac
+done
+
+[[ -n "$APP" ]] || { log "ERR: --app is required"; exit 2; }
+
+# --- sanity ---
+for bin in "$YABAI" "$JQ" /usr/bin/open; do
+  command -v "$bin" >/dev/null 2>&1 || { log "ERR missing: $bin"; exit 127; }
+done
+
+[[ "$DEBUG" -eq 1 ]] && { log "DEBUG ON"; set -x; }
+log "----- run start -----"
+log "args: app='$APP' timeout=${TIMEOUT}s front=$FRONT"
+log "bins: yabai='$YABAI' jq='$JQ' open='/usr/bin/open'"
+
+# --- launch quietly (no recents pollution / yank) ---
+log "launch: /usr/bin/open -g -a \"$APP\""
+/usr/bin/open -g -a "$APP" || { log "ERR: open failed"; exit 1; }
+
+# --- poll for window id (keep it stupid-simple) ---
+# We only extract .id (or empty), then act.
+loops=$(( TIMEOUT * 20 ))   # 50ms * 20 = 1s
+i=0
+while (( i < loops )); do
+  id="$("$YABAI" -m query --windows \
+      | "$JQ" -r "map(select(.app==\"$APP\")) | sort_by(.last_active) | last | .id // empty" 2>/dev/null || true)"
+  if [[ -n "$id" ]]; then
+    log "found window id=$id (iter=$i)"
+    "$YABAI" -m window --focus "$id" | true
+    if [[ "$FRONT" -eq 1 ]]; then
+      pid="$("$YABAI" -m query --windows --window "$id" | "$JQ" -r '.pid // empty')"
+      [[ -n "$pid" ]] && /usr/bin/osascript -e "tell application \"System Events\" to set frontmost of (first process whose unix id is $pid) to true" || true
+    fi
+    log "focused window id=$id"
+    log "----- run end (ok) -----"
+    exit 0
+  fi
+  i=$((i+1))
+  /bin/sleep 0.05
+done
+
+# --- timeout ---
+log "TIMEOUT: no '$APP' window in ${TIMEOUT}s (cold start slow?)"
+if "$YABAI" -m query --windows > /tmp/yabai-windows-snapshot.json 2>/dev/null; then
+  log "snapshot: /tmp/yabai-windows-snapshot.json"
+fi
+log "----- run end (timeout) -----"
+exit 3

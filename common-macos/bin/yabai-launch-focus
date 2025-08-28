@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Usage: yabai-launch-focus --app "Arc" [--bundle-id BID] [--timeout 6] [--front]
+set -euo pipefail
+
+APP=""; BID=""; TIMEOUT=6; FRONT=0
+YABAI=/opt/homebrew/bin/yabai
+JQ=/opt/homebrew/bin/jq
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --app)       APP="${2:-}"; shift 2;;
+    --bundle-id) BID="${2:-}"; shift 2;;
+    --timeout)   TIMEOUT="${2:-6}"; shift 2;;
+    --front)     FRONT=1; shift;;
+    -h|--help)   echo 'Usage: yabai-launch-focus --app "Arc" [--bundle-id BID] [--timeout 6] [--front]'; exit 0;;
+    *) echo "Unknown arg: $1" >&2; exit 2;;
+  esac
+done
+
+[[ -n "$APP$BID" ]] || { echo "Need --app NAME or --bundle-id BID" >&2; exit 2; }
+command -v "$YABAI" >/dev/null || { echo "yabai not found at $YABAI" >&2; exit 127; }
+command -v "$JQ"    >/dev/null || { echo "jq not found at $JQ" >&2; exit 127; }
+command -v /usr/bin/open >/dev/null || { echo "open not found" >&2; exit 127; }
+
+get_id() {
+  # Prefer app-name match (fast + reliable in yabai JSON).
+  if [[ -n "$APP" ]]; then
+    "$YABAI" -m query --windows | "$JQ" -r --arg app "$APP" '
+      def strip: gsub("[\u200E\u200F\u202A-\u202E\u2066-\u2069\u200B\u200C\u200D]"; "");
+      def norm(s): (s // "") | strip | ascii_downcase;
+      map(select(norm(.app) == norm($app)))
+      | sort_by((.last_active? // 0), .id) | last | .id // empty
+    ' 2>/dev/null || true
+  elif [[ -n "$BID" ]]; then
+    "$YABAI" -m query --windows | "$JQ" -r --arg bid "$BID" '
+      map(select((.bundle_id // "") == $bid))
+      | sort_by((.last_active? // 0), .id) | last | .id // empty
+    ' 2>/dev/null || true
+  fi
+}
+
+# Warm path
+if id="$(get_id)"; [[ -n "$id" ]]; then
+  "$YABAI" -m window --focus "$id" || true
+  if [[ "$FRONT" -eq 1 ]]; then
+    pid="$("$YABAI" -m query --windows --window "$id" | "$JQ" -r '.pid // empty')"
+    [[ -n "$pid" ]] && /usr/bin/osascript -e \
+      "tell application \"System Events\" to set frontmost of (first process whose unix id is $pid) to true" || true
+  fi
+  exit 0
+fi
+
+# Cold launch (front-aware)
+if [[ -n "$BID" ]]; then
+  [[ "$FRONT" -eq 1 ]] && /usr/bin/open -b "$BID" || /usr/bin/open -g -b "$BID"
+else
+  [[ "$FRONT" -eq 1 ]] && /usr/bin/open -a "$APP" || /usr/bin/open -g -a "$APP"
+fi
+
+# Poll for window
+fast_loops=10                    # ~200ms at 20ms
+normal_loops=$(( TIMEOUT * 20 )) # 50ms * 20 = 1s
+
+for ((i=0; i<fast_loops; i++)); do
+  id="$(get_id)"; [[ -n "$id" ]] && { "$YABAI" -m window --focus "$id" || true
+    if [[ "$FRONT" -eq 1 ]]; then
+      pid="$("$YABAI" -m query --windows --window "$id" | "$JQ" -r '.pid // empty')"
+      [[ -n "$pid" ]] && /usr/bin/osascript -e "tell application \"System Events\" to set frontmost of (first process whose unix id is $pid) to true" || true
+    fi
+    exit 0; }
+  /bin/sleep 0.02
+done
+
+# One-time activate nudge if we launched in background
+if [[ "$FRONT" -eq 0 ]]; then
+  if [[ -n "$BID" ]]; then /usr/bin/osascript -e "tell application id \"$BID\" to activate" || true
+  else /usr/bin/osascript -e "tell application \"$APP\" to activate" || true
+  fi
+fi
+
+for ((i=0; i<normal_loops; i++)); do
+  id="$(get_id)"; [[ -n "$id" ]] && { "$YABAI" -m window --focus "$id" || true
+    if [[ "$FRONT" -eq 1 ]]; then
+      pid="$("$YABAI" -m query --windows --window "$id" | "$JQ" -r '.pid // empty')"
+      [[ -n "$pid" ]] && /usr/bin/osascript -e "tell application \"System Events\" to set frontmost of (first process whose unix id is $pid) to true" || true
+    fi
+    exit 0; }
+  /bin/sleep 0.05
+done
+
+exit 3

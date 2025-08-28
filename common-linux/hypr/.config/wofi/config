@@ -1,0 +1,13 @@
+# ~/.config/wofi/config
+
+width=600
+height=600
+show=drun
+allow_markup=true
+prompt=Search:
+normal_window=true
+allow_images=true
+term=alseudo, 
+bind = $mainMod, S, togglesplit, 
+bind = $mainMod, Z, fullscreen
+bind = $mainMod, L, exec, hyprlockacritty

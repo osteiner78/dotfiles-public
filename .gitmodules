@@ -1,0 +1,6 @@
+[submodule "common/tmux/.config/tmux/plugins/tpm"]
+	path = common/tmux/.config/tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm
+[submodule "common/tmux/.config/tmux/plugins/tmux"]
+	path = common/tmux/.config/tmux/plugins/tmux
+	url = https://github.com/catppuccin/tmux

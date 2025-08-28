@@ -11,3 +11,8 @@ Status:children_add(function()
 		ui.Span(" "),
 	}
 end, 500, Status.RIGHT)
+
+require("full-border"):setup {
+	-- Available values: ui.Border.PLAIN, ui.Border.ROUNDED
+	type = ui.Border.ROUNDED,
+}

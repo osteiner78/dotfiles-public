@@ -1,0 +1,6 @@
+**/.history/
+**/.cache/
+~/.zsh_history
+~/.bash_history
+!.config
+# or: **/.history/**

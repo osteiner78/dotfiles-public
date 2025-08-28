@@ -10,12 +10,13 @@ after-login-command = []
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-  'exec-and-forget sketchybar',
-  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=7.0'
+  # 'exec-and-forget sketchybar',
+  'exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=4.0'
 ]
 # Notify Sketchybar about workspace change
-exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE']
+exec-on-workspace-change = [
+    # '/bin/bash', '-c', 'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+]
 
 # Start AeroSpace at login
 start-at-login = true
@@ -63,13 +64,13 @@ automatically-unhide-macos-hidden-apps = true
 #                 See:
 #                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-    inner.horizontal = 5
-    inner.vertical =   5
-    outer.left =       5
-    outer.bottom =     5
+    inner.horizontal = 7
+    inner.vertical =   7
+    outer.left =       7
+    outer.bottom =     7
     # Set outer.top to 16 for the main monitor (built-in) and 45 for others (external)
     outer.top =        [{ monitor.'^built-in retina display$' = 5 }, 40]
-    outer.right =      5
+    outer.right =      7
 
 # =========================================================================================
 # 'main' binding mode declaration
@@ -99,17 +100,21 @@ automatically-unhide-macos-hidden-apps = true
     # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
     # You can uncomment the following lines to open up terminal with alt + enter shortcut
     # (like in i3)
-    alt-enter = '''exec-and-forget osascript -e '
-    tell application alacritty
-        do script
-        activate
-    end tell'
-    '''
+    # alt-enter = '''exec-and-forget osascript -e '
+    # tell application "Alacritty"
+    #     do script
+    #     activate
+    # end tell'
+    # '''
+    alt-enter = 'exec-and-forget open -a Alacritty'
+
     #
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-    alt-slash = 'layout h_tiles'
+    alt-z= 'layout h_tiles h_accordion'
+    # alt-slash = 'layout h_tiles'
     # alt-slash = 'layout tiles horizontal vertical'
-    alt-comma = 'layout h_accordion'
+    # alt-x= 'layout h_accordion'
+    # alt-comma = 'layout h_accordion'
     # alt-comma = 'layout accordion horizontal vertical'
 
     # # See: https://nikitabobko.github.io/AeroSpace/commands#focus
@@ -120,7 +125,8 @@ automatically-unhide-macos-hidden-apps = true
 
     # Fullscreen
     # alt-f = "fullscreen"
-    alt-f = "macos-native-fullscreen"
+    alt-f = "fullscreen"
+    # alt-f = "macos-native-fullscreen"
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move
     alt-shift-h = 'move left'
@@ -161,9 +167,9 @@ automatically-unhide-macos-hidden-apps = true
     alt-u = 'workspace U'
     alt-v = 'workspace V'
     alt-w = 'workspace W'
-    alt-x = 'workspace X'
+    # alt-x = 'workspace X' # Used for accordion layout
     alt-y = 'workspace Y'
-    alt-z = 'workspace Z'
+    # alt-z = 'workspace Z' # Used for tiled layout
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = ['move-node-to-workspace 1 --focus-follows-window']
@@ -180,7 +186,7 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-c = ['move-node-to-workspace C --focus-follows-window']
     alt-shift-d = ['move-node-to-workspace D --focus-follows-window']
     alt-shift-e = ['move-node-to-workspace E --focus-follows-window']
-    alt-shift-f = ['move-node-to-workspace F --focus-follows-window']
+    # alt-shift-f = ['move-node-to-workspace F --focus-follows-window']
     alt-shift-g = ['move-node-to-workspace G --focus-follows-window']
     alt-shift-i = ['move-node-to-workspace I --focus-follows-window']
     alt-shift-m = ['move-node-to-workspace M --focus-follows-window']
@@ -194,9 +200,9 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-u = ['move-node-to-workspace U --focus-follows-window']
     alt-shift-v = ['move-node-to-workspace V --focus-follows-window']
     alt-shift-w = ['move-node-to-workspace W --focus-follows-window']
-    alt-shift-x = ['move-node-to-workspace X --focus-follows-window']
+    # alt-shift-x = ['move-node-to-workspace X --focus-follows-window']
     alt-shift-y = ['move-node-to-workspace Y --focus-follows-window']
-    alt-shift-z = ['move-node-to-workspace Z --focus-follows-window']
+    # alt-shift-z = ['move-node-to-workspace Z --focus-follows-window']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
@@ -204,17 +210,41 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
     # Set window floating/tiling
-    alt-shift-space = ['layout floating tiling', 'mode main']
+    alt-space = ['layout floating tiling', 'mode main']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#mode
     alt-semicolon = 'mode service'
+
+# Switch all workspaces (except worspace 1) between tiles and accordion
+    alt-shift-z =[
+        'workspace 2', 'layout h_accordion',
+        'workspace 3', 'layout h_accordion',
+        'workspace 4', 'layout h_accordion',
+        'workspace 5', 'layout h_accordion',
+        'workspace 6', 'layout h_accordion',
+        'workspace 7', 'layout h_accordion',
+        'workspace 8', 'layout h_accordion',
+        'workspace 9', 'layout h_accordion',
+        'workspace 0', 'layout h_accordion',
+    ]
+    alt-shift-x =[
+        'workspace 2', 'layout tiles',
+        'workspace 3', 'layout tiles',
+        'workspace 4', 'layout tiles',
+        'workspace 5', 'layout tiles',
+        'workspace 6', 'layout tiles',
+        'workspace 7', 'layout tiles',
+        'workspace 8', 'layout tiles',
+        'workspace 9', 'layout tiles',
+        'workspace 0', 'layout tiles',
+    ]
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
     esc = ['reload-config', 'mode main']
     r = ['flatten-workspace-tree', 'mode main'] # reset layout
-    f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
+    # f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
 
     # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
@@ -225,19 +255,30 @@ automatically-unhide-macos-hidden-apps = true
     alt-shift-k = ['join-with up', 'mode main']
     alt-shift-l = ['join-with right', 'mode main']
 
-    down = 'volume down'
-    up = 'volume up'
-    shift-down = ['volume set 0', 'mode main']
-
-
+    # down = 'volume down'
+    # up = 'volume up'
+    # shift-down = ['volume set 0', 'mode main']
 
 # =========================================================================================
 # Set workspaces for specific apps ####
 # =========================================================================================
 
+# ============================= Workspace 1 (Multiuse) ================================
+
+# ============================= Workspace 2 (Web Browsers) ============================
 # Arc Browser
 [[on-window-detected]]
 if.app-id = "company.thebrowser.Browser"
+run = ['layout tiling', 'move-node-to-workspace 2']
+
+# Google Chrome
+[[on-window-detected]]
+if.app-id = "company.google.Chrome"
+run = ['layout tiling', 'move-node-to-workspace 2']
+
+# Dia Browser
+[[on-window-detected]]
+if.app-id = "company.thebrowser.dia"
 run = ['layout tiling', 'move-node-to-workspace 2']
 
 # Safari
@@ -245,61 +286,135 @@ run = ['layout tiling', 'move-node-to-workspace 2']
 if.app-id = "com.apple.Safari"
 run = ['layout tiling', 'move-node-to-workspace 2']
 
-# Gemini webapp
+# Zen Browser
 [[on-window-detected]]
-if.app-id = "com.apple.Safari.WebApp.6A7AFF52-9A44-4752-8108-C25F5D24CBDA"
-run = ['layout tiling', 'move-node-to-workspace Z']
+if.app-id = "app.zen-browser.zen"
+run = ['layout tiling', 'move-node-to-workspace 2']
+# ============================= Workspace 3 (Comms) ================================
+# Apple Mail
+[[on-window-detected]]
+if.app-id = "com.apple.mail"
+run = ['layout tiling', 'move-node-to-workspace 3']
 
 # Gmail webapp
 [[on-window-detected]]
 if.app-id = "com.apple.Safari.WebApp.914D4153-7335-40BA-B949-DFD3F7ADBC73"
-run = ['layout tiling', 'move-node-to-workspace G']
+run = ['layout tiling', 'move-node-to-workspace 3']
 
+# Whatsapp
+[[on-window-detected]]
+if.app-id = "net.whatsapp.WhatsApp"
+run = ['layout floating', 'move-node-to-workspace 3']
+
+# ============================= Workspace 4 (Calendar + Todo) ================================
 # Calendar
 [[on-window-detected]]
 if.app-id = "com.apple.iCal"
-run = ['layout tiling', 'move-node-to-workspace C']
+run = ['layout tiling', 'move-node-to-workspace 4']
 
 # Things
 [[on-window-detected]]
 if.app-id = "com.culturedcode.ThingsMac"
-run = ['layout tiling', 'move-node-to-workspace I']
+run = ['layout tiling', 'move-node-to-workspace 4']
 
 # Todoist
 [[on-window-detected]]
 if.app-id = "com.todoist.mac.Todoist"
-run = ['layout tiling', 'move-node-to-workspace I']
+run = ['layout tiling', 'move-node-to-workspace 4']
+
+# ============================= Workspace 5 (Notes) ================================
 
 # Obsidian
 [[on-window-detected]]
 if.app-id = "md.obsidian"
-run = ['layout tiling', 'move-node-to-workspace O']
+run = ['layout tiling', 'move-node-to-workspace 5']
 
 # Notes
 [[on-window-detected]]
 if.app-id = "com.apple.Notes"
-run = ['layout tiling', 'move-node-to-workspace N']
+run = ['layout tiling', 'move-node-to-workspace 5']
+
+# ============================= Workspace 6 (Paperless-ngx) ================================
+
+# Paperless-ngx
+[[on-window-detected]]
+if.app-id = "com.apple.Safari.WebApp.16EF9EB5-B58B-47EA-8391-00983CB5E0A2"
+run = ['layout tiling', 'move-node-to-workspace 6']
+
+# ============================= Workspace 7 (Coding) ================================
 
 # VSCode
 [[on-window-detected]]
 if.app-id = "com.microsoft.VSCode"
-run = ['layout tiling', 'move-node-to-workspace V']
+run = ['layout tiling', 'move-node-to-workspace 7']
+
+# Sublime Text
+[[on-window-detected]]
+if.app-id = "com.sublimetext.4"
+run = ['layout tiling', 'move-node-to-workspace 7']
+
+# ============================= Workspace 8 (Terminal) ================================
 
 # Alacritty
 [[on-window-detected]]
 if.app-id = "org.alacritty"
 # run = ['layout floating', 'move-node-to-workspace T']
-run = ['layout tiling', 'move-node-to-workspace T']
+run = ['layout tiling', 'move-node-to-workspace 8']
+
+# ============================= Workspace 9 (Trading) ================================
 
 # TradingView
 [[on-window-detected]]
 if.app-id = "com.tradingview.tradingviewapp.desktop"
+run = ['layout tiling', 'move-node-to-workspace 9']
+
+# IBKR Desktop
+[[on-window-detected]]
+if.app-id = "com.install4j.5557-0173-2810-0000.22"
+run = ['layout tiling', 'move-node-to-workspace 9']
+
+# ============================= Workspace 0 (Media/Entertainment) ================================
+
+# Apple Photos
+[[on-window-detected]]
+if.app-id = "com.apple.Photos"
 run = ['layout tiling', 'move-node-to-workspace 0']
 
-# Whatsapp
+# CrossOver
 [[on-window-detected]]
-if.app-id = "net.whatsapp.WhatsApp"
-run = ['layout floating', 'move-node-to-workspace W']
+if.app-id = "com.codeweavers.CrossOver"
+run = ['layout floating', 'move-node-to-workspace 0']
+
+# Spotify
+[[on-window-detected]]
+if.app-id = "com.spotify.client"
+run = ['layout tiling', 'move-node-to-workspace 0']
+
+# Apple Music
+[[on-window-detected]]
+if.app-id = "com.apple.Music"
+run = ['layout tiling', 'move-node-to-workspace 0']
+
+# Stremio
+[[on-window-detected]]
+if.app-id = "com.smartcodeltd.stremio"
+run = ['layout tiling', 'move-node-to-workspace 0']
+
+# ============================= Workspace Z (Chatbots / LLMs) ================================
+# ChatGTP webapp
+[[on-window-detected]]
+if.app-id = "com.apple.Safari.WebApp.FAB13EE8-7E2B-40F3-A531-4768092813F4"
+run = ['layout tiling', 'move-node-to-workspace Z']
+
+# Gemini webapp
+[[on-window-detected]]
+if.app-id = "com.apple.Safari.WebApp.6A7AFF52-9A44-4752-8108-C25F5D24CBDA"
+run = ['layout tiling', 'move-node-to-workspace Z']
+
+# Perplexity
+[[on-window-detected]]
+if.app-id = "ai.perplexity.mac"
+run = ['layout tiling', 'move-node-to-workspace Z']
 
 # =========================================================================================
 # Floating apps
@@ -346,11 +461,6 @@ run = 'layout floating'
 if.app-id = "com.apple.Calculator"
 run = 'layout floating'
 
-# Calculator
-[[on-window-detected]]
-if.app-id = "com.apple.Calculator"
-run = 'layout floating'
-
 # Calendar settings
 [[on-window-detected]]
 if.app-id = "com.apple.Calendar"
@@ -370,6 +480,11 @@ run = 'layout floating'
 # Creative Cloud
 [[on-window-detected]]
 if.app-id = "com.adobe.acc.AdobeCreativeCloud"
+run = 'layout floating'
+
+# Crossover
+[[on-window-detected]]
+if.app-id = "com.codeweavers.CrossOver"
 run = 'layout floating'
 
 # Dictionary
@@ -397,6 +512,11 @@ run = 'layout floating'
 if.app-id = "com.apple.Home"
 run = 'layout floating'
 
+# Itau
+[[on-window-detected]]
+if.app-id = "br.com.itau.aplicativoitau"
+run = 'layout floating'
+
 # Karabiner-Elements
 [[on-window-detected]]
 if.app-id = "org.pqrs.Karabiner-Elements.Settings"
@@ -415,6 +535,11 @@ run = 'layout floating'
 [[on-window-detected]]
 if.app-id = "com.apple.Messenger"
 run = "layout floating"
+
+# ScanSnap Home
+[[on-window-detected]]
+if.app-id = "com.fujitsu.pfu.ScanSnapHome"
+run = 'layout floating'
 
 # Software Update
 [[on-window-detected]]
@@ -439,4 +564,9 @@ run = 'layout floating'
 # System Settings
 [[on-window-detected]]
 if.app-id = "com.apple.systempreferences"
+run = 'layout floating'
+
+# Weather
+[[on-window-detected]]
+if.app-id = "com.apple.weather"
 run = 'layout floating'

@@ -1,0 +1,64 @@
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+PIPE="${XDG_RUNTIME_DIR:-/run/user/$UID}/wobpipe"
+[ -p "$PIPE" ] || exit 0  # silently ignore if wob isn't up
+
+send() { printf '%s\n' "$1" > "$PIPE"; }
+
+case "${1:-}" in
+  vol|get-vol)
+    # wpctl get-volume @DEFAULT_AUDIO_SINK@ -> "Volume: 0.53" (maybe " [MUTED]")
+    v=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{print $2}')
+    # clamp 0..1 → 0..100
+    awk -v v="$v" 'BEGIN{printf "%d\n", (v<0?0:(v>1?1:v))*100}' | while read -r p; do send "$p"; done
+    ;;
+  vol:raise)
+    wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+ >/dev/null
+    "$0" vol
+    ;;
+  vol:lower)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- >/dev/null
+    "$0" vol
+    ;;
+  vol:toggle-mute)
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle >/dev/null
+    "$0" vol
+    ;;
+  mic|get-mic)
+    v=$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | awk '{print $2}')
+    awk -v v="$v" 'BEGIN{printf "%d\n", (v<0?0:(v>1?1:v))*100}' | while read -r p; do send "$p"; done
+    ;;
+  mic:raise)
+    wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%+ >/dev/null
+    "$0" mic
+    ;;
+  mic:lower)
+    wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 5%- >/dev/null
+    "$0" mic
+    ;;
+  mic:toggle-mute)
+    wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle >/dev/null
+    "$0" mic
+    ;;
+  br|get-bright)
+    # brightnessctl: g=current, m=max
+    cur=$(brightnessctl g)
+    max=$(brightnessctl m)
+    awk -v c="$cur" -v m="$max" 'BEGIN{ if(m<=0){print 0; exit}; p=int((c/m)*100); if(p<0)p=0; if(p>100)p=100; print p }' \
+      | while read -r p; do send "$p"; done
+    ;;
+  br:raise)
+    brightnessctl set +5% >/dev/null
+    "$0" br
+    ;;
+  br:lower)
+    brightnessctl set 5%- >/dev/null
+    "$0" br
+    ;;
+  *)
+    echo "Usage: wobctl {vol|get-vol|vol:raise|vol:lower|vol:toggle-mute|mic|get-mic|mic:raise|mic:lower|mic:toggle-mute|br|get-bright|br:raise|br:lower}" >&2
+    exit 2
+    ;;
+esac

@@ -1,0 +1,265 @@
+!/usr/bin/env bash
+# <xbar.title>Btop in Alacritty (Toggle, robust)</xbar.title>
+# <xbar.version>1.8.0</xbar.version>
+# <xbar.author>Oliver + ChatGPT</xbar.author>
+# <xbar.desc>Toggle a centered Alacritty+btop popup (PID-aware, robust centering).</xbar.desc>
+# <xbar.dependencies>bash,yabai,jq,Alacritty,btop</xbar.dependencies>
+
+set -euo pipefail
+
+# --- settings ---
+readonly TITLE="btop-floating"     # desired window title
+readonly COLS=150                  # ≈1200 px wide at typical fonts
+readonly LINES=46                  # ≈800 px high (adjust to taste)
+readonly PIDFILE="/tmp/btop-swiftbar.pid"
+readonly DBG="/tmp/btop-swiftbar.debug"
+# ----------------
+
+# SwiftBar GUI env usually lacks Homebrew paths
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+
+dbg(){ printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >>"$DBG"; }
+trap 'dbg "EXIT rc=$?"' EXIT
+dbg "----- run start -----"
+dbg "PATH=$PATH"
+dbg "argv='${*:-}'  PWD=$PWD  USER=$(id -un)"
+
+# Prefer PID match; fallback to title match; newest first
+get_btop_win_ids() {
+  local ids="" pid=""
+  if [ -f "$PIDFILE" ]; then
+    pid="$(cat "$PIDFILE" 2>/dev/null || true)"
+  fi
+
+  # 1) Try PID match if present
+  if [ -n "${pid:-}" ]; then
+    ids="$(yabai -m query --windows 2>/dev/null \
+      | jq -r --argjson P "${pid:-0}" \
+        '[.[] | select((.app|ascii_downcase)=="alacritty" and .pid==$P)] | sort_by(-.id) | .[].id' \
+      || true)"
+  fi
+
+  # 2) If none, try title match
+  if [ -z "${ids//$'\n'/}" ]; then
+    ids="$(yabai -m query --windows 2>/dev/null \
+      | jq -r --arg T "$TITLE" \
+        '[.[] | select((.app|ascii_downcase)=="alacritty" and .title==$T)] | sort_by(-.id) | .[].id' \
+      || true)"
+  fi
+
+  dbg "get_btop_win_ids(pid=${pid:-none}) -> '$(echo "$ids" | tr '\n' ' ')'"
+  printf '%s\n' "$ids"
+}
+
+# Try to fetch window JSON for an id, with small retries (race-safe)
+get_window_json_retry() {
+  local id="$1" i json=""
+  for (( i=0; i<12; i++ )); do
+    json="$(yabai -m query --windows --window "$id" 2>/dev/null || true)"
+    if [ -n "$json" ] && printf '%s' "$json" | jq -e . >/dev/null 2>&1; then
+      printf '%s\n' "$json"
+      return 0
+    fi
+    sleep 0.03
+  done
+  printf ''  # empty on failure
+}
+
+focus_and_center() {
+  local id="$1"
+  dbg "focus_and_center: id=$id"
+
+  # --- figure out the window's display frame and the window's current size ---
+  local win_json did disp_json fx=0 fy=0 fw=0 fh=0 ok_disp=0
+  win_json="$(get_window_json_retry "$id")"
+  dbg "win_json: ${win_json:-<none>}"
+
+  if [ -n "$win_json" ]; then
+    did="$(printf '%s' "$win_json" | jq -r 'select(.display!=null) | .display' 2>/dev/null || true)"
+    dbg "did='${did:-<empty>}'"
+  fi
+
+  if [ -n "${did:-}" ]; then
+    disp_json="$(yabai -m query --displays --display "$did" 2>/dev/null || true)"
+    dbg "disp_json: ${disp_json:-<none>}"
+    if [ -n "$disp_json" ]; then
+      read -r fx fy fw fh <<<"$(printf '%s' "$disp_json" \
+        | jq -r '.frame | "\((.x|floor)) \((.y|floor)) \((.w|floor)) \((.h|floor))"' \
+        2>/dev/null || echo "0 0 0 0")"
+      if (( fw > 0 && fh > 0 )); then ok_disp=1; fi
+    fi
+  fi
+
+  # --- compute target position using the ACTUAL window size (grid-sized) ---
+  local x y cw ch
+  if (( ok_disp == 1 )); then
+    read -r cw ch <<<"$(printf '%s' "$win_json" | jq -r '.frame | "\((.w|floor)) \((.h|floor))"')"
+    x=$(( fx + (fw - cw)/2 ))
+    y=$(( fy + (fh - ch)/2 ))
+    dbg "center calc (yabai): did=$did frame=${fx},${fy} ${fw}x${fh} win=${cw}x${ch} -> pos=${x},${y}"
+  else
+    dbg "display lookup failed -> centering via Finder main screen"
+    /usr/bin/osascript <<AS
+      # set wpx to $ww
+      # set hpx to $wh
+      -- fallback: center using Finder's desktop bounds and window 1's current size
+      tell application "Finder" to set db to bounds of window of desktop
+      set sw to item 3 of db
+      set sh to item 4 of db
+      tell application "System Events"
+        if exists process "Alacritty" then
+          tell process "Alacritty"
+            if (count of windows) > 0 then
+              set wpx to (item 1 of (size of window 1))
+              set hpx to (item 2 of (size of window 1))
+              set px to (sw - wpx) / 2
+              set py to (sh - hpx) / 2
+              set position of window 1 to {px, py}
+            end if
+          end tell
+        end if
+      end tell
+AS
+    return
+  fi
+
+  # --- MOVE ONLY (keep grid size) ---
+  local yb_ok=1
+  if ! yabai -m window "$id" --move "abs:${x}:${y}" >/dev/null 2>&1; then yb_ok=0; fi
+  dbg "yabai move status: $yb_ok"
+  
+  # --- verify; if off, AppleScript fallback to nudge into place ---
+  sleep 0.02
+  local fjson
+  fjson="$(get_window_json_retry "$id")"
+  if [ -n "$fjson" ]; then
+    # local cx cy cw ch
+    # read -r cx cy cw ch <<<"$(printf '%s' "$fjson" \
+    #   | jq -r '.frame | "\((.x|floor)) \((.y|floor)) \((.w|floor)) \((.h|floor))"')"
+    # dbg "after-yabai frame=${cx},${cy} ${cw}x${ch}"
+    #
+    # if ! (( cx == x && cy == y && cw == ww && ch == wh )); then
+    local cx cy
+    read -r cx cy <<<"$(printf '%s' "$fjson" \
+      | jq -r '.frame | "\((.x|floor)) \((.y|floor))"')"
+    dbg "after-yabai pos=${cx},${cy}"
+    if ! (( cx == x && cy == y )); then
+      dbg "frame mismatch -> AppleScript nudge"
+      /usr/bin/osascript <<AS
+        with timeout of 1 second
+          tell application "System Events"
+            if exists process "Alacritty" then
+              tell process "Alacritty"
+                set found to false
+                repeat with w in windows
+                  try
+                    if name of w is "$TITLE" then
+                      set position of w to {$x, $y}
+                      set found to true
+                      exit repeat
+                    end if
+                  end try
+                end repeat
+                if found is false and (count of windows) > 0 then
+                  set position of window 1 to {$x, $y}
+                end if
+              end tell
+            end if
+          end tell
+        end timeout
+AS
+    fi
+  fi
+}
+
+# Close by ID (yabai), fallback Cmd-W if needed
+close_btop_windows() {
+  local ids="$1"
+  [ -z "$ids" ] && { dbg "close: no ids"; return 0; }
+  dbg "close: ids=$(echo "$ids" | tr '\n' ' ')"
+  while IFS= read -r id; do
+    [ -z "$id" ] && continue
+    if yabai -m window "$id" --close >/dev/null 2>&1; then
+      dbg "closed via yabai: id=$id"
+    else
+      dbg "yabai close failed, using Cmd-W: id=$id"
+      yabai -m window "$id" --focus >/dev/null 2>&1 || true
+      /usr/bin/osascript -e 'tell application "System Events" to keystroke "w" using command down' >/dev/null 2>&1 || true
+    fi
+  done <<< "$ids"
+}
+
+launch_btop() {
+  local fx fy fw fh ww wh x y
+  read -r fx fy fw fh <<<"$(yabai -m query --displays --display | jq -r '.frame | "\((.x|floor)) \((.y|floor)) \((.w|floor)) \((.h|floor))"')"
+  ww=$(( COLS * 4 ))
+  wh=$(( LINES * 12 ))
+  x=$(( fx + (fw - ww)/2 ))
+  y=$(( fy + (fh - wh)/2 ))
+
+  dbg "launch_btop: pre-pos center guess x=$x y=$y using ww≈$ww wh≈$wh"
+  dbg "launch_btop: alacritty --title '$TITLE' -o cols=$COLS lines=$LINES pos=($x,$y) --command btop &"
+
+  alacritty --title "$TITLE" \
+    -o window.dimensions.columns="$COLS" \
+    -o window.dimensions.lines="$LINES" \
+    -o window.position.x="$x" \
+    -o window.position.y="$y" \
+    --command btop >/dev/null 2>&1 &
+
+  echo $! >"$PIDFILE"
+  dbg "launch_btop: pid=$! (saved to $PIDFILE)"
+}
+
+log_recent_state() {
+  local s
+  s="$(yabai -m query --windows --window recent 2>/dev/null | jq '{app,title,managed,floating,role,subrole,space,display}' 2>/dev/null || true)"
+  dbg "recent_state: ${s:-<none>}"
+}
+
+toggle_btop() {
+  local ids first_id front_id i
+
+  ids="$(get_btop_win_ids)"
+  if [ -z "$ids" ]; then
+    dbg "no existing window -> LAUNCH"
+    launch_btop
+
+    # wait up to ~4s for the new window from that PID or title
+    for (( i=0; i<200; i++ )); do
+      ids="$(get_btop_win_ids)"; [ -n "$ids" ] && break
+      sleep 0.02
+    done
+    first_id="$(printf '%s\n' "$ids" | head -n1)"
+    dbg "post-launch ids='$(echo "$ids" | tr '\n' ' ')', first_id=${first_id:-<none>}"
+    log_recent_state
+
+    [ -n "${first_id:-}" ] && focus_and_center "$first_id"
+    return 0
+  fi
+
+  first_id="$(printf '%s\n' "$ids" | head -n1)"
+  dbg "existing: ids='$(echo "$ids" | tr '\n' ' ')', first_id=${first_id:-<none>}"
+  [ -z "$first_id" ] && { dbg "no first_id -> return"; return 0; }
+
+  front_id="$(yabai -m query --windows --window | jq -r '.id')"
+  dbg "front_id=$front_id"
+  log_recent_state
+
+  if [ "$front_id" != "null" ] && printf '%s\n' "$ids" | grep -qx "$front_id"; then
+    dbg "front is our btop -> CLOSE"
+    close_btop_windows "$ids"
+  else
+    dbg "front is not our btop -> FOCUS/CENTER"
+    focus_and_center "$first_id"
+  fi
+}
+
+case "${1:-}" in
+  toggle) toggle_btop; exit 0 ;;
+esac
+
+# Menubar
+echo "| sfimage=cpu tooltip='Btop toggle' bash=\"$0\" param1=toggle terminal=false refresh=false"
+echo "---"
+echo "Toggle btop | bash=\"$0\" param1=toggle terminal=false refresh=false"
