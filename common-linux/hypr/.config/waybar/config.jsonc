@@ -1,0 +1,179 @@
+{
+"env": {
+  "LANG": "en_US.UTF-8",
+  "LC_ALL": "en_US.UTF-8"
+},
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 30,
+  "modules-left": [
+    "custom/omarchy",
+    "hyprland/workspaces",
+  ],
+  "modules-center": [
+    "clock"
+    // "hyprland/window"
+    // "custom/update"
+  ],
+  "modules-right": [
+    "group/tray-expander",
+    "custom/weather",
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "cpu",
+    "memory",
+    "battery",
+  ],
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "active": "󱓻"
+    },
+  // "hyprland/window": {
+  //       "format": "{class}",
+  //       "max-length": 20,
+  //       "rewrite": {
+  //         "^(?!.*\\S).*": "Finder"
+  //       }
+  //     },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+      "9": []
+    }
+  },
+  "custom/omarchy": {
+    "format": "",
+    "on-click": "~/.config/hypr/scripts/confirm-exit.sh",
+    "tooltip-format": "SUPER + ALT + SPACE"
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "󰍛",
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t Activity -e btop'",
+  },
+    "memory": {
+    "interval": 30,
+    "format": "",
+    "tooltip-format": "{used:0.1f}G/{total:0.1f}G"
+  },
+  "clock": {
+    "format": "{:%A %H:%M}",
+    "format-alt": "{:%d %B %Y}",
+    "tooltip": false,
+    // "on-click-right": "~/.local/share/omarchy/bin/omarchy-cmd-tzupdate"
+  },
+  "network": {
+    "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"],
+    "format" : "{icon}",
+    "format-wifi" : "{icon}",
+    "format-ethernet" : "󰀂",
+    "format-disconnected" : "󰖪",
+    "tooltip-format-wifi": "󰤨 {ifname} @ {essid}\nIP: {ipaddr}\nStrength: {signalStrength}%\nFreq: {frequency}MHz\nUp: {bandwidthUpBits} Down: {bandwidthDownBits}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "nospacing": 1,
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t WiFiPicker -e ~/.local/bin/wifi-scanner.sh'",
+    "on-click-right": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -e $HOME/.local/bin/network-launcher.sh'"
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging":    "{icon}",
+    "format-plugged":     "",
+    "format-icons": {
+      "charging": [
+        "󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"
+      ],
+      "default": [
+        "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"
+      ]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+    "custom/weather": {
+      // "format": "{}",
+      // "format-alt": "{alt}: {}",
+      "exec": "curl 'https://wttr.in/Vila_Mariana?format=%t'",
+      "interval": 3600,
+      "format": "{}",
+      // "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t Weather -e ~/.local/bin/fetch-weather.sh'"
+    },  
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t BluetoothManager -e ~/.local/bin/bluetui'",
+    "on-click-right": "blueman-manager"
+  },
+  "pulseaudio": {
+    "format": "{icon}",
+    "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty --class=Wiremix -e /home/osteiner/.cargo/bin/wiremix'",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "󰝟",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+    "custom/health": {
+      "format": "{}",
+      "tooltip": true,
+      "interval": 5,
+      "return-type": "json",
+      // "exec": "/home/osteiner/.local/bin/waybar-health.sh waybar.service hypridle.service libinput-gestures.service hyprpolkitagent.service nm-applet.service waypaper.service",
+      "exec": "/home/osteiner/.local/bin/waybar-health.sh proc:waybar hypridle.service hyprpolkitagent.service nm-applet.service cmd:libinput-gestures proc:swaybg",
+      "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -e /home/osteiner/.local/bin/waybar-health-click.sh'",
+      "on-click-right": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -e /home/osteiner/.local/bin/waybar-health-rclick.sh'",
+    },
+    "group/tray-expander": {
+      "orientation": "inherit",
+      "drawer": {
+        "transition-duration": 600,
+        "children-class": "tray-group-item"
+      },
+      "modules": [
+        "custom/expand-icon",
+        "custom/health",
+        "tray"
+      ]
+    },
+  "custom/expand-icon": {
+    "format": " ",
+    "tooltip": false
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 12
+  }
+}

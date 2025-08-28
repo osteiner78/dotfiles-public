@@ -4,36 +4,53 @@
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 sudo yabai --load-sa
 
+# yabai -m rule --add label=btop_float app="^Alacritty$" title="^btop-floating$" manage=on
+
 # ============= DESKTOP RULES =============
 # specific space settings
 yabai -m config --space 1 layout float
 # yabai -m config --space comms layout stack
 
 # Spaces rules
-yabai -m rule --add app="^Arc$" space=2
-yabai -m rule --add app="^Safari$" space=2
+yabai -m rule --add label=web2 app="^(Arc|Dia|Google Chrome|Safari|Zen)$" space=2
 
-yabai -m rule --add app="^Gmail$" space=3
-yabai -m rule --add app="^WhatsApp$" space=3
+yabai -m rule --add label=comms3 app="^(Gmail|Mail|WhatsApp)$" space=3
+# yabai -m rule --add app="^Gmail$" space=3
+# yabai -m rule --add app="^Mail$" space=3
+# yabai -m rule --add app="^WhatsApp$" space=3
 
-yabai -m rule --add app="^Calendar$" space=4
-yabai -m rule --add app="^Things$" space=4
-yabai -m rule --add app="^Todoist$" space=4
+yabai -m rule --add label=tasks4 app="^(Calendar|Things|Todoist)$" space=4
+# yabai -m rule --add app="^Calendar$" space=4
+# yabai -m rule --add app="^Things$" space=4
+# yabai -m rule --add app="^Todoist$" space=4
 
-yabai -m rule --add app="^Obsidian$" space=5
-yabai -m rule --add app="^Notes$" space=5
+yabai -m rule --add label=notes5 app="^(Obsidian|Notes)$" space=5
+# yabai -m rule --add app="^Obsidian$" space=5
+# yabai -m rule --add app="^Notes$" space=5
 
-yabai -m rule --add app="^Code$" space=6
-yabai -m rule --add app="^Dash$" space=6
-yabai -m rule --add app="^Sublime Text$" space=6
+yabai -m rule --add label=paperless6 app="^Paperless-ngx$" space=6
 
-yabai -m rule --add app="^Alacritty$" space=7
-yabai -m rule --add app="^iTerm2$" space=7
-yabai -m rule --add app="^Terminal$" space=7
+yabai -m rule --add label=code7 app="^(Code|Dash|Sublime Text)$" space=7
+# yabai -m rule --add app="^Code$" space=7
+# yabai -m rule --add app="^Dash$" space=7
+# yabai -m rule --add app="^Sublime Text$" space=7
 
-yabai -m rule --add app="^Stocks$" space=8
-yabai -m rule --add app="^TradingView$" space=8
+# yabai -m rule --add app="^Alacritty$" space=7
+# yabai -m rule --add app="^iTerm2$" space=7
+# yabai -m rule --add app="^Terminal$" space=7
 
+yabai -m rule --add label=trading8 app="^(Stocks|TradingView)$" space=8
+# yabai -m rule --add app="^Stocks$" space=8
+# yabai -m rule --add app="^TradingView$" space=8
+
+yabai -m rule --add label=chatbot9 app="^(ChatGPT|Gemini)$" space=9
+# yabai -m rule --add app="^ChatGPT$" space=9
+# yabai -m rule --add app="^Gemini$" space=9
+
+yabai -m rule --add label=media1 app="^(Photos|Spotify|Stremio)$" space=10
+# yabai -m rule --add app="^Photos$" space= 8
+# yabai -m rule --add app="^Spotify$" space=8
+# yabai -m rule --add app="^Stremio$" space=8
 
 # ============= TILING OPTIONS =============
 # Tiling
@@ -50,21 +67,23 @@ yabai -m config \
 # ============= WINDOW OPTIONS =============
 # Padding
 yabai -m config \
-        top_padding     5 \
-        bottom_padding  5 \
-        right_padding   5 \
-        left_padding    5 \
-        window_gap      5 
+        top_padding     7 \
+        bottom_padding  7 \
+        right_padding   7 \
+        left_padding    7 \
+        window_gap      7 
 
 # Test
- yabai -m config window_shadow                  float
- yabai -m config window_opacity                  off
- yabai -m config window_opacity_duration         0.2
- yabai -m config active_window_opacity           1.0
- yabai -m config normal_window_opacity           0.95
- yabai -m config window_animation_duration       0.2
- yabai -m config window_animation_easing         ease_in_expo #ease_out_quint
- yabai -m config insert_feedback_color           0xff272727
+ yabai -m config window_shadow                  off
+ yabai -m config window_border                  off
+ yabai -m config window_opacity                 on
+ yabai -m config window_opacity_duration        0.2
+ yabai -m config active_window_opacity          0.98
+ yabai -m config normal_window_opacity          0.92
+ yabai -m config window_animation_duration      0.2
+ yabai -m config window_animation_easing        ease_out_quint
+ # yabai -m config window_animation_easing      ease_in_expo
+ yabai -m config insert_feedback_color          0xff272727
 
 # ============= MOUSE SETTINGS =============
 yabai -m config mouse_modifier alt    # set mouse interaction modifier key (default: fn)
@@ -72,27 +91,30 @@ yabai -m config mouse_action1 move      #left click+drag
 yabai -m config mouse_action2 resize    #right click+drag
 yabai -m config mouse_drop_action swap
 
+# yabai -m config focus_follows_mouse autoraise \
 yabai -m config focus_follows_mouse off \
                 mouse_follows_focus off
 
 # ===========================================================
-# WINDOWS MODIFICATIONS
-# floating windows are always on top (default: off)
-# yabai -m config window_topmost on 
+# SIGNALS
+# Thick borders when maximized
+yabai -m signal --add event=window_focused      action='/usr/local/bin/yb-border-auto'
+yabai -m signal --add event=window_resized      action='/usr/local/bin/yb-border-auto'
+yabai -m signal --add event=space_changed       action='/usr/local/bin/yb-border-auto'
+yabai -m signal --add event=window_floated      action='/usr/local/bin/yb-border-auto'
+yabai -m signal --add event=window_unfloated    action='/usr/local/bin/yb-border-auto'
 
-# modify window shadows (default: on, options: on, off, float)
-# example: show shadows only for floating windows
-# yabai -m config window_shadow float
-
-# window opacity (default: off)
-# example: render all unfocused windows with 90% opacity
-# yabai -m config window_opacity on
-# yabai -m config active_window_opacity 1.0
-# yabai -m config normal_window_opacity 0.9
-
-# ============== TEST ====================
-# The following signal can be added to your yabai config to automatically flash the focused window when focus changes.
-# yabai -m signal --add label="flash_focus" event="window_focused" action="yabai -m window \$YABAI_WINDOW_ID --opacity 0.1 && sleep $(yabai -m config window_opacity_duration) && yabai -m window \$YABAI_WINDOW_ID --opacity 0.0"
+# YabaiIndicator
+yabai -m signal --add event=mission_control_exit    action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=display_added           action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=display_removed         action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_created          action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_destroyed        action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_focused          action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_moved            action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_resized          action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_minimized        action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
+yabai -m signal --add event=window_deminimized      action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
 
 # ============== DISABLE MANAGEMENT FOR SPECIFIC APPS =============================================
 yabai -m rule --add app="^1Password$" manage=off
@@ -108,15 +130,18 @@ yabai -m rule --add app="^Contacts$" manage=off
 yabai -m rule --add app="^Creative Cloud$" manage=off
 yabai -m rule --add app="^Dictionary$" manage=off
 yabai -m rule --add app="^Font Book$" manage=off
+yabai -m rule --add app="^Ice$" manage=off
 yabai -m rule --add app="^Karabiner-Elements$" manage=off
 yabai -m rule --add app="^Karabiner-EventViewer$" manage=off
-yabai -m rule --add app="^Keyboard Maestro$"t manage=off
-yabai -m rule --add app="^Logi Options$" manage=off
+yabai -m rule --add app="^Keyboard Maestro$" manage=off
+yabai -m rule --add app="^Logi$" manage=off
 yabai -m rule --add app="^Software Update$" manage=off
 yabai -m rule --add app="^Soulver 3$" manage=off
 yabai -m rule --add app="^Stickies$" manage=off
 yabai -m rule --add app="^Steam$" manage=off
 yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Weather$" manage=off
+yabai -m rule --add title="^(Preferences|Settings|About This Mac|Save|Open|Share|Print)" manage=off
 
 yabai -m rule --add label="Finder" app="^Finder$" title="(Co(py|nnect)|Move|Info|Pref)" manage=off
 yabai -m rule --add label="Safari" app="^Safari$" title="^(General|(Tab|Password|Website|Extension)s|AutoFill|Se(arch|curity)|Privacy|Advance)$" manage=off
@@ -127,19 +152,11 @@ yabai -m rule --add label="About This Mac" app="System Information" title="About
 yabai -m rule --add app="^Arc$" title="^Space.*$" manage=off
 yabai -m rule --add app="^Arc$" title="^$" manage=off
 
+# Swiftbar widgets
+# yabai -m rule --add app="Alacritty" title=".*" role="AXWindow" subrole="AXStandardWindow" manage=off label=btop_float
+yabai -m rule --add title="^btop-floating$" manage=off label=btop_float
+# yabai -m rule --add label=btop_float app="^Alacritty$" title="^btop-floating$" manage=on float=on
+
 # ============================== TO SOLVE BUG  ==================================
 # https://github.com/koekeishiya/yabai/issues/1929
 yabai -m rule --add app=".*" sub-layer=normal
-
-# ============================== ARCHIVE ==================================
-# =========== FOR YABAI INDICATOR ==================
-# yabai -m signal --add event=mission_control_exit action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=display_added action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=display_removed action='echo "refresh" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_created action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_destroyed action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_focused action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_moved action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_resized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_minimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'
-# yabai -m signal --add event=window_deminimized action='echo "refresh windows" | nc -U /tmp/yabai-indicator.socket'

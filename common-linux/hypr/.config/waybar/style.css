@@ -1,0 +1,80 @@
+/* @import "../omarchy/current/theme/waybar.css"; */
+@define-color foreground #d4be98;
+@define-color background #282828;
+
+* {
+  background-color: @background;
+  color: @foreground;
+
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  /* font-family: CaskaydiaMono Nerd Font; */
+  font-family: "SF Pro Display", "JetBrainsMono Nerd Font Propo";
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+#workspaces button {
+  all: initial;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+#tray,
+#cpu,
+#battery,
+#network,
+#bluetooth,
+#pulseaudio,
+#clock,
+#custom-omarchy {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#custom-expand-icon {
+  margin-right: 7px;
+}
+
+tooltip {
+  padding: 2px;
+}
+tooltip label {
+  font-size: 14px;
+  font-weight: normal;
+  padding: 0;
+}
+
+/* Volume drawer + slider */
+.vol-drawer { margin-left: 3px; }
+#custom-vol-button { padding: 0 10px; margin: 0 5.5px; }
+#pulseaudio-slider { min-width: 140px; padding: 0 8px; }
+#pulseaudio-slider > scale { min-height: 12px; }
+#pulseaudio-slider > scale trough    { background: #504945; border-radius: 4px; }
+#pulseaudio-slider > scale highlight { background: #d79921; border-radius: 4px; }  /* softer yellow */
+#pulseaudio-slider > scale slider    { background: #ebdbb2; border-radius: 50%; min-width: 12px; min-height: 12px; }
+
+
+#custom-weather .emoji {
+  font-family: "Noto Color Emoji", "SF Pro Display", "JetBrainsMono Nerd Font Propo", sans-serif;
+  font-size: 16px;
+}
+
+#custom-health { padding: 0 6px; }
+#custom-health.ok   { color: #a3be8c; }
+#custom-health.warn { color: #ebcb8b; }
+#custom-health.bad  { color: #bf616a; }

@@ -1,0 +1,18 @@
+[Unit]
+Description=Hyprland Polkit Agent
+PartOf=hypr-apps.target
+Wants=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=exec
+# wait until the Wayland socket exists
+ExecStartPre=/usr/bin/bash -lc 'for i in {1..50}; do test -n "$WAYLAND_DISPLAY" && test -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" && exit 0; sleep 0.1; done; echo "Wayland not ready"; exit 1'
+Environment=QT_QPA_PLATFORM=wayland
+Environment=XDG_CURRENT_DESKTOP=Hyprland
+ExecStart=/usr/libexec/hyprpolkitagent
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=hypr-apps.target

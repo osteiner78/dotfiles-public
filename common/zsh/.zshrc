@@ -1,79 +1,74 @@
-# ==================== AUTOSTART TMUX WHEN SSH ==========================
-# https://stackoverflow.com/questions/27613209/how-to-automatically-start-tmux-on-ssh-session
-# See https://stackoverflow.com/questions/25207909/tmux-open-terminal-failed-not-a-terminal
-if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
-# if [ -z "$TMUX" ]; then
-  exec tmux new-session -A -s osteiner
-fi 
-
 # ============================== POWERLEVEL 10K =================================
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# Keep instant prompt near the top to avoid flicker.
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
+
+# ==================== AUTOSTART TMUX WHEN SSH =========================
+# Auto-attach/create tmux for interactive SSH sessions.
+if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
+  exec tmux new-session -A -s osteiner
 fi
 
+# ==================== POWERLEVEL 10K ==========================
+# Load p10k theme per-OS (guarded).
+#if [[ "$(uname -s)" == "Darwin" ]]; then
+#  [[ -r /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme ]] \
+#    && source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+#elif [[ "$(uname -s)" == "Linux" ]]; then
+#  [[ -r ~/powerlevel10k/powerlevel10k.zsh-theme ]] \
+#    && source ~/powerlevel10k/powerlevel10k.zsh-theme
+#fi
+#[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
+
 # ============================== ZSHRC DEFAULTS =================================
-# # Set up the prompt
+# (Legacy promptinit kept to preserve your original behavior)
 # autoload -Uz promptinit
 # promptinit
 # prompt adam1
 
+# History & completion behavior
 setopt histignorealldups sharehistory
+setopt completealiases
 
-# # Use emacs keybindings even if our EDITOR is set to vi
+# Keybindings style
 bindkey -e
 
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
-HISTSIZE=5000
-SAVEHIST=5000
+# History file and size
+HISTSIZE=20000
+SAVEHIST=20000
 HISTFILE=~/.zsh_history
-#
-# # Use modern completion system
-autoload -Uz compinit
-compinit
-#
-# zstyle ':completion:*' auto-description 'specify: %d'
-# zstyle ':completion:*' completer _expand _complete _correct _approximate
-# zstyle ':completion:*' format 'Completing %d'
-# zstyle ':completion:*' group-name ''
-# zstyle ':completion:*' menu select=2
-# eval "$(dircolors -b)"
-# zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+# Completion styles (kept as-is; grouped)
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' completer _expand _complete _correct _approximate
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' group-name ''
+command -v dircolors >/dev/null 2>&1 && eval "$(dircolors -b)"
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 # zstyle ':completion:*' list-colors ''
-# zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-# zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-# zstyle ':completion:*' menu select=long
-# zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-# zstyle ':completion:*' use-compctl false
-# zstyle ':completion:*' verbose true
-#
-# zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-# zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' menu select=long
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 # =================================== OTHER ====================================================
+# History prefix search on arrows (keep exact sequences)
 bindkey "^[[A" history-search-backward
-bindkey "OA" history-search-backward
+bindkey "OA"  history-search-backward
 bindkey "^[[B" history-search-forward
-bindkey "OB" history-search-forward
+bindkey "OB"  history-search-forward
 # bindkey "<Down>" history-beginning-search-forward
 
-# Moved to .zshenv
-# EDITOR=/usr/local/bin/nvim
-# SUDO_EDITOR=/usr/local/bin/nvim
-
 # =================================== ALIASES ====================================================
-alias ".."="cd .." 
-alias "..."="cd ../.." 
-alias "...."="cd ../../.." 
-alias "....."="cd ../../../.." 
-
-# alias -g ..='..'
-# alias -g ...='../..'
-# alias -g ....='../../..'
-# alias -g .....='../../../..'
-# alias -g ......='../../../../..'
+alias ".."="cd .."
+alias "..."="cd ../.."
+alias "...."="cd ../../.."
+alias "....."="cd ../../../.."
 alias /="cd /"
 
 alias -- -='cd -'
@@ -87,171 +82,163 @@ alias 7='cd -7'
 alias 8='cd -8'
 alias 9='cd -9'
 
-# alias ll="ls -lah"
-# alias ls="eza -a --color=always --long --icons=always --no-user"
-alias ll="eza -lah --color=always --long --icons=always"
-
+alias ll="eza -lah --group --color=always --long --icons=always"
 alias vim="nvim"
 alias c="clear"
 
-# To run obsidian in hidpi in wayland
-# alias obsidian="OBSIDIAN_USE_WAYLAND=1 ~/AppImages/gearlever_obsidian_7947f7.appimage --no-sandbox -enable-features=UseOzonePlatform -ozone-platform=wayland %U"
+# Wayland Code
+alias code='code --enable-features=UseOzonePlatform --ozone-platform=wayland'
 
-# Tmux
+# Tmux helpers
 alias ta="tmux new-session -A -s ${USER} >/dev/null 2>&1"
 alias td="tmux detach"
 
-# Git
+# Git QoL
 alias gs="git status"
-alias gcm="git commit -m " ""
+alias gcm='git commit -m'
 alias gd="git diff"
 
 # Wireguard
 alias wd="sudo systemctl stop wg-quick@wg0"
 alias wu="sudo systemctl start wg-quick@wg0"
 
+# ==================== ENVIRONMENT =================================================
+# Tell systemctl not to use a pager
+export SYSTEMD_PAGER=cat
+export SYSTEMD_LESS=
+
 # ==================== YAZI =================================================
 function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
 }
-
-# ==================== NNN =================================================
-# alias n="nnn -dHieo -Pp"
-# alias n="nnn -dDHioU -Pp"
-
-# export NNN_BMS="c:$HOME/.config/;n:/media/nvme/;D:$HOME/Downloads/"
-# export NNN_COLORS='2314'
-# export NNN_PLUG="p:preview-tui;c:fzcd;a:autojump"
-# # export NNN_TERMINAL='alacritty --title preview-tui'
-# export NNN_USE_EDITOR=1
-# export NNN_RESTRICT_NAV_OPEN=1
-#
-# # For live preview plugin
-# export NNN_FIFO=/tmp/nnn.fifo
 
 # ==================== FZF =================================================
-# Set up fzf key bindings and fuzzy completion
-# source <(fzf --zsh)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Lines below from josean-dev: https://www.josean.com/posts/7-amazing-cli-tools
-# -- Use fd instead of fzf --
-export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+# (Order preserved exactly)
+export FZF_DEFAULT_COMMAND='fd --hidden --follow --strip-cwd-prefix --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --strip-cwd-prefix --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache'
 
-# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
-# - The first argument to the function ($1) is the base path to start traversal
-# - See the source code (completion.{bash,zsh}) for the details.
-_fzf_compgen_path() {
-  fd --hidden --exclude .git . "$1"
-}
+_fzf_compgen_path() { fd --hidden --follow --exclude .git . "$1" }
+_fzf_compgen_dir()  { fd --type=d --hidden --follow --exclude .git . "$1" }
 
-# Use fd to generate the list for directory completion
-_fzf_compgen_dir() {
-  fd --type=d --hidden --exclude .git . "$1"
-}
-
-# --- setup fzf theme ---
-# fg="#CBE0F0"
-# bg="#011628"
-# bg_highlight="#143652"
-# purple="#B388FF"
-# blue="#06BCE4"
-# cyan="#2CF9ED"
-
-# export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
 _gen_fzf_default_opts() {
+  # Gruvbox palette
+  local color00='#32302f' color01='#3c3836' color02='#504945' color03='#665c54'
+  local color04='#bdae93' color05='#d5c4a1' color06='#ebdbb2' color07='#fbf1c7'
+  local color08='#fb4934' color09='#fe8019' color0A='#fabd2f' color0B='#b8bb26'
+  local color0C='#8ec07c' color0D='#83a598' color0E='#d3869b' color0F='#d65d0e'
 
-# echo "Loaded fzf"
-# FZF GRUVBOX THEME 
-local color00='#32302f'
-local color01='#3c3836'
-local color02='#504945'
-local color03='#665c54'
-local color04='#bdae93'
-local color05='#d5c4a1'
-local color06='#ebdbb2'
-local color07='#fbf1c7'
-local color08='#fb4934'
-local color09='#fe8019'
-local color0A='#fabd2f'
-local color0B='#b8bb26'
-local color0C='#8ec07c'
-local color0D='#83a598'
-local color0E='#d3869b'
-local color0F='#d65d0e'
+  local opts="$FZF_DEFAULT_OPTS \
+--color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D} \
+--color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C} \
+--color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
 
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"\
-" --color=bg+:$color01,bg:$color00,spinner:$color0C,hl:$color0D"\
-" --color=fg:$color04,header:$color0D,info:$color0A,pointer:$color0C"\
-" --color=marker:$color0C,fg+:$color06,prompt:$color0A,hl+:$color0D"
+  export FZF_DEFAULT_OPTS="$opts"
 }
-
 _gen_fzf_default_opts
 
 show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
+export FZF_CTRL_T_OPTS="--preview='$show_file_or_dir_preview'"
+export FZF_ALT_C_OPTS="--preview='eza --tree --color=always {} | head -200'"
 
-export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+# ============== FZF-TAB =================
+
+# ----- Standard zsh completion system -----
+autoload -Uz compinit
+compinit
+
+fzf_tab_plugin="$HOME/.zsh/fzf-tab/fzf-tab.zsh"
+
+# If fzf-tab is present -> configure everything
+if [[ -r "$fzf_tab_plugin" ]]; then
+    fpath=(~/.zsh/fzf-tab $fpath)
+
+    if [[ -n $TMUX ]] && (( $+commands[fzf-tmux] )); then
+      zstyle ':fzf-tab:*' fzf-command 'fzf-tmux -p 80%,70%'
+    else
+      zstyle ':fzf-tab:*' fzf-command fzf
+    fi
+
+    zstyle ':fzf-tab:*' fzf-preview 'if [[ -d $realpath ]]; then eza --tree --color=always $realpath | head -200; else bat --style=numbers --color=always $realpath; fi'
+    zstyle ':completion:*:git-checkout:*' sort false
+    zstyle ':completion:*:descriptions' format '[%d]'
+    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+    zstyle ':completion:*' menu no
+    zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+    zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
+    zstyle ':fzf-tab:*' use-fzf-default-opts yes
+    zstyle ':fzf-tab:*' switch-group '<' '>'
+    zstyle ':fzf-tab:complete:z:*' fzf-preview 'eza -1 --color=always $realpath'
+
+    # Load fzf-tab plugin
+    source "$fzf_tab_plugin"
+
+    # Make sure fzf-tab owns TAB (after everything else)
+    if (( ${+functions[fzf-tab-complete]} )); then
+        bindkey -M emacs '^I' fzf-tab-complete
+        bindkey -M viins '^I' fzf-tab-complete
+    fi
+fi
+
+# Load fzf keybindings (Ctrl-R / Ctrl-T / Alt-C etc.)
+# Keep this after fzf-tab — your working order.
+source <(fzf --zsh)
 
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
 
 # ============ Zoxide (better cd) =========================
 eval "$(zoxide init zsh)"
-
 alias cd="z"
 
 # ==================== PERL LOCALE ==========================
+# (left commented intentionally)
 # LC_CTYPE=en_US.UTF-8
 # LC_ALL=en_US.UTF-8
 
-# ==================== POWERLEVEL 10K ==========================
-# Load powerlevel10k theme - Cross-platform
-if [ "$(uname -s)" = "Darwin" ]; then
-    source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-elif [ "$(uname -s)" =  "Linux" ]; then
-    # source /usr/share/powerlevel10k/powerlevel10k.zsh-theme
-	source ~/powerlevel10k/powerlevel10k.zsh-theme
-fi
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
 # ==================== ZSH PLUGINS  ==========================
-# Load shell plugins - Cross-platform
-if [ "$(uname -s)" = "Darwin" ]; then
-    source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [ "$(uname -s)" =  "Linux" ]; then
-    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# (Kept at the very end — your original order)
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  [[ -r "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] \
+    && source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  [[ -r "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] \
+    && source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [[ "$(uname -s)" == "Linux" ]]; then
+  [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+    && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+    && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
-# path+=${HOME}/.local/bin
-
-# For borgmatic
-# path+=('/root/.local/bin/')
+# (Kept as-is; order preserved)
+path+=${HOME}/.local/bin
+path+=('/root/.local/bin/')
 path+=('/opt/nvim')
 
 # >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/oliversteiner/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
+# (Kept verbatim but guarded)
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  if __conda_setup="$('/Users/oliversteiner/miniconda3/bin/conda' 'shell.zsh' 'hook' 2>/dev/null)"; then
     eval "$__conda_setup"
-else
-    if [ -f "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/oliversteiner/miniconda3/bin:$PATH"
-    fi
+  elif [[ -r "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh" ]]; then
+    . "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh"
+  else
+    export PATH="/Users/oliversteiner/miniconda3/bin:$PATH"
+  fi
+  unset __conda_setup
 fi
-unset __conda_setup
 # <<< conda initialize <<<
+
+# NVM (guarded)
+export NVM_DIR="$HOME/.nvm"
+[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"
+[[ -s "$NVM_DIR/bash_completion" ]] && . "$NVM_DIR/bash_completion"
+
+# (( ! ${+functions[p10k]} )) || p10k finalize
+eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"

@@ -1,16 +1,15 @@
-local colors = require("colors").sections.bar
+local settings = require("config.settings")
 
-sbar.bar {
-  topmost = "window",
-  height = 41,
-  notch_display_height = 41,
-  padding_right = 12,
-  padding_left = 12,
-  margin = -1,
-  corner_radius = 0,
-  y_offset = -1,
-  blur_radius = 20,
-  border_color = colors.border,
-  border_width = 1,
-  color = colors.bg,
-}
+sbar.bar({
+	topmost = "window",
+	height = settings.dimens.graphics.bar.height,
+	color = settings.colors.bar.transparent,
+	padding_right = settings.dimens.padding.right,
+	padding = settings.dimens.padding.bar,
+	padding_left = settings.dimens.padding.left,
+	margin = settings.dimens.padding.bar,
+	corner_radius = settings.dimens.graphics.background.corner_radius,
+	y_offset = settings.dimens.graphics.bar.offset,
+	-- blur_radius = settings.dimens.graphics.blur_radius,
+	border_width = 0,
+})

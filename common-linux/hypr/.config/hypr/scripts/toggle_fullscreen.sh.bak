@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# --- YOUR COLORS ---
+# NORMAL_BORDER_COLOR="rgba(33ccffee) rgba(00ff99ee) 45deg"
+# NORMAL_BORDER_COLOR="rgba(33ccffee)"
+FULLSCREEN_BORDER_COLOR="rgba(00aaaaae)"
+# --- END OF YOUR COLORS ---
+
+# Check if the active window is fullscreen.
+# The '-e' flag in jq sets an exit code, which is a cleaner way to use it in an 'if' statement.
+if hyprctl activewindow -j | jq -e '.fullscreen'; then
+  # IF IT IS FULLSCREEN:
+  # 1. Set the border color back to normal FIRST.
+  # 2. THEN, toggle fullscreen off.
+  # This order ensures the color change is registered before the window state changes.
+  hyprctl --batch "keyword general:col.active_border $NORMAL_BORDER_COLOR; dispatch fullscreen 1"
+else
+  # IF IT IS NOT FULLSCREEN:
+  # 1. Toggle fullscreen on FIRST.
+  # 2. THEN, set the special border color.
+  hyprctl --batch "dispatch fullscreen 1; keyword general:col.active_border $FULLSCREEN_BORDER_COLOR"
+fi
