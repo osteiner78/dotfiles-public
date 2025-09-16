@@ -17,12 +17,13 @@ mouse_events   = [ "click", "scroll" ]
 title_format   = "Yazi: {cwd}"
 
 [preview]
+image           = "chafa"
 wrap            = "no"
 tab_size        = 2
 max_width       = 600
 max_height      = 900
 cache_dir       = ""
-image_delay     = 30
+image_delay     = 100
 image_filter    = "triangle"
 image_quality   = 75
 sixel_fraction  = 15

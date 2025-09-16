@@ -108,9 +108,11 @@ export SYSTEMD_PAGER=cat
 export SYSTEMD_LESS=
 
 # ==================== YAZI =================================================
+# Removed WAYLAND_DISPLAY and XDG_SESSION_TYPE to force to use chafa for previews
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-  yazi "$@" --cwd-file="$tmp"
+  env -u WAYLAND_DISPLAY -u DISPLAY XDG_SESSION_TYPE=tty \
+    yazi "$@" --cwd-file="$tmp"
   if cwd="$(command cat -- "$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
     builtin cd -- "$cwd"
   fi
@@ -213,12 +215,17 @@ elif [[ "$(uname -s)" == "Linux" ]]; then
     && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
     && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Locations for Arch Linux
+  [[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+    && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+  [[ -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+    && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
 # (Kept as-is; order preserved)
 path+=${HOME}/.local/bin
-path+=('/root/.local/bin/')
+# path+=('/root/.local/bin/')
 path+=('/opt/nvim')
 
 # >>> conda initialize >>>
