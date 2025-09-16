@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Requires power-profiles-daemon
+# Profiles order: power-saver -> balanced -> performance -> back to power-saver
+
+current="$(powerprofilesctl get || true)"
+case "$current" in
+  power-saver) next="balanced" ;;
+  balanced)    next="performance" ;;
+  performance|*) next="power-saver" ;;
+esac
+
+powerprofilesctl set "$next"
+
+# Optional desktop notification
+if command -v notify-send >/dev/null 2>&1; then
+  notify-send "Power Profile" "Switched to: $next"
+fi

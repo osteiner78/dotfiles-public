@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Usage:
+#   focus-or-launch-class <class_name> <command...>
+#   focus-or-launch-class webapp <APPID>
+#
+# Examples:
+#   focus-or-launch-class code code
+#   focus-or-launch-class obsidian obsidian
+#   focus-or-launch-class webapp fmgjjmmmlfnkbppncabfkddbjimcfncm
+
+set -euo pipefail
+
+CHROMIUM_CMD=${CHROMIUM_CMD:-'/usr/bin/chromium --ozone-platform=wayland --enable-features=UseOzonePlatform --profile-directory=Default --enable-features=ExternalProtocolDialog'}
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: focus-or-launch-class <class_name> <command...> | webapp <APPID>" >&2
+  exit 2
+fi
+
+case "$1" in
+  webapp)
+    shift
+    [[ $# -ge 1 ]] || { echo "Usage: webapp <APPID>" >&2; exit 2; }
+    appid="$1"; shift
+    class_pat="^chrome-${appid}-.*$"
+    # Build default launch command for webapp (can be overridden by CHROMIUM_CMD env)
+    set -- $CHROMIUM_CMD --app-id="$appid" "$@"
+    ;;
+  *)
+    # exact class name
+    class_name="$1"; shift
+    [[ $# -ge 1 ]] || { echo "Need a launch command." >&2; exit 2; }
+    class_pat="^${class_name}$"
+    ;;
+esac
+
+# If any client's class matches -> focus; else launch.
+if hyprctl clients | sed -n 's/^[[:space:]]*class:[[:space:]]*//p' | grep -qE "$class_pat"; then
+  # Focus with the same pattern (Hyprland expects a matcher)
+  hyprctl dispatch focuswindow "class:${class_pat}" >/dev/null 2>&1 || true
+else
+  nohup "$@" >/dev/null 2>&1 &
+fi
