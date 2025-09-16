@@ -1,0 +1,8 @@
+[Unit]
+Description=Battery threshold watcher
+
+[Service]
+Type=oneshot
+Environment=LOW=20
+Environment=CRIT=10
+ExecStart=%h/.local/bin/battery-watch.sh
