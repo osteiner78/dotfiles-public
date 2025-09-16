@@ -216,7 +216,7 @@
         
         {:des "Cheatsheet (Hyper + ?)"
         :rules [:hyper-mode
-                [:k
+                [:slash
                 "/usr/bin/env bash -lc '/usr/local/bin/show-karabiner-cheatsheet'"]
                 ]}
 

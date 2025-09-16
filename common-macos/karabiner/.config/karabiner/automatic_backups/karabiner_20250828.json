@@ -821,7 +821,7 @@
         "description" : "Cheatsheet (Hyper + ?)",
         "manipulators" : [ {
           "from" : {
-            "key_code" : "slash"
+            "key_code" : "k"
           },
           "to" : [ {
             "shell_command" : "/usr/bin/env bash -lc '/usr/local/bin/show-karabiner-cheatsheet'"
