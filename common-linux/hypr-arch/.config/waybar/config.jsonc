@@ -1,0 +1,212 @@
+{
+"env": {
+  "LANG": "en_US.UTF-8",
+  "LC_ALL": "en_US.UTF-8"
+},
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 9,
+  "height": 30,
+  "modules-left": [
+    "custom/omarchy",
+    "hyprland/workspaces",
+    "custom/ws-sep",
+    "hyprland/window",
+  ],
+  "modules-center": [
+    "clock"
+    // "hyprland/window"
+    // "custom/update"
+  ],
+  "modules-right": [
+    "group/tray-expander",
+    "custom/weather",
+    "network",
+    "bluetooth",
+    "custom/powerprofile",
+    "cpu",
+    "temperature",
+    "memory",
+    "pulseaudio",
+    "battery",
+  ],
+  "custom/omarchy": {
+    "format": "",
+    // "on-click": "~/.local/bin/hypr-shutdown-dialog.sh",
+    "on-click": "~/.config/rofi/scripts/powermenu_t1",
+    "tooltip-format": "SUPER + ALT + SPACE"
+  },
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "active": "󱓻"
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+      "9": []
+    }
+  },
+  "custom/ws-sep": {
+    "format": "",
+    "tooltip": false
+  },
+  "hyprland/window": {
+        "format": "{class}",
+        "max-length": 20,
+        "rewrite": {
+          "^(?!.*\\S).*": "Finder"
+        }
+      },
+  "cpu": {
+    "interval": 5,
+    "format": "󰍛",
+    "on-click": "hyprctl dispatch exec 'sh -lc ~/.config/waybar/scripts/waybar-toggle-btop.sh'",
+    "on-click-right": "hyprctl dispatch exec '[float;size 900;center;noanim] alacritty -t Impala -e /usr/bin/s-tui'",
+    "tooltip-format": "{temperatureC}°C"
+  },
+"custom/powerprofile": {
+  "exec": "~/.config/waybar/scripts/waybar-powerprofile-json",
+  "interval": 5,
+  "signal": 5,
+  "return-type": "json",
+  "format": "{icon}",             // show only icon
+  "format-icons": {
+    "power-saver": "󰾆",          // leaf
+    "balanced": "",       // gauge
+    "performance": "󰓅"           // rocket
+  },
+  "tooltip-format": "Current profile: {}", 
+  "on-click": "~/.config/waybar/scripts/waybar-power-profile-toggle"
+},
+  "temperature": {
+    "interval": 5,
+    "format": "{temperatureC}°C",
+    "thermal-zone": 2,
+    "max-temp": 100,
+    "states": { "warning": 60, "critical": 80 },
+    "on-click-release": "hyprctl dispatch exec 'sh -lc ~/.config/waybar/scripts/waybar-toggle-btop.sh'"
+  },
+    "memory": {
+    "interval": 30,
+    "format": "",
+    "tooltip-format": "{used:0.1f}G/{total:0.1f}G"
+  },
+  "clock": {
+    "format": "{:%A %H:%M}",
+    "format-alt": "{:%d %B %Y}",
+    "tooltip": false,
+    // "on-click-right": "~/.local/share/omarchy/bin/omarchy-cmd-tzupdate"
+  },
+  "network": {
+    "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"],
+    "format" : "{icon}",
+    "format-wifi" : "{icon}",
+    "format-ethernet" : "󰀂",
+    "format-disconnected" : "󰖪",
+    "tooltip-format-wifi": "󰤨 {ifname} @ {essid}\nIP: {ipaddr}\nStrength: {signalStrength}%\nFreq: {frequency}MHz\nUp: {bandwidthUpBits} Down: {bandwidthDownBits}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "nospacing": 1,
+    "on-click": "hyprctl dispatch exec '[float;size 900;center;noanim] alacritty -t Impala -e /usr/bin/impala'",
+    "on-click-right": "hyprctl dispatch exec '[float;size 900;center;noanim] alacritty -e $HOME/.local/bin/waybar-network-launcher.sh'"
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging":    "{icon}",
+    "format-plugged":     "",
+    "format-icons": {
+      "charging": [
+        "󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"
+      ],
+      "default": [
+        "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"
+      ]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{capacity}% · {power:>1.0f} W↓ \n {time} left",
+    "tooltip-format-charging": "{capacity}% · {power:>1.0f} W↑ \n {time} to full",
+    "format-time": "{H}h {m}m",
+    "interval": 5,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+    "custom/weather": {
+      "exec": "~/.config/waybar/scripts/waybar-weather.sh",
+      "return-type": "json",
+      "format": "{text}",               // shows icon + temp
+      "interval": 600,                         // 10 min; adjust as you like
+      // "on-click": "hyprctl dispatch exec '[float;size 1250 900;center;noanim] alacritty -t Weather -e ~/.local/bin/waybar-weather-pane'"
+      // "on-click": "hyprctl dispatch exec \"[float;size 1075 900;center;noanim] mpv 'https://my.meteoblue.com/images/meteogram?lat=-23.55&lon=-46.63&asl=760&tz=America%2FSao_Paulo&lang=pt&apikey=1wtDgvnTC0l4Zo2V'\""
+      "on-click": "hyprctl dispatch exec \"[float;size 1150 670;center;noanim] mpv --force-window=immediate --image-display-duration=inf --idle=yes --no-osc --vf=crop=1150:670:0:0 'https://my.meteoblue.com/images/meteogram?lat=-23.55&lon=-46.63&asl=760&tz=America%2FSao_Paulo&lang=pt&apikey=1wtDgvnTC0l4Zo2V'\"",
+      "on-click-right": "xdg-open 'https://www.meteoblue.com/pt/tempo/previsao/meteogramweb/s%C3%A3o-paulo_brasil_3448439'"
+
+      // "format": "{}",
+      // "format-alt": "{alt}: {}",
+      // "exec": "~/.local/bin/weather-waybar",
+      // "interval": 3600,
+      // "format": "{}",
+      // "on-click": "hyprctl dispatch exec '[float;size 900x520;center;noanim] alacritty -t Weather -e ~/.local/bin/fetch-weather.sh'"
+    },  
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "hyprctl dispatch exec '[float;size 900 520;center;noanim] alacritty -t BluetoothManager -e /usr/bin/bluetui'",
+    "on-click-right": "blueman-manager"
+  },
+  "pulseaudio": {
+    "format": "{icon}",
+    "on-click": "hyprctl dispatch exec /usr/bin/pavucontrol",
+    "on-click-right": "hyprctl dispatch exec '[float;size 900 520;center;noanim] alacritty --class=Wiremix -e /usr/bin/wiremix'",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "󰝟",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+    "group/tray-expander": {
+      "orientation": "inherit",
+      "drawer": {
+        "transition-duration": 600,
+        "children-class": "tray-group-item"
+      },
+      "modules": [
+        "custom/expand-icon",
+        "tray"
+      ]
+    },
+  "custom/expand-icon": {
+    "format": " ",
+    "tooltip": false
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 12
+  }
+}

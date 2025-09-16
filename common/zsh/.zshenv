@@ -2,7 +2,7 @@
 
 path+=${HOME}/.local/bin
 # For borgmatic
-path+=('/root/.local/bin/')
+# path+=('/root/.local/bin/')
 
 EDITOR=/usr/local/bin/nvim
 SUDO_EDITOR=/usr/local/bin/nvim
