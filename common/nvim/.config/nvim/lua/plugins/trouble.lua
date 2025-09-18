@@ -1,6 +1,6 @@
 return {
 	"folke/trouble.nvim",
-	enabled = false,
+	enabled = true,
 	dependencies = { "nvim-tree/nvim-web-devicons", "folke/todo-comments.nvim" },
 	keys = {
 		-- from josean

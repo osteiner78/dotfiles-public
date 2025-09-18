@@ -48,8 +48,8 @@ vim.keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "[T]ab [F]ile" }
 
 -- [[ File Explorer (Nvim-Tree) ]] -- Mnemonic: [e]xplorer
 -- --- NOTE: Simplified Nvim-Tree keymaps to an '[e]xplorer' group for consistency.
-vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file [E]xplorer" })
-vim.keymap.set("n", "\\", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file [E]xplorer" })
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle file [E]xplorer" })
+vim.keymap.set("n", "\\", "<cmd>Neotree toggle<CR>", { desc = "Toggle file [E]xplorer" })
 vim.keymap.set("n", "<leader>o", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "[O]pen file in explorer" })
 
 -- [[ UI & Utilities ]] -- Mnemonic: [u]tils or [u]i
