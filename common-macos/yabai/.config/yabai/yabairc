@@ -78,8 +78,8 @@ yabai -m config \
  yabai -m config window_border                  off
  yabai -m config window_opacity                 on
  yabai -m config window_opacity_duration        0.2
- yabai -m config active_window_opacity          0.98
- yabai -m config normal_window_opacity          0.92
+ yabai -m config active_window_opacity          1.00
+ yabai -m config normal_window_opacity          1.00
  yabai -m config window_animation_duration      0.2
  yabai -m config window_animation_easing        ease_out_quint
  # yabai -m config window_animation_easing      ease_in_expo
