@@ -1,0 +1,327 @@
+// This config is in the KDL format: https://kdl.dev
+// "/-" comments out the following node.
+// Check the wiki for a full description of the configuration:
+// https://yalter.github.io/niri/Configuration:-Introduction
+//
+// Converted from your Hyprland config set on 2025-09-21.
+// Goal: keep your semantics (apps, launches, keys, look & feel) where Niri supports it.
+// Notes:
+// - Hypr-specific effects (blur, opacity-per-state, per-window border color) have no 1:1 in Niri.
+// - Hypr plugins (overview, hyprexpo) → use Niri's built-in Overview (toggle-overview) instead.
+// - "Special" workspaces & some gesture dispatchers don’t exist; alternatives are commented.
+// - Autostart: uses spawn-at-startup/spawn-sh-at-startup. Keep your scripts and bins.
+// - Waybar: switch modules hyprland/* → niri/* (see comments at bottom).
+// - Hyprlock/hypridle: recommended replacements are swaylock + swayidle. Your hyprlock
+//   block is preserved here as comments for reference.
+// - Env vars: set system-wide via ~/.config/environment.d/*.conf or systemd --user; see block.
+
+// =============================
+// ========== INPUT ============
+// =============================
+input {
+    keyboard {
+        xkb {
+            // Hypr: kb_layout=us, kb_variant=intl, kb_model=apple, kb_options=caps:hyper
+            layout "us"
+            variant "intl"
+            model "apple"
+            options "caps:hyper"
+        }
+        numlock
+    }
+
+    touchpad {
+        // Hypr: natural_scroll=true, clickfinger_behavior=true
+        natural-scroll
+        tap
+        // dwt
+        // clickfinger-behavior has no direct knob; libinput defaults are fine.
+    }
+
+    // Hypr per-device examples (epic-mouse-v1, apple-spi-trackpad) don’t map 1:1.
+    // For device-specific tweaks on Niri, prefer udev hwdb/libinput quirks.
+    // See: https://yalter.github.io/niri/Configuration:-Input
+
+    // follow_mouse = 0  → default Niri behavior is focus-follows-keyboard.
+    // To mimic focus-follows-mouse, uncomment:
+    // focus-follows-mouse max-scroll-amount="0%"
+}
+
+// =============================
+// ========== OUTPUTS ==========
+// =============================
+// Hypr: monitor=eDP-1,preferred,auto,1.5
+// Your existing Niri block kept, with a comment of Hypr mapping.
+output "eDP-1" {
+    // Hypr suggested scale was 1.50. You're currently using 1.333 in Niri.
+    // Keep as-is; change to 1.5 if desired.
+    mode "1920x1080@120.030"
+    scale 1.333
+    transform "normal"
+    position x=1280 y=0
+}
+
+// Hypr lid-close bindl used hyprctl to disable/enable the panel.
+// Niri doesn’t expose lid-switch bindings directly. Use logind HandleLidSwitch=suspend
+// (or ignore) in /etc/systemd/logind.conf, or an external daemon that calls `niri msg`.
+// See: man logind.conf
+
+// =============================
+// ========== LAYOUT ===========
+// =============================
+layout {
+    // Hypr general { gaps_in=3 gaps_out=5 border_size=2 rounding=5 }
+    // Niri has a single gaps value; use outer-ish feel by raising slightly.
+    gaps 8
+
+    // Focus ring approximates your active/inactive border aesthetics.
+    focus-ring {
+        width 3
+        active-color "#AF3A03"   // gruv-ish active
+        inactive-color "#595959" // subtle inactive
+        // You had gradient borders; Niri supports gradients but simpler is faster.
+        // active-gradient from="#AF3A03" to="#FABD2F" angle=45
+    }
+
+    // Border OFF to rely on focus ring only (closer to Hypr’s colored border semantics)
+    border {
+        off
+        width 2
+        active-color "#AF3A03"
+        inactive-color "#595959"
+    }
+
+    // Shadows: you used enabled=true range=12; here’s a light shadow approximation.
+    shadow {
+        // on
+        softness 20
+        spread 3
+        offset x=0 y=5
+        color "#0006"
+    }
+
+    // prefer-no-csd trims client-side rounding/shadows and lets Niri draw clean borders.
+}
+
+prefer-no-csd
+
+// Hypr: decoration { active_opacity/inactive_opacity, blur { enabled } }
+// Niri lacks per-window opacity and blur. Consider picom-like effects are not in Niri.
+
+// =============================
+// ======== ANIMATIONS =========
+// =============================
+animations {
+    // You had many tweaked Beziers. Niri has simpler global controls per type.
+    // Leave defaults (they’re snappy). To trim for battery, uncomment:
+    // off
+    // slowdown 0.9
+}
+
+// =============================
+// ===== WINDOW RULES ==========
+// =============================
+// Hypr floating apps → open-floating true by (app-id|title) regex where possible.
+// NOTE: Hypr “class” ≠ Wayland app-id. We map to common app-ids and titles; adjust if needed.
+window-rule { match app-id=r#"^(1Password|com\.onepassword\.OnePassword|1password)$"# open-floating true }
+window-rule { match app-id=r#"^(btrfs-assistant)$"# open-floating true }
+window-rule { match app-id=r#"^(firewall-config|org\.fedoraproject\.FirewallConfig)$"# open-floating true }
+window-rule { match app-id=r#"^(blueman-manager)$"# open-floating true }
+window-rule { match app-id=r#"^(org\.pulseaudio\.pavucontrol)$"# open-floating true }
+window-rule { match app-id=r#"^(xdg-desktop-portal-gtk)$"# open-floating true }
+window-rule { match app-id=r#"^(waypaper)$"# open-floating true }
+window-rule { match app-id=r#"^(nm-connection-editor)$"# open-floating true }
+window-rule { match title="^Open File$" open-floating true }
+
+// Hypr suppress maximize requests:
+// Niri has no explicit suppressevent; if an app forces fullscreen, you can bind
+// fullscreen-window toggle. Leaving as-is.
+
+// Hypr XWayland drag fix (nofocus for a particular empty Xwayland window) not needed here.
+
+// Hypr fullscreen: bordersize 5 + color. Niri: we can thicken focus ring when fullscreen via rule:
+window-rule { match fullscreen=true focus-ring { width 5 active-color "#cc241d" inactive-color "#00aaaa" } }
+
+// === Workspace placement rules ===
+// Hypr moved some apps to numbered workspaces.
+// Niri window rules *may* support initial-placement (subject to version).
+// If your Niri build supports it, uncomment examples below and adjust.
+// /- window-rule { match app-id=r#"^(dolphin|org\.kde\.dolphin)$"#          move-to-workspace 1 }
+// /- window-rule { match app-id=r#"^(firefox|org\.mozilla\.firefox)$"#       move-to-workspace 2 }
+// /- window-rule { match title=r#"^Timeshift$"#                               move-to-workspace 1 }
+// /- window-rule { match app-id=r#"^obsidian$"#                               move-to-workspace 5 }
+// /- window-rule { match app-id=r#"^code$"#                                   move-to-workspace 7 }
+// Chrome webapps had Hypr class like chrome-<APPID>-.*. Wayland app-id is usually "chromium"/"google-chrome".
+// Use title rules or launch scripts to focus/move after spawn.
+
+// === Waybar "Activity" scratch ===
+// Hypr had a special workspace for btop Activity window. Niri lacks named special WS.
+// Bind below spawns a floating centered terminal sized like your Hypr rule.
+
+// Example geometry-like centering is done by the terminal itself (alacritty -o window.dimensions).
+
+// =============================
+// ========== AUTOSTART ========
+// =============================
+// Hypr autostart → spawn-at-startup / spawn-sh-at-startup.
+spawn-at-startup "waybar"
+spawn-at-startup "hyprpaper"   // works fine under Niri
+spawn-at-startup "swayosd-server"
+spawn-at-startup "libinput-gestures-setup" "start"
+spawn-at-startup "systemctl" "--user" "start" "hyprpolkitagent.service"
+spawn-at-startup "keyd-application-mapper" "-d"
+spawn-sh-at-startup "waypaper --random"
+
+// Hypr visual-profile.sh toggles Hypr effects via hyprctl → not applicable.
+// Keep as reference (disabled):
+// /- spawn-at-startup "~/.config/hypr/scripts/visual-profile.sh" "--auto"
+
+// =============================
+// ======== ENV VARIABLES ======
+// =============================
+// Hypr env block → set globally so all apps (including those launched outside Niri) see them.
+// Recommended: create ~/.config/environment.d/90-wayland.conf with lines like:
+//   HYPRCURSOR_THEME=bibata-modern-classic
+//   HYPRCURSOR_SIZE=24
+//   XCURSOR_SIZE=24
+//   GDK_BACKEND=wayland,x11
+//   QT_QPA_PLATFORM=wayland;xcb
+//   QT_STYLE_OVERRIDE=kvantum
+//   SDL_VIDEODRIVER=wayland
+//   MOZ_ENABLE_WAYLAND=1
+//   ELECTRON_OZONE_PLATFORM_HINT=wayland
+//   XDG_SESSION_TYPE=wayland
+//   XDG_CURRENT_DESKTOP=niri
+//   QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+//   GTK_USE_PORTAL=1
+// Then: systemctl --user daemon-reload (for generators that read environment.d) and re-login.
+
+// =============================
+// ========== BINDS ============
+// =============================
+binds {
+    // Keep Niri defaults + add Hypr-style app launches and tools.
+
+    // --- Launchers ---
+    // CONTROL+SPACE → your rofi script
+    Ctrl+Space { spawn-sh "~/.config/rofi/scripts/launcher_t1" }
+
+    // Super+Return → Alacritty
+    Mod+Return { spawn "alacritty" }
+
+    // Hyper-layer apps (you map HYPER via keyd): 1password, terminal, browser, file manager, obsidian, code
+    // Niri doesn’t parse custom $HYPER; rely on your keyd to emit Ctrl+Super+Alt+Shift modifiers.
+    Ctrl+Super+Alt+Shift+1 { spawn "1password" }
+    Ctrl+Super+Alt+Shift+Q { spawn "alacritty" }
+    Ctrl+Super+Alt+Shift+A { spawn-sh "~/.config/hypr/scripts/hypr-focus-browser" }
+    Ctrl+Super+Alt+Shift+F { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch org.kde.dolphin dolphin" }
+    Ctrl+Super+Alt+Shift+O { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch obsidian obsidian" }
+    Ctrl+Super+Alt+Shift+V { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch code code" }
+
+    // Webapps by APPID (chromium --app-id=...)
+    Ctrl+Super+Alt+Shift+C { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp kjbdgfilnfhdoflbpgamdcdgpehopbep" } // Calendar
+    Ctrl+Super+Alt+Shift+G { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp fmgjjmmmlfnkbppncabfkddbjimcfncm" } // Gmail
+    Ctrl+Super+Alt+Shift+M { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp mnhkaebcjjhencmpkapnbdaogjamfbcj" } // Maps
+    Ctrl+Super+Alt+Shift+P { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp hobmfnofdkcfacpggknhmphkfebfeopg" } // Paperless
+    Ctrl+Super+Alt+Shift+T { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp dlgohinmglaoopaiplliaecdpmnepmga" } // Todoist
+    Ctrl+Super+Alt+Shift+W { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp hnpfjngllnobngcgfapefoaidbinmjnm" } // WhatsApp
+    Ctrl+Super+Alt+Shift+X { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp caidcmannjgahlnbpmidmiecjcoiiigg" } // Gemini
+    Ctrl+Super+Alt+Shift+Z { spawn-sh "~/.config/hypr/scripts/hypr-focus-or-launch webapp cadlkienfkclaiaibeoongdcgmdikeeg" } // ChatGPT
+
+    // --- System-ish binds ---
+    Mod+B { spawn-sh "~/.config/waybar/scripts/waybar-toggle.sh" }
+    Mod+D { spawn-sh "~/.config/hypr/scripts/hypr-toggle-dark.sh" }
+    Mod+N { spawn-sh "alacritty -e nvim" }
+    Mod+T { spawn-sh "alacritty -e btop" }
+    Mod+V { toggle-window-floating; }
+    Mod+Q { close-window; }
+
+    // Overview / Expo equivalents
+    XF86LaunchA { toggle-overview; }
+    XF86LaunchB { toggle-overview; }
+
+    // Visual profile toggle (Hypr-only). Keep commented for reference.
+    // Mod+F1 { spawn-sh "~/.config/hypr/scripts/visual-profile.sh --toggle" }
+
+    // Media & brightness (prefer swayosd if you want OSD)
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "swayosd-client" "--output-volume=raise" }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "swayosd-client" "--output-volume=lower" }
+    XF86AudioMute        allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle" }
+
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "swayosd-client" "--brightness=raise" }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "swayosd-client" "--brightness=lower" }
+
+    // Keyboard backlight (macsmc)
+    Mod+XF86MonBrightnessUp   { spawn "brightnessctl" "-d" "smc::kbd_backlight" "set" "+10%" }
+    Mod+XF86MonBrightnessDown { spawn "brightnessctl" "-d" "smc::kbd_backlight" "set" "10%-" }
+
+    // Focus/move (you already have many defaults; keep WASD/HJKL + arrows)
+    Mod+H { focus-column-left; }  Mod+L { focus-column-right; }
+    Mod+J { focus-window-down; }  Mod+K { focus-window-up; }
+
+    Mod+Ctrl+H { move-column-left; }  Mod+Ctrl+L { move-column-right; }
+    Mod+Ctrl+J { move-window-down; }  Mod+Ctrl+K { move-window-up; }
+
+    // Workspaces 1-9 (Hypr style)
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+Ctrl+1 { move-column-to-workspace 1; }
+    Mod+Ctrl+2 { move-column-to-workspace 2; }
+    Mod+Ctrl+3 { move-column-to-workspace 3; }
+    Mod+Ctrl+4 { move-column-to-workspace 4; }
+    Mod+Ctrl+5 { move-column-to-workspace 5; }
+    Mod+Ctrl+6 { move-column-to-workspace 6; }
+    Mod+Ctrl+7 { move-column-to-workspace 7; }
+    Mod+Ctrl+8 { move-column-to-workspace 8; }
+    Mod+Ctrl+9 { move-column-to-workspace 9; }
+
+    // Column tweaks
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // Fullscreen / maximize approximations
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+
+    // Scratch-like: spawn btop in centered floating alacritty (size ~1400x950)
+    Mod+S { spawn-sh "alacritty -t Activity --option window.dimensions.columns=170 --option window.dimensions.lines=45" }
+}
+
+// =============================
+// ======== SCREENSHOT =========
+// =============================
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// =============================
+// ======== IDLE / LOCK =========
+// =============================
+// Replace Hypridle + Hyprlock with swayidle + swaylock (or gtklock) under Niri.
+// Example (enable via spawn-at-startup or your user services):
+// spawn-sh-at-startup "swayidle -w timeout 120 'brightnessctl -s set 10' resume 'brightnessctl -r' timeout 150 'swaylock -f' timeout 180 'niri msg action power-off-monitors' timeout 600 'systemctl suspend' &"
+
+// Your hypridle/hyprlock content kept below for reference only (commented):
+// /- general { lock_cmd = "pidof hyprlock || hyprlock" before_sleep_cmd = "loginctl lock-session" after_sleep_cmd = "niri msg action power-off-monitors" }
+// /- listener { timeout = 60 on-timeout = "brightnessctl -d 'smc::kbd_backlight' -s set 0" on-resume = "brightnessctl -d 'smc::kbd_backlight' -r" }
+// /- listener { timeout = 120 on-timeout = "notify-send -u low 'Idle' 'Screen dimmed' || true; brightnessctl -s set 10" on-resume = "brightnessctl -r" }
+// /- listener { timeout = 150 on-timeout = "swaylock -f" }
+// /- listener { timeout = 180 on-timeout = "niri msg action power-off-monitors" on-resume = "brightnessctl -r" }
+// /- listener { timeout = 600 on-timeout = "systemctl suspend" }
+
+// =============================
+// ========= WAYBAR ============
+// =============================
+// Switch modules in your waybar config:
+//   "hyprland/workspaces" → "niri/workspaces"
+//   "hyprland/window"     → "niri/window"
+// and replace any "hyprctl dispatch exec ..." with plain exec or `niri msg action` where relevant.
+// The rest of your Waybar JSON can remain as-is.
+

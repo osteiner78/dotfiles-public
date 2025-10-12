@@ -1,0 +1,63 @@
+
+configuration {
+  modi: "window";
+  show-icons: false;
+  window-format: "{n} {t}";
+  scrollbar: false;
+}
+
+* {
+  font: "JetBrainsMono Nerd Font 13";
+  background-color: #282828;
+  text-color: #d4be98;
+}
+
+window {
+  width: 60%;
+  padding: 10px;
+  border: 1px;
+  border-radius: 6px;
+  border-color: #504945;
+  background-color: rgba(40,40,40,0.94);
+}
+
+listview {
+  lines: 3;
+  columns: 6;
+  spacing: 10px;
+  padding: 8px;
+  background-color: #282828;
+}
+
+element {
+  padding: 6px 10px;
+  margin: 4px;
+  border: 1px;
+  border-radius: 6px;
+  border-color: transparent;
+  background-color: transparent;
+}
+
+element-text {
+  text-color: #d4be98;
+}
+
+element selected {
+  background-color: #3c3836;
+  border: 1px;
+  border-color: #d79921;
+}
+element selected element-text {
+  text-color: #fbf1c7;
+}
+
+element normal.active {
+  background-color: rgba(60,56,54,0.70);
+  border: 1px;
+  border-color: #b57614;
+}
+element normal.urgent {
+  background-color: rgba(60,56,54,0.85);
+  border: 1px;
+  border-color: #d79921;
+}
