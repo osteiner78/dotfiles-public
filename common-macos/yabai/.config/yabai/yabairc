@@ -7,6 +7,11 @@ sudo yabai --load-sa
 # yabai -m rule --add label=btop_float app="^Alacritty$" title="^btop-floating$" manage=on
 
 # ============= DESKTOP RULES =============
+# Reserve 0px top padding on internal (id=1), 40px on external (id=2)
+yabai -m config --display 1 external_bar all:0:0
+yabai -m config --display 3 external_bar all:40:0
+
+# ============= DESKTOP RULES =============
 # specific space settings
 yabai -m config --space 1 layout float
 # yabai -m config --space comms layout stack
@@ -14,7 +19,8 @@ yabai -m config --space 1 layout float
 # Spaces rules
 yabai -m rule --add label=web2 app="^(Arc|Dia|Google Chrome|Safari|Zen)$" space=2
 
-yabai -m rule --add label=comms3 app="^(Gmail|Mail|WhatsApp)$" space=3
+yabai -m rule --add label=comms3 app="^(Gmail|Mail)$" space=3
+yabai -m rule --add label=comms-wa app="WhatsApp$" space=3
 # yabai -m rule --add app="^Gmail$" space=3
 # yabai -m rule --add app="^Mail$" space=3
 # yabai -m rule --add app="^WhatsApp$" space=3
