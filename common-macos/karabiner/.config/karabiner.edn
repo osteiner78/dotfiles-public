@@ -143,7 +143,7 @@
 
                 [:1 [:launch "/Applications/1Password.app"]]
                 [:a [:launch_focus_cmd "Arc"]]
-                [:c [:launch_focus_cmd "Calendar"]]
+                [:c [:launch_focus_front_app "Calendar"]]
                 [:d [:launch "/opt/homebrew/bin/dark-mode"]]
                 [:e :!Fe]
                 [:f ["open /System/Library/CoreServices/Finder.app && osascript -e 'tell application \"Finder\" to activate'"]]
@@ -157,7 +157,7 @@
                 [:q [:launch "/Applications/Alacritty.app"]]
                 [:v [:launch_focus_front_app_bid "Code"     "com.microsoft.VSCode"]]
                 [:w [:launch_focus_front_app_bid "WhatsApp" "net.whatsapp.WhatsApp"]]
-                [:x [:launch_focus_cmd "Gemini"]]
+                [:x [:launch_focus_front_app "Gemini"]]
                 [:z [:launch_focus_front_app_bid "ChatGPT" "com.openai.chat"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
 
