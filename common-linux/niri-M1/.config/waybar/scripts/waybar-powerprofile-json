@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+profile="$(powerprofilesctl get || echo balanced)"
+
+printf '{"text":"%s","alt":"%s","tooltip":"Power profile: %s"}\n' \
+  "$profile" "$profile" "$profile"
