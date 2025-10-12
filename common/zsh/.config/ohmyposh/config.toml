@@ -23,6 +23,12 @@ final_space = true
     type = 'os'
     style = 'powerline'
 
+      [blocks.segments.properties]
+      archarm = ''        # use Arch icon for Arch Linux ARM (ID=archarm)
+      # optional: fallback tweaks
+      # linux = ''        # generic Linux icon if you want to change it
+      # display_distro_name = false
+
   [[blocks.segments]]
     template = ' {{ .Path }} '
     foreground = '#282828' # gruvbox fg0
