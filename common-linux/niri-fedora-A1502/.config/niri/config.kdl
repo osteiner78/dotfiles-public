@@ -50,6 +50,14 @@ animations {
     // }
 // }
 
+cursor {
+    // Replace "Bibata-Modern-Classic" with the specific folder name 
+    // you installed (e.g., Bibata-Modern-Ice, Bibata-Original-Amber)
+    xcursor-theme "Bibata-Modern-Classic"
+    // xcursor-theme "Bibata-Original-Classic"
+    xcursor-size 24
+}
+
 // Alt-tab switcher
 recent-windows {
     // off
