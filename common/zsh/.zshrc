@@ -321,3 +321,12 @@ eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
 
 # Velocity Bridge PATH
 export PATH="$HOME/.local/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/home/osteiner/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+export PATH=$PATH:~/.npm-global/bin
