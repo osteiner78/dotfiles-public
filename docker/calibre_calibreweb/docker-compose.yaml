@@ -25,39 +25,35 @@ services:
   #     - 9191:8181
   #     - 9091:8081
   #   restart: unless-stopped
-
-  calibre-web:
+ 
+  calibre-web-luisa:
     image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
+    container_name: calibre-web-luisa
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Sao_Paulo
-      - DOCKER_MODS=linuxserver/mods=universal-calibre #optional
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+      # - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      # - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
-      - /opt/calibre-web/config:/config
-      # - /opt/docker/calibre-books:/books
-      - /mnt/nfs/books/Luisa Library/:/books
-      # - /media/nvme/books:/books
+      - /opt/calibre-web/luisa-config:/config
+      - /mnt/nfs/books/Luisa Library:/books
     ports:
       - 8083:8083
     restart: unless-stopped
 
-  # calibre-web-luisa:
-  #   image: lscr.io/linuxserver/calibre-web:latest
-  #   container_name: calibre-web-luisa
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=America/Sao_Paulo
-  #     - DOCKER_MODS=linuxserver/mods=universal-calibre #optional
-  #     - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
-  #   volumes:
-  #     - /opt/calibre-web/config:/config
-  #     # - /opt/docker/calibre-books:/books
-  #     - /mnt/nfs/books:/books
-  #     # - /media/nvme/books:/books
-  #   ports:
-  #     - 8084:8083
-  #   restart: unless-stopped
+  calibre-web-technical:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web-technical
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      # - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      # - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - /opt/calibre-web/technical-config:/config
+      - /mnt/nfs/books/Technical Library:/books
+    ports:
+      - 8084:8083
+    restart: unless-stopped
