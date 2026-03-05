@@ -1,0 +1,102 @@
+// Add lines like this to spawn processes at startup.
+// Note that running niri as a session supports xdg-desktop-autostart,
+// which may be more convenient to use.
+// See the binds section below for more spawn examples.
+
+spawn-at-startup "qs" "-c" "noctalia-shell"
+spawn-at-startup "/usr/libexec/kf6/polkit-kde-authentication-agent-1"
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+spawn-at-startup "keyd-application-mapper" "-d"
+spawn-at-startup "vicinae" "server"
+
+hotkey-overlay {
+    // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
+    skip-at-startup
+}
+
+// Uncomment this line to ask the clients to omit their client-side decorations if possible.
+// If the client will specifically ask for CSD, the request will be honored.
+// Additionally, clients will be informed that they are tiled, removing some client-side rounded corners.
+// This option will also fix border/focus ring drawing behind some semitransparent windows.
+// After enabling or disabling this, you need to restart the apps for this to take effect.
+prefer-no-csd
+
+// You can change the path where screenshots are saved.
+// A ~ at the front will be expanded to the home directory.
+// The path is formatted with strftime(3) to give you the screenshot date and time.
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// You can also set this to null to disable saving screenshots to disk.
+// screenshot-path null
+
+// Animation settings.
+animations {
+    // Uncomment to turn off all animations.
+    // off
+
+    // Slow down all animations by this factor. Values below 1 speed them up instead.
+    slowdown 2.0
+}
+
+overview {
+    zoom 0.4
+    backdrop-color "#262626"
+
+    workspace-shadow {
+        // off
+        softness 40
+        spread 10
+        offset x=0 y=10
+        color "#00000050"
+    }
+}
+
+cursor {
+    // Replace "Bibata-Modern-Classic" with the specific folder name
+    // you installed (e.g., Bibata-Modern-Ice, Bibata-Original-Amber)
+    xcursor-theme "Bibata-Modern-Classic"
+    // xcursor-theme "Bibata-Original-Classic"
+    xcursor-size 24
+}
+
+// Alt-tab switcher
+recent-windows {
+    // off
+    debounce-ms 750
+
+    open-delay-ms 150
+
+    highlight {
+        active-color "#999999ff"
+        urgent-color "#ff9999ff"
+        padding 18
+        corner-radius 15
+    }
+
+    previews {
+        max-height 580
+        max-scale 0.7
+    }
+
+    binds {
+        Mod+Tab         { next-window; }
+        Mod+Shift+Tab   { previous-window; }
+        // Ctrl+dead_grave   { previous-window; }
+        Mod+dead_grave       { next-window     filter="app-id"; }
+        Mod+Shift+grave { previous-window filter="app-id"; }
+
+        // Mod+Tab         { next-window; }
+        // Mod+Shift+Tab   { previous-window; }
+        // Mod+grave       { next-window     filter="app-id"; }
+        // Mod+Shift+grave { previous-window filter="app-id"; }
+    }
+}
+
+include "input.kdl"
+include "output.kdl"
+include "layout.kdl"
+include "windowrule.kdl"
+include "binds.kdl"
+include "hardware-specific.kdl"
+// include "./noctalia.kdl"
