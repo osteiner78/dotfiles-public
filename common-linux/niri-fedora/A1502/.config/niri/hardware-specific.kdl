@@ -1,0 +1,28 @@
+// Niri keybinds specific to Macbook Pro A1502
+
+spawn-at-startup "hypridle"
+
+binds {
+Super+Alt+L hotkey-overlay-title="Lock the Screen: hyprlock" { spawn "hyprlock"; }
+
+// Hyper-layer apps
+Ctrl+Super+Alt+Shift+A { spawn-sh "niri-focus-or-launch --app-id '^app.zen_browser.zen$' --command flatpak run app.zen_browser.zen"; }
+Ctrl+Super+Alt+Shift+T { spawn-sh "niri-focus-or-launch --app-id '^Todoist$' --command flatpak run com.todoist.Todoist"; } // Todoist
+
+// Webapps by APPID
+Ctrl+Super+Alt+Shift+C { spawn-sh "niri-focus-or-launch webapp kjbdgfilnfhdoflbpgamdcdgpehopbep"; } // Google Calendar
+Ctrl+Super+Alt+Shift+G { spawn-sh "niri-focus-or-launch webapp fmgjjmmmlfnkbppncabfkddbjimcfncm"; } // Gmail
+Ctrl+Super+Alt+Shift+M { spawn-sh "niri-focus-or-launch webapp mnhkaebcjjhencmpkapnbdaogjamfbcj"; } // Google Maps
+Ctrl+Super+Alt+Shift+P { spawn-sh "niri-focus-or-launch webapp iibhdbailckdjjikafofclhkhaejamgp"; } // Paperless-ngx
+Ctrl+Super+Alt+Shift+T { spawn-sh "niri-focus-or-launch webapp dlgohinmglaoopaiplliaecdpmnepmga"; } // Todoist
+Ctrl+Super+Alt+Shift+W { spawn-sh "niri-focus-or-launch webapp hnpfjngllnobngcgfapefoaidbinmjnm"; } // WhatsApp
+Ctrl+Super+Alt+Shift+X { spawn-sh "niri-focus-or-launch webapp cadlkienfkclaiaibeoongdcgmdikeeg"; } // ChatGPT
+Ctrl+Super+Alt+Shift+Z { spawn-sh "niri-focus-or-launch webapp caidcmannjgahlnbpmidmiecjcoiiigg"; } // Gemini
+
+
+// Other
+Mod+XF86MonBrightnessDown   {spawn-sh "brightnessctl --device='smc::kbd_backlight' set 10%-"; }
+Mod+XF86MonBrightnessUp     {spawn-sh "brightnessctl --device='smc::kbd_backlight' set 10%+"; }
+
+XF86LaunchB { spawn "fuzzel"; }
+}

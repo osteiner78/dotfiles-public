@@ -1,7 +1,7 @@
 return {
 	-- Autoformat
 	"stevearc/conform.nvim",
-    enabled = false,
+    enabled = true,
 	lazy = true,
 	keys = {
 		{

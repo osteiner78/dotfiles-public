@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# cat-all: print each (text) file with a header.
+# Default: current directory, NOT recursive. Use -r to recurse.
+
+set -euo pipefail
+
+recurse=0
+while getopts ":r" opt; do
+  case "$opt" in
+    r) recurse=1 ;;
+    *) echo "Usage: $(basename "$0") [-r]"; exit 2 ;;
+  esac
+done
+shift $((OPTIND-1))
+
+root='.'
+
+if [[ $recurse -eq 1 ]]; then
+  depth_args=()   # no maxdepth -> recursive
+else
+  depth_args=(-maxdepth 1)
+fi
+
+is_text() {
+  # grep -I returns true if the file is NOT binary
+  grep -Iq . -- "$1"
+}
+
+# is_text() {
+#   local f=$1
+#   if command -v file >/dev/null 2>&1; then
+#     local mime
+#     mime=$(file -b --mime -- "$f") || return 1
+#     [[ "$mime" != *"charset=binary"* ]]
+#   else
+#     grep -Iq . -- "$f"
+#   fi
+# }
+
+find "$root" "${depth_args[@]}" \( -type f -o -xtype f \) -print0 |
+while IFS= read -r -d '' f; do
+  abs="$PWD/${f#./}"
+
+  printf '\n--- FILE: %s ---\n' "$abs"
+
+  if is_text "$f"; then
+    cat -- "$f"
+  else
+    echo "(binary skipped)"
+  fi
+done

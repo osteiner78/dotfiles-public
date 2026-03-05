@@ -39,23 +39,53 @@ HISTSIZE=20000
 SAVEHIST=20000
 HISTFILE=~/.zsh_history
 
-# Completion styles (kept as-is; grouped)
-zstyle ':completion:*' auto-description 'specify: %d'
+# --- Global Zsh Completion Styles ---
 zstyle ':completion:*' completer _expand _complete _correct _approximate
-zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' menu select=long
+zstyle ':completion:*' verbose true
 zstyle ':completion:*' group-name ''
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+
+# Formatting for headers and descriptions
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*:messages' format ' %d'
+zstyle ':completion:*:warnings' format ' [%d: no matches found]'
+zstyle ':completion:*' auto-description 'specify: %d'
+
+# Colors and Prompts
 command -v dircolors >/dev/null 2>&1 && eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-# zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-zstyle ':completion:*' menu select=long
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' verbose true
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
+# --- FZF-TAB Specific Styles ---
+zstyle ':fzf-tab:*' show-help yes
+zstyle ':fzf-tab:*' group-tidy true
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+
+# Completion styles (kept as-is; grouped)
+# zstyle ':completion:*' auto-description 'specify: %d'
+# zstyle ':completion:*' completer _expand _complete _correct _approximate
+# command -v dircolors >/dev/null 2>&1 && eval "$(dircolors -b)"
+# zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+# zstyle ':completion:*' list-colors ''
+# zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+# zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+# zstyle ':completion:*' menu select=long
+# zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+# zstyle ':completion:*' use-compctl false
+# zstyle ':completion:*' verbose true
+# zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+# zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+
+# Enable grouping and descriptions
+# zstyle ':completion:*:descriptions' format '[%d]'
+# zstyle ':completion:*' group-name ''
+
+# Force fzf-tab to show these groups
+# zstyle ':fzf-tab:*' show-help yes
+# zstyle ':fzf-tab:*' group-tidy true
+#
 # =================================== OTHER ====================================================
 # History prefix search on arrows (keep exact sequences)
 bindkey "^[[A" history-search-backward
@@ -86,8 +116,12 @@ alias ll="eza -lah --group --color=always --long --icons=always"
 alias vim="nvim"
 alias c="clear"
 
+# Fzf finders
+# Find files in subfolders
+# alias ff='fd . --type f --hidden --follow --exclude .git | fzf --ansi'
+
 # Wayland Code
-alias code='code --enable-features=UseOzonePlatform --ozone-platform=wayland'
+# alias code='code --enable-features=UseOzonePlatform --ozone-platform=wayland'
 
 # Tmux helpers
 alias ta="tmux new-session -A -s ${USER} >/dev/null 2>&1"
@@ -102,15 +136,52 @@ alias gd="git diff"
 alias wd="sudo systemctl stop wg-quick@wg0"
 alias wu="sudo systemctl start wg-quick@wg0"
 
+# Find files in subfolders
+ff() {
+  local fd_command="fd --type f --hidden --follow --exclude .git --color=always"
+  local file_path
+  
+  # 1. Capture the selected file path
+  file_path=$(fzf --ansi --disabled --query "$*" \
+    --bind "start:reload($fd_command . || true)" \
+    --bind "change:reload($fd_command {q} || true)" \
+    --preview 'bat --color=always --style=numbers {}' \
+    --header "ENTER to cd to this file's directory" \
+    --layout=reverse --height=90% --border)
+
+  # 2. If a file was selected, cd to its parent directory
+  if [[ -n "$file_path" ]]; then
+    # dirname extracts the path up to the last slash
+    cd "$(dirname "$file_path")" || return
+    
+    # Optional: list files in the new directory so you see where you are
+    ls -p --color=always
+  fi
+}
+
+# Find string in subfolders and open in Neovim
+fs() {
+  local rg_command="rg --column --line-number --no-heading --color=always --smart-case"
+  
+  fzf --ansi --disabled --query "$*" \
+    --bind "start:reload($rg_command -- . || true)" \
+    --bind "change:reload($rg_command -- {q} || true)" \
+    --delimiter : \
+    --preview 'bat --style=numbers --color=always --highlight-line {2} {1}' \
+    --bind 'enter:become(nvim {1} +{2})'
+}
+
 # ==================== ENVIRONMENT =================================================
 # Tell systemctl not to use a pager
 export SYSTEMD_PAGER=cat
 export SYSTEMD_LESS=
 
 # ==================== YAZI =================================================
+# Removed WAYLAND_DISPLAY and XDG_SESSION_TYPE to force to use chafa for previews
 function y() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-  yazi "$@" --cwd-file="$tmp"
+  env -u WAYLAND_DISPLAY -u DISPLAY XDG_SESSION_TYPE=tty \
+    yazi "$@" --cwd-file="$tmp"
   if cwd="$(command cat -- "$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
     builtin cd -- "$cwd"
   fi
@@ -213,12 +284,17 @@ elif [[ "$(uname -s)" == "Linux" ]]; then
     && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
     && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Locations for Arch Linux
+  [[ -r /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+    && source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+  [[ -r /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+    && source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
 # (Kept as-is; order preserved)
 path+=${HOME}/.local/bin
-path+=('/root/.local/bin/')
+# path+=('/root/.local/bin/')
 path+=('/opt/nvim')
 
 # >>> conda initialize >>>
@@ -242,3 +318,15 @@ export NVM_DIR="$HOME/.nvm"
 
 # (( ! ${+functions[p10k]} )) || p10k finalize
 eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
+
+# Velocity Bridge PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/home/osteiner/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+export PATH=$PATH:~/.npm-global/bin

@@ -1,0 +1,8 @@
+[Unit]
+Description=Automount trigger for %h/Nextcloud
+
+[Automount]
+Where=%h/Nextcloud
+
+[Install]
+WantedBy=default.target

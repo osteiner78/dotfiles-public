@@ -37,6 +37,15 @@ patterns:
     - '- /var/tmp/*'
     - '- /var/cache/*'
     - '- swap.img'
+    - '- /media/RAID*'
+    - '- /media/backups'
+    - '- /home/*/cache/*'
+    - '- /var/run/*'
+    - '- /dev/*'
+    - '- /proc/*'
+    - '- /run/*'
+    - '- /sys/*'
+    - '- /tmp/*'
 
 # Read include/exclude patterns from one or more separate named files,
 # one pattern per line. Note that Borg considers this option
@@ -49,21 +58,20 @@ patterns:
 # and tildes are expanded. Note that a glob pattern must either start
 # with a glob or be an absolute path. Do not backslash spaces in path
 # names. See the output of "borg help patterns" for more details.
-exclude_patterns:
-    - '/media/WDElements/'
-    - '/media/RAID*'
-    - '/media/backups'
-    - '/mnt/*'
-    - '/home/*/cache/*'
-    - '/var/run/*'
-    - '/var/tmp/*'
-    - '/var/cache/*'
-    - 'swap.img'
-    - '/dev/*'
-    - '/proc/*'
-    - '/run/*'
-    - '/sys/*'
-    - '/tmp/*'
+# exclude_patterns:
+#     - '/media/RAID*'
+#     - '/media/backups'
+#     - '/mnt/*'
+#     - '/home/*/cache/*'
+#     - '/var/run/*'
+#     - '/var/tmp/*'
+#     - '/var/cache/*'
+#     - 'swap.img'
+#     - '/dev/*'
+#     - '/proc/*'
+#     - '/run/*'
+#     - '/sys/*'
+#     - '/tmp/*'
 
 # Read exclude patterns from one or more separate named files, one
 # pattern per line. See the output of "borg help patterns" for more

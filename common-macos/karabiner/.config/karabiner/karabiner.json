@@ -116,7 +116,7 @@
             "key_code" : "c"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Calendar\""
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Calendar\" --front --timeout 8"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -286,7 +286,7 @@
             "key_code" : "x"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Gemini\""
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Gemini\" --front --timeout 8"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -821,7 +821,7 @@
         "description" : "Cheatsheet (Hyper + ?)",
         "manipulators" : [ {
           "from" : {
-            "key_code" : "k"
+            "key_code" : "slash"
           },
           "to" : [ {
             "shell_command" : "/usr/bin/env bash -lc '/usr/local/bin/show-karabiner-cheatsheet'"

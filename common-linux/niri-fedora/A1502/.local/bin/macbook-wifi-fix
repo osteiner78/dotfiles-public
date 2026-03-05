@@ -1,0 +1,34 @@
+#!/bin/bash
+# Location: /usr/lib/systemd/system-sleep/macbook-wifi-fix 
+
+# case $1/$2 in
+  # pre/*)
+   # Stop the network manager so it releases the driver
+    /usr/bin/systemctl stop NetworkManager
+    sleep 2
+    /usr/sbin/modprobe -r brcmfmac_wcc
+    sleep 2
+    /usr/sbin/modprobe -r brcmfmac
+    sleep 2
+    /usr/sbin/modprobe -r cfg80211
+    sleep 2
+    echo "stopped everything"
+    # ;;
+  # post/*)
+    # Reload the driver and start the network back up
+    /usr/sbin/modprobe cfg80211
+    sleep 2
+    /usr/sbin/modprobe brcmfmac
+    sleep 2
+    /usr/sbin/modprobe brcmfmac_wcc
+    sleep 2
+    /usr/bin/sleep 2
+    sleep 2
+    /usr/bin/systemctl start NetworkManager
+    sleep 2
+    echo "restarted everything"
+
+    nmcli device wifi rescan || true
+    # ;;
+# esac
+

@@ -1,0 +1,42 @@
+# Environment
+# Optional: Automatically launch tmux if you want
+# command = /usr/bin/tmux
+
+confirm-close-surface = false
+shell-integration = detect
+shell-integration-features = sudo,title,no-cursor
+
+# Window Aesthetics
+window-padding-x = 5
+window-padding-y = 5
+window-decoration = server
+background-opacity = 0.95
+background-blur = true
+window-colorspace = srgb
+alpha-blending = native
+window-theme = ghostty
+
+# Font Configuration
+font-family = "JetBrainsMono NF"
+font-style = "Regular"
+font-style-bold = "Bold"
+font-style-italic = "Italic"
+font-style-bold-italic = "Bold Italic"
+font-size = 12
+
+# Cursor Style
+cursor-style = underline
+cursor-style-blink = false
+adjust-cursor-thickness = 3
+
+# Selection & Clipboard
+copy-on-select = clipboard
+
+# Theme 
+# Ghostty has 300+ built-in themes. You can try:
+theme = "Gruvbox Material Dark"
+# Or import your specific one if it's a file:
+# config-file = themes/gruvbox_material.config
+
+# Keyboard Bindings
+keybind = ctrl+v=paste_from_clipboard

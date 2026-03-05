@@ -1,0 +1,17 @@
+[Unit]
+Description=On-demand rclone mount: nextcloud -> %h/Nextcloud
+After=network-online.target
+Wants=network-online.target
+
+[Mount]
+# rclone via fuse: WHAT is "remote:path"
+What=nextcloud:
+Where=%h/Nextcloud
+Type=fuse.rclone
+# Options are comma-separated rclone flags:
+#   - set your uid/gid (check with: id -u ; id -g)
+Options=config=%h/.config/rclone/rclone.conf,uid=%U,gid=%G,umask=002,allow_other,dir_cache_time=12h,poll_interval=15s,vfs_cache_mode=writes
+TimeoutSec=30
+
+[Install]
+WantedBy=default.target
