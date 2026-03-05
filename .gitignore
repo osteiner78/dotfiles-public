@@ -3,3 +3,4 @@
 .env
 lazy-lock.json
 ~/.local/share/nvim/lazy/
+docker/raspi-docker/etc-pihole/
