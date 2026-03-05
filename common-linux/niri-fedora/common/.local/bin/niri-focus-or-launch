@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# Usage:
+#   niri-focus-or-launch [--prefer <firefox|chromium>] --app-id <APP_ID_REGEX> --command <cmd...>
+#   niri-focus-or-launch [--prefer <firefox|chromium>] webapp [--title <TITLE_REGEX>] <URL_OR_ID>
+#   niri-focus-or-launch --list
+
+set -euo pipefail
+
+# --- Browser Detection ---
+get_browser() {
+    local pref="${1:-chromium}"
+    local chromium_list=(chromium-browser chromium google-chrome-stable brave-browser microsoft-edge)
+    local firefox_list=(zen-browser zen firefox librewolf)
+
+    local primary=("${chromium_list[@]}")
+    local secondary=("${firefox_list[@]}")
+    [[ "$pref" == "firefox" ]] && primary=("${firefox_list[@]}") && secondary=("${chromium_list[@]}")
+
+    for b in "${primary[@]}"; do if command -v "$b" >/dev/null 2>&1; then echo "$b"; return 0; fi; done
+
+    if flatpak list --app | grep -q "app.zen_browser.zen"; then
+        echo "flatpak run app.zen_browser.zen"
+        return 0
+    fi
+
+    for b in "${secondary[@]}"; do if command -v "$b" >/dev/null 2>&1; then echo "$b"; return 0; fi; done
+
+    echo "No suitable browser found" >&2
+    exit 1
+}
+
+# --- Argument Parsing ---
+APP_RE=""
+TITLE_RE=""
+CMD=()
+PREFER="chromium"
+
+# Dynamic Usage output
+if [[ $# -eq 0 ]]; then
+    grep '^# Usage:' "$0" | cut -c 3- >&2
+    exit 2
+fi
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --prefer) shift; PREFER="$1"; shift ;;
+    --list)
+      niri msg --json windows | jq -r '.[] | "\(.id)\t\(.app_id // "NULL")\t\(.title // "")"'
+      exit 0
+      ;;
+    webapp)
+      shift
+      if [[ "${1:-}" == "--title" ]]; then shift; TITLE_RE="$1"; shift; fi
+      [[ $# -gt 0 ]] || { echo "Missing URL/AppID" >&2; exit 2; }
+      appid="$1"; shift
+
+      BROWSER_BIN=$(get_browser "$PREFER")
+      
+      # FIX: Escape potential dots in the appid for the regex
+      # Catch Firefox (FFPWA-), Chromium (crx_), and raw IDs
+      APP_RE=".*${appid//./\\.}.*|crx_${appid//./\\.}"
+
+      if [[ "$BROWSER_BIN" == *"chrom"* || "$BROWSER_BIN" == *"brave"* ]]; then
+          CMD=($BROWSER_BIN --profile-directory=Default --app-id="$appid" "$@")
+      else
+          # Use firefoxpwa for SSB profiles
+          if command -v firefoxpwa >/dev/null 2>&1; then
+              CMD=(firefoxpwa site launch "$appid" "$@")
+          else
+              CMD=($BROWSER_BIN --pwa "$appid" "$@")
+          fi
+      fi
+      break
+      ;;
+    --app-id)
+      shift; APP_RE="$1"; shift
+      if [[ "${1:-}" == "--command" ]]; then shift; CMD=("$@"); break; fi
+      ;;
+    *) echo "Unknown option: $1" >&2; exit 2 ;;
+  esac
+done
+
+# --- Execution Logic ---
+find_win_id() {
+  niri msg --json windows | jq -r \
+    --arg app_re "$APP_RE" --arg title_re "${TITLE_RE:-}" '
+      .[] | select(
+        ( .app_id? and (.app_id | test($app_re; "i")) )
+        and
+        ( $title_re == "" or ( .title? and (.title | test($title_re; "i")) ) )
+      ) | .id
+    ' | head -n1
+}
+
+id="$(find_win_id || true)"
+
+if [[ -n "${id:-}" ]]; then
+    niri msg action focus-window --id "$id"
+else
+    # Launch new instance and detach
+    setsid "${CMD[@]}" >/dev/null 2>&1 &
+    
+    # IMPROVEMENT: Increased poll count with shorter sleep for snappier M1 performance
+    for _ in {1..70}; do
+        sleep 0.07 
+        id="$(find_win_id || true)"
+        if [[ -n "${id:-}" ]]; then
+            # Niri Action: focus the newly created window
+            niri msg action focus-window --id "$id"
+            exit 0
+        fi
+    done
+    echo "Timeout: Could not find window for $APP_RE" >&2
+    exit 1
+fi

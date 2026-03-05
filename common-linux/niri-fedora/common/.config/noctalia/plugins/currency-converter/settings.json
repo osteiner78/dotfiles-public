@@ -1,0 +1,6 @@
+{
+  "fromCurrency": "USD",
+  "toCurrency": "BRL",
+  "updateInterval": 30,
+  "displayMode": "both"
+}

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Tunables
+WAIT_TRIES=${WAIT_TRIES:-100}   # ~5s total
+WAIT_SLEEP=${WAIT_SLEEP:-0.05}
+
+# Chromium as array (spaces-safe)
+CHROMIUM_CMD=(/usr/bin/chromium --ozone-platform=wayland --enable-features=UseOzonePlatform --profile-directory=Default)
+
+find_window_id() {
+  local app_re="$1"
+  niri msg --json windows |
+    jq -r --arg re "$app_re" '
+      map(select(.app_id? and (.app_id | test($re)) and (.workspace_id != null) and (.id|type=="number")))
+      | sort_by(.id) | last | (.id|tostring) // empty
+    '
+}
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: focus-or-launch-appid <app_id_regex> <command...> | webapp <APPID>" >&2
+  exit 2
+fi
+
+launch_cmd=()
+app_re=""
+
+case "$1" in
+  webapp)
+    shift
+    [[ $# -ge 1 ]] || { echo "Usage: webapp <APPID>" >&2; exit 2; }
+    app_id="$1"; shift
+    # Default regex matches chrome/chromium PWAs regardless of profile suffix; override with APP_PAT to customize.
+    app_re="${APP_PAT:-^(chromium|chrome)-${app_id}(-.*)?$}"
+    launch_cmd=("${CHROMIUM_CMD[@]}" --app-id="$app_id" "$@")
+    ;;
+  *)
+    app_re="$1"; shift
+    [[ $# -ge 1 ]] || { echo "Need a launch command." >&2; exit 2; }
+    launch_cmd=("$@")
+    ;;
+esac
+
+# Focus existing (newest on a workspace)
+if win_id="$(find_window_id "$app_re")"; [[ -n "$win_id" ]]; then
+  if niri msg action focus-window --id "$win_id" >/dev/null 2>&1; then exit 0; fi
+fi
+
+# Launch and wait for it to land on a workspace
+"${launch_cmd[@]}" >/dev/null 2>&1 &
+
+for ((i=0; i<WAIT_TRIES; i++)); do
+  if win_id="$(find_window_id "$app_re")"; [[ -n "$win_id" ]]; then
+    if niri msg action focus-window --id "$win_id" >/dev/null 2>&1; then exit 0; fi
+  fi
+  sleep "$WAIT_SLEEP"
+done
+
+exit 1

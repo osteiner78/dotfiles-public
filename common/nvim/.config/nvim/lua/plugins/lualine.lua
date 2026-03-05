@@ -1,5 +1,6 @@
 return {
 	"nvim-lualine/lualine.nvim",
+    -- enabled = false,
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 
 	config = function()
@@ -54,8 +55,8 @@ return {
 		lualine.setup({
 			options = {
 				icons_enabled = true,
-				theme = "auto",
-				-- theme = "gruvbox_dark",
+				-- theme = "auto",
+				theme = "gruvbox_dark",
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
 				disabled_filetypes = {
@@ -64,7 +65,7 @@ return {
 				},
 				ignore_focus = { "NvimTree" },
 				always_divide_middle = true,
-				globalstatus = false,
+				globalstatus = true,
 				refresh = {
 					statusline = 1000,
 					tabline = 1000,

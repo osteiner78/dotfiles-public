@@ -15,14 +15,16 @@ show_symlink   = true
 scrolloff      = 10
 mouse_events   = [ "click", "scroll" ]
 title_format   = "Yazi: {cwd}"
+smooth_scrolling = true
 
 [preview]
+image           = "chafa"
 wrap            = "no"
 tab_size        = 2
 max_width       = 600
 max_height      = 900
 cache_dir       = ""
-image_delay     = 30
+image_delay     = 100
 image_filter    = "triangle"
 image_quality   = 75
 sixel_fraction  = 15
@@ -88,10 +90,10 @@ suppress_preload = false
 
 [plugin]
 
-fetchers = [
-	# Mimetype
-	{ id = "mime", name = "*", run = "mime", if = "!mime", prio = "high" },
-]
+# fetchers = [
+# 	# Mimetype
+# 	{ id = "mime", name = "*", run = "mime", if = "!mime", prio = "high" },
+# ]
 preloaders = [
 	# Image
 	{ mime = "image/{avif,hei?,jxl,svg+xml}", run = "magick" },
@@ -105,7 +107,8 @@ preloaders = [
 	{ mime = "application/vnd.ms-opentype", run = "font" },
 ]
 previewers = [
-	{ name = "*/", run = "folder", sync = true },
+	# { name = "*/", run = "folder", sync = true },
+	{ url = "*/", run = "folder", sync = true },
 	# Code
 	{ mime = "text/*", run = "code" },
 	{ mime = "*/{xml,javascript,x-wine-extension-ini}", run = "code" },
@@ -129,7 +132,6 @@ previewers = [
 	# Fallback
 	{ name = "*", run = "file" },
 ]
-
 [input]
 cursor_blink = false
 

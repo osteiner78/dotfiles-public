@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Usage:
+#   focus-or-launch-appid <app_id_regex> <command...>
+#   focus-or-launch-appid webapp <CHROMIUM_PWA_APPID> [extra chromium args...]
+
+set -euo pipefail
+
+CHROMIUM_CMD=${CHROMIUM_CMD:-'/usr/bin/chromium --ozone-platform=wayland --enable-features=UseOzonePlatform --profile-directory=Default'}
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: focus-or-launch-appid <app_id_regex> <command...> | webapp <APPID>" >&2
+  exit 2
+fi
+
+case "$1" in
+  webapp)
+    shift
+    [[ $# -ge 1 ]] || { echo "Usage: webapp <APPID>" >&2; exit 2; }
+    appid="$1"; shift
+
+    # Niri matches by Wayland app_id, not X11 WM_CLASS.
+    # Chromium PWAs typically expose an app_id derived from the .desktop filename,
+    # e.g. chromium-<APPID>-Default (varies by packaging/profile).
+    app_pat="${APP_PAT:-${appid}}"
+
+    # Default launch command for a PWA
+    set -- $CHROMIUM_CMD --app-id="$appid" "$@"
+    ;;
+  *)
+    app_pat="$1"; shift
+    [[ $# -ge 1 ]] || { echo "Need a launch command." >&2; exit 2; }
+    ;;
+esac
+
+# Look for any window whose app_id matches app_pat; focus it; else launch.
+win_id="$(niri msg --json windows \
+  | jq -r --arg re "$app_pat" '
+      .[] | select(.app_id? and (.app_id | test($re))) | .id
+    ' | head -n1 || true)"
+
+if [[ -n "${win_id:-}" ]]; then
+  # Focus by ID
+  niri msg action focus-window --id "$win_id" >/dev/null 2>&1 || true
+else
+  nohup "$@" >/dev/null 2>&1 &
+fi
