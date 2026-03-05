@@ -8,8 +8,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
       - /dev/serial/by-id:/dev/serial/by-id
-    devices:
-      - /dev/ttyACM0:/dev/ttyACM0
+    # devices:
+      # - /dev/ttyACM0:/dev/ttyACM0
     restart: unless-stopped
     privileged: true
     network_mode: host
@@ -81,8 +81,10 @@ services:
       - "53:53/udp"
       # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
       - "80:80/tcp"
+      - "443:443/tcp"
     environment:
       TZ: 'America/Sao_Paulo'
+      FTLCONF_dns_listeningMode: 'ALL'
       # WEBPASSWORD: 'set a secure password here or it will be random'
     # Volumes store your data between container upgrades
     volumes:
