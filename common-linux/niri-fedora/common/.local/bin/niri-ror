@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+# Niri Run or Raise
 # Usage:
-#   niri-focus-or-launch [--prefer <firefox|chromium>] --app-id <APP_ID_REGEX> --command <cmd...>
-#   niri-focus-or-launch [--prefer <firefox|chromium>] webapp [--title <TITLE_REGEX>] <URL_OR_ID>
-#   niri-focus-or-launch --list
+#   niri-ror [--prefer <firefox|chromium>] --app-id <APP_ID_REGEX> --command <cmd...>
+#   niri-ror [--prefer <firefox|chromium>] webapp [--title <TITLE_REGEX>] <URL_OR_ID>
+#   niri-ror --list
 
 set -euo pipefail
 
@@ -54,6 +55,11 @@ while [[ $# -gt 0 ]]; do
       [[ $# -gt 0 ]] || { echo "Missing URL/AppID" >&2; exit 2; }
       appid="$1"; shift
 
+      # AUTO-DETECT: If it looks like a Firefox PWA ID (26 chars), prefer firefox
+      if [[ "$appid" =~ ^[0-9A-Z]{26}$ ]]; then
+          PREFER="firefox"
+      fi
+
       BROWSER_BIN=$(get_browser "$PREFER")
       
       # FIX: Escape potential dots in the appid for the regex
@@ -85,7 +91,10 @@ find_win_id() {
   niri msg --json windows | jq -r \
     --arg app_re "$APP_RE" --arg title_re "${TITLE_RE:-}" '
       .[] | select(
-        ( .app_id? and (.app_id | test($app_re; "i")) )
+        (
+          (.app_id? and (.app_id | test($app_re; "i"))) or
+          (.title? and (.title | test($app_re; "i")))
+        )
         and
         ( $title_re == "" or ( .title? and (.title | test($title_re; "i")) ) )
       ) | .id

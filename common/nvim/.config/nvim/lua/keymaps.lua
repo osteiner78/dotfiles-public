@@ -5,71 +5,62 @@ vim.g.maplocalleader = " "
 vim.keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
 vim.keymap.set("n", ";", ":", { desc = "Use semicolon for commands" })
 
--- Set highlight on search, but clear on pressing <Esc> in normal mode
+-- Clear search highlights
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 
--- Always delete to the black hole (trash) unless explicitly told otherwise
+-- [[ Black Hole Register Mappings ]]
 vim.keymap.set({"n", "v"}, "d", '"_d')
 vim.keymap.set({"n", "v"}, "c", '"_c')
 vim.keymap.set("n", "x", '"_x')
 
 -- Special shortcuts if you DO want to delete and yank
-vim.keymap.set({"n", "v"}, "<leader>d", "d")  -- delete into clipboard/register
-vim.keymap.set({"n", "v"}, "<leader>c", "c")  -- change into clipboard/register
+-- Moved from <leader>d to <leader>D to avoid collision with Document group
+vim.keymap.set({"n", "v"}, "<leader>D", "d", { desc = "Delete into clipboard" })
+vim.keymap.set({"n", "v"}, "<leader>C", "c", { desc = "Change into clipboard" })
 
-
+-- [[ Productivity: Centered Motion ]]
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next search match and center" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Prev search match and center" })
 
 -- [[ Window Navigation ]]
--- Use CTRL+<hjkl> to switch between windows
---  See `:help wincmd` for a list of all window commands
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
--- [[ Window Management ]] -- Mnemonic: [w]indow
-vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "[W]indow split [V]ertical" })
-vim.keymap.set("n", "<leader>wh", "<C-w>s", { desc = "[W]indow split [H]orizontal" })
-vim.keymap.set("n", "<leader>we", "<C-w>=", { desc = "[W]indow make [E]qual" })
-vim.keymap.set("n", "<leader>wx", "<cmd>close<CR>", { desc = "[W]indow/split close(e[X]it)" })
+-- [[ Window Management ]]
+vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split [V]ertical" })
+vim.keymap.set("n", "<leader>wh", "<C-w>s", { desc = "Split [H]orizontal" })
+vim.keymap.set("n", "<leader>we", "<C-w>=", { desc = "Make [E]qual" })
+vim.keymap.set("n", "<leader>wx", "<cmd>close<CR>", { desc = "Close window" })
 
 -- [[ Buffer Management ]]
 vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
--- vim.keymap.set("n", "<leader>bx", "<cmd>bdelete<CR>", { desc = "Close current buffer" }) -- Optional: to close a buffer without closing the window
 
--- [[ Tab Management ]] -- Mnemonic: [t]ab
-vim.keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "[T]ab [O]pen" })
-vim.keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "[T]ab close(e[X]it)" })
-vim.keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "[T]ab [N]ext" })
-vim.keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "[T]ab [P]revious" })
-vim.keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "[T]ab [F]ile" })
+-- [[ Tab Management ]]
+vim.keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "[O]pen tab" })
+vim.keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close tab" })
+vim.keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "[N]ext tab" })
+vim.keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "[P]revious tab" })
 
--- [[ File Explorer (Nvim-Tree) ]] -- Mnemonic: [e]xplorer
--- --- NOTE: Simplified Nvim-Tree keymaps to an '[e]xplorer' group for consistency.
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle file [E]xplorer" })
-vim.keymap.set("n", "\\", "<cmd>Neotree toggle<CR>", { desc = "Toggle file [E]xplorer" })
-vim.keymap.set("n", "<leader>o", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "[O]pen file in explorer" })
+-- [[ File Explorer (Neo-tree) ]]
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Explorer" })
+vim.keymap.set("n", "\\", "<cmd>Neotree toggle<CR>", { desc = "Explorer" })
 
--- [[ UI & Utilities ]] -- Mnemonic: [u]tils or [u]i
-vim.keymap.set("n", "<leader>un", "<cmd>set nu!<CR>", { desc = "Toggle [U]I line [N]umbers" })
-vim.keymap.set("n", "<leader>ur", "<cmd>set rnu!<CR>", { desc = "Toggle [U]I [R]elative Numbers" })
+-- [[ UI / Toggles (using Snacks.toggle) ]]
+vim.keymap.set("n", "<leader>ul", function() Snacks.toggle.number():toggle() end, { desc = "Toggle [L]ine Numbers" })
+vim.keymap.set("n", "<leader>ur", function() Snacks.toggle.option("relativenumber", { name = "Relative Number" }):toggle() end, { desc = "Toggle [R]elative Numbers" })
+vim.keymap.set("n", "<leader>um", function() MiniMap.toggle() end, { desc = "Toggle [M]inimap" })
+vim.keymap.set("n", "<leader>ud", function() Snacks.toggle.diagnostics():toggle() end, { desc = "Toggle [D]iagnostics" })
+vim.keymap.set("n", "<leader>ub", function() Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):toggle() end, { desc = "Toggle [B]ackground" })
 
--- [[ Commenting ]]
-vim.keymap.set("n", "<leader>/", "gcc", { desc = "Toggle comment", remap = true })
-vim.keymap.set("v", "<leader>/", "gc", { desc = "Toggle comment", remap = true })
+-- [[ Navigation ]]
+vim.keymap.set("n", "]]", function() Snacks.words.jump(vim.v.count1) end, { desc = "Next Reference" })
+vim.keymap.set("n", "[[", function() Snacks.words.jump(-vim.v.count1) end, { desc = "Prev Reference" })
 
--- [[ Diagnostics ]]
--- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
--- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
--- vim.keymap.set("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show [D]iagnostic [E]rror messages" })
--- vim.keymap.set("n", "<leader>dq", vim.diagnostic.setloclist, { desc = "Open [D]iagnostic [Q]uickfix list" })
-
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
+-- Exit terminal mode
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })

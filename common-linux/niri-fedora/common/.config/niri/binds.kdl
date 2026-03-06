@@ -20,14 +20,15 @@ binds {
  
     // Hyper-layer apps (you map HYPER via keyd): 1password, terminal, browser, file manager, obsidian, code
     // Niri doesn’t parse custom $HYPER; rely on your keyd to emit Ctrl+Super+Alt+Shift modifiers.
-    Ctrl+Super+Alt+Shift+1 { spawn-sh "niri-focus-or-launch --app-id '^1password$' --command 1password"; }
-        // Ctrl+Super+Alt+Shift+A { spawn-sh "niri-focus-or-launch --app-id '^zen$' --command zen-browser"; }
+    Ctrl+Super+Alt+Shift+1 { spawn-sh "niri-ror --app-id '^1password$' --command 1password"; }
+        // Ctrl+Super+Alt+Shift+A { spawn-sh "niri-ror --app-id '^zen$' --command zen-browser"; }
 
     Ctrl+Super+Alt+Shift+Q { spawn "ghostty"; }
-    // Ctrl+Super+Alt+Shift+A { spawn-sh "niri-focus-or-launch --app-id '^app.zen_browser.zen$' --command flatpak run app.zen_browser.zen"; }
-    Ctrl+Super+Alt+Shift+F { spawn-sh "niri-focus-or-launch --app-id '^org.gnome.Nautilus$' --command nautilus"; }
-    Ctrl+Super+Alt+Shift+O { spawn-sh "niri-focus-or-launch --app-id '^obsidian$' --command flatpak run md.obsidian.Obsidian"; }
-    Ctrl+Super+Alt+Shift+V { spawn-sh "niri-focus-or-launch --app-id '^code$' --command code"; }
+    // Ctrl+Super+Alt+Shift+A { spawn-sh "niri-ror --app-id '^app.zen_browser.zen$' --command flatpak run app.zen_browser.zen"; }
+    Ctrl+Super+Alt+Shift+F { spawn-sh "niri-ror --app-id '^org.gnome.Nautilus$' --command nautilus"; }
+    Ctrl+Super+Alt+Shift+O { spawn-sh "niri-ror --app-id '^obsidian$' --command flatpak run md.obsidian.Obsidian"; }
+    Ctrl+Super+Alt+Shift+V { spawn-sh "niri-ror --app-id '^code$' --command code"; }
+    Ctrl+Super+Alt+Shift+X { spawn-sh "niri-ror --app-id '^Claude$' --command claude-desktop"; }
 
     // =============================== SYSTEM =============================
     // Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }

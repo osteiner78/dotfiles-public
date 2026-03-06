@@ -3,37 +3,40 @@ return {
 	"echasnovski/mini.nvim",
 	config = function()
 		-- Better Around/Inside textobjects
-		--
-		-- Examples:
-		--  - va)  - [V]isually select [A]round [)]paren
-		--  - yinq - [Y]ank [I]nside [N]ext [']quote
-		--  - ci'  - [C]hange [I]nside [']quote
 		require("mini.ai").setup({ n_lines = 500 })
 
 		-- Add/delete/replace surroundings (brackets, quotes, etc.)
-		--
-		-- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-		-- - sd'   - [S]urround [D]elete [']quotes
-		-- - sr)'  - [S]urround [R]eplace [)] [']
-		require("mini.surround").setup()
+		require("mini.surround").setup({
+			mappings = {
+				add = "gza",
+				delete = "gzd",
+				find = "gzf",
+				find_left = "gzF",
+				highlight = "gzh",
+				replace = "gzr",
+				update_n_lines = "gzn",
+			},
+		})
 
-		-- Simple and easy statusline.
-		--  You could remove this setup call if you don't like it,
-		--  and try some other statusline plugin
-		-- local statusline = require("mini.statusline")
-		-- set use_icons to true if you have a Nerd Font
-		-- statusline.setup({ use_icons = vim.g.have_nerd_font })
+		-- Simple autopairs
+		require("mini.pairs").setup()
 
-		-- You can configure sections in the statusline by overriding their
-		-- default behavior. For example, here we set the section for
-		-- cursor location to LINE:COLUMN
-		-- ---@diagnostic disable-next-line: duplicate-set-field
-		-- statusline.section_location = function()
-		-- 	return "%2l:%-2v"
-		-- end
+		-- Simple commenting
+		require("mini.comment").setup()
 
-		-- ... and there is more!
-		--  Check out: https://github.com/echasnovski/mini.nvim
-		require("mini.map").setup()
+		-- Move blocks of code
+		require("mini.move").setup()
+
+		-- Minimap with integration
+		local minimap = require("mini.map")
+		minimap.setup({
+			integrations = {
+				minimap.gen_integration.builtin_search(),
+				minimap.gen_integration.diff(),
+				minimap.gen_integration.diagnostic(),
+			},
+			symbols = { encode = minimap.gen_encode_symbols.dot("4x2") },
+			window = { side = "right", width = 20, winblend = 15 },
+		})
 	end,
 }

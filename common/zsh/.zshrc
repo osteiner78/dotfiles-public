@@ -330,3 +330,7 @@ case ":$PATH:" in
 esac
 # pnpm end
 export PATH=$PATH:~/.npm-global/bin
+
+
+# Gemini API Key
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

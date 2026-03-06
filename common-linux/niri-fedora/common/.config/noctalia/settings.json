@@ -46,6 +46,7 @@
         "preferredPlayer": "spotify",
         "visualizerType": "mirrored",
         "volumeFeedback": true,
+        "volumeFeedbackSoundFile": "",
         "volumeOverdrive": false,
         "volumeStep": 5
     },
@@ -55,28 +56,41 @@
         "backgroundOpacity": 0.75,
         "barType": "simple",
         "capsuleColorKey": "none",
-        "capsuleOpacity": 0.58,
+        "capsuleOpacity": 0.6,
+        "contentPadding": 14,
         "density": "comfortable",
         "displayMode": "always_visible",
         "floating": false,
+        "fontScale": 1,
         "frameRadius": 11,
         "frameThickness": 32,
         "hideOnOverview": false,
         "marginHorizontal": 4,
         "marginVertical": 4,
+        "middleClickAction": "none",
+        "middleClickCommand": "",
+        "middleClickFollowMouse": false,
         "monitors": [
         ],
+        "mouseWheelAction": "none",
+        "mouseWheelWrap": true,
         "outerCorners": true,
         "position": "top",
+        "reverseScroll": false,
+        "rightClickAction": "controlCenter",
+        "rightClickCommand": "",
+        "rightClickFollowMouse": true,
         "screenOverrides": [
             {
                 "enabled": false,
                 "name": "eDP-1"
             }
         ],
-        "showCapsule": true,
+        "showCapsule": false,
+        "showOnWorkspaceSwitch": true,
         "showOutline": false,
         "useSeparateOpacity": false,
+        "widgetSpacing": 4,
         "widgets": {
             "center": [
                 {
@@ -94,10 +108,6 @@
                 }
             ],
             "left": [
-                {
-                    "id": "Spacer",
-                    "width": 5
-                },
                 {
                     "characterCount": 7,
                     "colorizeIcons": false,
@@ -141,29 +151,63 @@
                     ]
                 },
                 {
-                    "colorizeSystemIcon": "none",
+                    "colorizeSystemIcon": "tertiary",
                     "enableColorization": false,
-                    "generalTooltipText": "",
+                    "generalTooltipText": "PiHole",
                     "hideMode": "alwaysExpanded",
-                    "icon": "brand-openvpn",
+                    "icon": "barrier-block",
                     "id": "CustomButton",
-                    "ipcIdentifier": "",
-                    "leftClickExec": "tailscale up",
-                    "leftClickUpdateText": true,
+                    "ipcIdentifier": "pihole_widget",
+                    "leftClickExec": "/home/osteiner/.local/bin/noctalia-pihole-toggle.sh toggle",
+                    "leftClickUpdateText": false,
                     "maxTextLength": {
-                        "horizontal": 10,
+                        "horizontal": 0,
                         "vertical": 10
                     },
                     "middleClickExec": "",
                     "middleClickUpdateText": false,
                     "parseJson": true,
-                    "rightClickExec": "tailscale down",
+                    "rightClickExec": "xdg-open http://pihole.osteiner.xyz/admin",
                     "rightClickUpdateText": false,
-                    "showExecTooltip": true,
+                    "showExecTooltip": false,
                     "showIcon": true,
                     "showTextTooltip": true,
                     "textCollapse": "",
-                    "textCommand": "~/.local/bin/noctalia-tailscale.sh",
+                    "textCommand": "/home/osteiner/.local/bin/noctalia-pihole-toggle.sh",
+                    "textIntervalMs": 3000,
+                    "textStream": false,
+                    "wheelDownExec": "",
+                    "wheelDownUpdateText": false,
+                    "wheelExec": "",
+                    "wheelMode": "unified",
+                    "wheelUpExec": "",
+                    "wheelUpUpdateText": false,
+                    "wheelUpdateText": false
+                },
+                {
+                    "colorizeSystemIcon": "none",
+                    "enableColorization": false,
+                    "generalTooltipText": "Tailscale",
+                    "hideMode": "alwaysExpanded",
+                    "icon": "cloud-network",
+                    "id": "CustomButton",
+                    "ipcIdentifier": "",
+                    "leftClickExec": "/home/osteiner/.local/bin/noctalia-tailscale-toggle.sh toggle",
+                    "leftClickUpdateText": false,
+                    "maxTextLength": {
+                        "horizontal": 0,
+                        "vertical": 10
+                    },
+                    "middleClickExec": "",
+                    "middleClickUpdateText": false,
+                    "parseJson": true,
+                    "rightClickExec": "xdg-open https://login.tailscale.com/admin/machines",
+                    "rightClickUpdateText": false,
+                    "showExecTooltip": false,
+                    "showIcon": true,
+                    "showTextTooltip": true,
+                    "textCollapse": "",
+                    "textCommand": "/home/osteiner/.local/bin/noctalia-tailscale-toggle.sh",
                     "textIntervalMs": 3000,
                     "textStream": false,
                     "wheelDownExec": "",
@@ -193,6 +237,7 @@
                     "diskPath": "/",
                     "iconColor": "none",
                     "id": "SystemMonitor",
+                    "showCpuCores": false,
                     "showCpuFreq": false,
                     "showCpuTemp": false,
                     "showCpuUsage": true,
@@ -260,15 +305,13 @@
                     "icon": "noctalia",
                     "id": "ControlCenter",
                     "useDistroLogo": false
-                },
-                {
-                    "id": "Spacer",
-                    "width": 5
                 }
             ]
         }
     },
     "brightness": {
+        "backlightDeviceMappings": [
+        ],
         "brightnessStep": 5,
         "enableDdcSupport": false,
         "enforceMinimum": true
@@ -290,7 +333,7 @@
         ]
     },
     "colorSchemes": {
-        "darkMode": true,
+        "darkMode": false,
         "generationMethod": "tonal-spot",
         "manualSunrise": "06:30",
         "manualSunset": "18:30",
@@ -331,33 +374,27 @@
         "shortcuts": {
             "left": [
                 {
-                    "id": "Network"
+                    "id": "WiFi"
                 },
                 {
                     "id": "Bluetooth"
-                },
-                {
-                    "id": "WallpaperSelector"
                 }
             ],
             "right": [
                 {
-                    "id": "Notifications"
+                    "id": "DarkMode"
                 },
                 {
-                    "id": "PowerProfile"
+                    "id": "WallpaperSelector"
                 },
                 {
                     "id": "KeepAwake"
-                },
-                {
-                    "id": "NightLight"
                 }
             ]
         }
     },
     "desktopWidgets": {
-        "enabled": true,
+        "enabled": false,
         "gridSnap": false,
         "monitorWidgets": [
             {
@@ -365,7 +402,8 @@
                 "widgets": [
                 ]
             }
-        ]
+        ],
+        "overviewEnabled": true
     },
     "dock": {
         "animationSpeed": 1,
@@ -373,10 +411,19 @@
         "colorizeIcons": false,
         "deadOpacity": 0.86,
         "displayMode": "always_visible",
-        "dockType": "static",
+        "dockType": "floating",
         "enabled": false,
         "floatingRatio": 0,
+        "groupApps": false,
+        "groupClickAction": "cycle",
+        "groupContextMenuMode": "extended",
+        "groupIndicatorStyle": "dots",
         "inactiveIndicators": true,
+        "indicatorColor": "primary",
+        "indicatorOpacity": 0.6,
+        "indicatorThickness": 3,
+        "launcherIconColor": "none",
+        "launcherPosition": "end",
         "monitors": [
         ],
         "onlySameOutput": false,
@@ -387,7 +434,8 @@
         ],
         "pinnedStatic": true,
         "position": "bottom",
-        "showFrameIndicator": true,
+        "showDockIndicator": true,
+        "showLauncherIcon": false,
         "sitOnFrame": false,
         "size": 1.09
     },
@@ -404,6 +452,7 @@
         "compactLockScreen": false,
         "dimmerOpacity": 0,
         "enableLockScreenCountdown": true,
+        "enableLockScreenMediaControls": false,
         "enableShadows": false,
         "forceBlackScreenCorners": true,
         "iRadiusRatio": 0.52,
@@ -412,7 +461,8 @@
                 "Down"
             ],
             "keyEnter": [
-                "Return"
+                "Return",
+                "Enter"
             ],
             "keyEscape": [
                 "Esc"
@@ -433,11 +483,12 @@
         "language": "",
         "lockOnSuspend": true,
         "lockScreenAnimations": true,
-        "lockScreenBlur": 0,
+        "lockScreenBlur": 0.5,
         "lockScreenCountdownDuration": 10000,
         "lockScreenMonitors": [
         ],
         "lockScreenTint": 0,
+        "passwordChars": false,
         "radiusRatio": 0.42,
         "reverseScroll": false,
         "scaleRatio": 1.15,
@@ -462,6 +513,20 @@
         "startup": "",
         "wallpaperChange": ""
     },
+    "idle": {
+        "customCommands": "[]",
+        "enabled": false,
+        "fadeDuration": 5,
+        "lockCommand": "",
+        "lockTimeout": 660,
+        "resumeLockCommand": "",
+        "resumeScreenOffCommand": "",
+        "resumeSuspendCommand": "",
+        "screenOffCommand": "",
+        "screenOffTimeout": 600,
+        "suspendCommand": "",
+        "suspendTimeout": 1800
+    },
     "location": {
         "analogClockInCalendar": false,
         "firstDayOfWeek": -1,
@@ -478,11 +543,13 @@
     },
     "network": {
         "airplaneModeEnabled": false,
+        "bluetoothAutoConnect": true,
         "bluetoothDetailsViewMode": "grid",
         "bluetoothHideUnnamedDevices": false,
         "bluetoothRssiPollIntervalMs": 10000,
         "bluetoothRssiPollingEnabled": false,
         "disableDiscoverability": false,
+        "networkPanelView": "wifi",
         "wifiDetailsViewMode": "grid",
         "wifiEnabled": true
     },
@@ -493,7 +560,7 @@
         "forced": false,
         "manualSunrise": "06:30",
         "manualSunset": "18:30",
-        "nightTemp": "4000"
+        "nightTemp": "4043"
     },
     "notifications": {
         "backgroundOpacity": 1,
@@ -514,7 +581,7 @@
         "respectExpireTimeout": false,
         "saveToHistory": {
             "critical": true,
-            "low": true,
+            "low": false,
             "normal": true
         },
         "sounds": {
@@ -597,12 +664,26 @@
                 "countdownEnabled": true,
                 "enabled": true,
                 "keybind": "6"
+            },
+            {
+                "action": "userspaceReboot",
+                "command": "",
+                "countdownEnabled": true,
+                "enabled": false,
+                "keybind": ""
+            },
+            {
+                "action": "rebootToUefi",
+                "command": "",
+                "countdownEnabled": true,
+                "enabled": true,
+                "keybind": ""
             }
         ],
         "showHeader": true,
         "showKeybinds": true
     },
-    "settingsVersion": 53,
+    "settingsVersion": 55,
     "systemMonitor": {
         "batteryCriticalThreshold": 5,
         "batteryWarningThreshold": 20,
@@ -632,19 +713,16 @@
         "enableUserTheming": false
     },
     "ui": {
-        "bluetoothDetailsViewMode": "grid",
-        "bluetoothHideUnnamedDevices": false,
         "boxBorderEnabled": false,
-        "fontDefault": "Noto Sans",
+        "fontDefault": "Open Sans Light",
         "fontDefaultScale": 0.9,
         "fontFixed": "JetBrainsMono NF",
         "fontFixedScale": 1.02,
-        "networkPanelView": "wifi",
-        "panelBackgroundOpacity": 0.63,
+        "panelBackgroundOpacity": 0.85,
         "panelsAttachedToBar": true,
         "settingsPanelMode": "attached",
-        "tooltipsEnabled": true,
-        "wifiDetailsViewMode": "grid"
+        "settingsPanelSideBarCardStyle": false,
+        "tooltipsEnabled": true
     },
     "wallpaper": {
         "automationEnabled": true,
