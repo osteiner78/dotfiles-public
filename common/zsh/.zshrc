@@ -7,7 +7,9 @@
 # ==================== AUTOSTART TMUX WHEN SSH =========================
 # Auto-attach/create tmux for interactive SSH sessions.
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
-  exec tmux new-session -A -s osteiner
+  tmux attach-session -t osteiner || tmux new-session -s osteiner
+  exit
+  # exec tmux new-session -A -s osteiner
 fi
 
 # ==================== POWERLEVEL 10K ==========================
