@@ -29,10 +29,6 @@ return {
 					lualine_c = { { "filename", path = 1 } },
 					lualine_x = {
 						{
-							function() return require("snacks.profiler").status() end,
-							cond = function() return package.loaded["snacks.profiler"] ~= nil end,
-						},
-						{
 							function() return "󰂚 " .. #require("snacks.notifier").get_history() end,
 							cond = function() return package.loaded["snacks.notifier"] ~= nil and #require("snacks.notifier").get_history() > 0 end,
 							color = { fg = "#fabd2f" },

@@ -12,12 +12,27 @@ return {
 				changedelete = { text = "~" },
 			},
 			on_attach = function(bufnr)
-				local gs = package.loaded.gitsigns
+				local gs = require("gitsigns")
 				local function map(mode, l, r, opts)
 					opts = opts or {}
 					opts.buffer = bufnr
 					vim.keymap.set(mode, l, r, opts)
 				end
+
+				-- which-key hints for buffer-local gitsigns keymaps
+				require("which-key").add({
+					{ "<leader>ghs", desc = "Stage Hunk",       buffer = bufnr },
+					{ "<leader>ghr", desc = "Reset Hunk",       buffer = bufnr },
+					{ "<leader>ghS", desc = "Stage Buffer",     buffer = bufnr },
+					{ "<leader>ghu", desc = "Undo Stage Hunk",  buffer = bufnr },
+					{ "<leader>ghR", desc = "Reset Buffer",     buffer = bufnr },
+					{ "<leader>ghp", desc = "Preview Hunk",     buffer = bufnr },
+					{ "<leader>ghb", desc = "Blame Line",       buffer = bufnr },
+					{ "<leader>ght", desc = "Toggle Blame",     buffer = bufnr },
+					{ "<leader>ghd", desc = "Diff Index",       buffer = bufnr },
+					{ "<leader>ghD", desc = "Diff Last Commit", buffer = bufnr },
+					{ "<leader>ghx", desc = "Toggle Deleted",   buffer = bufnr },
+				})
 
 				-- Navigation
 				map("n", "]c", function()

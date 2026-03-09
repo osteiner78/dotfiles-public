@@ -16,10 +16,10 @@ return {
 			},
 			sync_install = false,
 			auto_install = true,
-			highlight = { 
-                enable = true,
-                additional_vim_regex_highlighting = false,
-            },
+			highlight = {
+				enable = true,
+				additional_vim_regex_highlighting = true, -- fallback when treesitter parser is missing
+			},
 			indent = { enable = true },
 			textobjects = {
 				select = {
@@ -35,25 +35,23 @@ return {
 				move = {
 					enable = true,
 					set_jumps = true,
-					goto_next_start = { ["]m"] = "@function.outer", ["]]"] = "@class.outer" },
+					goto_next_start = { ["]m"] = "@function.outer", ["]C"] = "@class.outer" },
 					goto_next_end = { ["]M"] = "@function.outer", ["]["] = "@class.outer" },
-					goto_previous_start = { ["[m"] = "@function.outer", ["[["] = "@class.outer" },
+					goto_previous_start = { ["[m"] = "@function.outer", ["[C"] = "@class.outer" },
 					goto_previous_end = { ["[M"] = "@function.outer", ["[]"] = "@class.outer" },
 				},
 				swap = {
 					enable = true,
-					swap_next = { ["<leader>a"] = "@parameter.inner" },
-					swap_previous = { ["<leader>A"] = "@parameter.inner" },
+					swap_next = { ["<leader>cp"] = "@parameter.inner" },
+					swap_previous = { ["<leader>cP"] = "@parameter.inner" },
 				},
 			},
 		},
 		config = function(_, opts)
 			require("nvim-treesitter.install").prefer_git = true
-			local ok, configs = pcall(require, "nvim-treesitter.configs")
-			if not ok then
-				configs = require("nvim-treesitter.config")
-			end
-			configs.setup(opts)
+			local ok, mod = pcall(require, "nvim-treesitter.configs")
+			if not ok then mod = require("nvim-treesitter.config") end
+			mod.setup(opts)
 
 			require("treesitter-context").setup({
 				enable = true,

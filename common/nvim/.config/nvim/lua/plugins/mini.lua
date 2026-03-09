@@ -6,6 +6,7 @@ return {
 		require("mini.ai").setup({ n_lines = 500 })
 
 		-- Add/delete/replace surroundings (brackets, quotes, etc.)
+		-- Using gz prefix to avoid conflict with flash.nvim 's'
 		require("mini.surround").setup({
 			mappings = {
 				add = "gza",
@@ -27,7 +28,7 @@ return {
 		-- Move blocks of code
 		require("mini.move").setup()
 
-		-- Minimap with integration
+		-- Minimap with stable integrations
 		local minimap = require("mini.map")
 		minimap.setup({
 			integrations = {
@@ -35,8 +36,17 @@ return {
 				minimap.gen_integration.diff(),
 				minimap.gen_integration.diagnostic(),
 			},
-			symbols = { encode = minimap.gen_encode_symbols.dot("4x2") },
-			window = { side = "right", width = 20, winblend = 15 },
+			symbols = {
+				encode = minimap.gen_encode_symbols.dot("4x2"),
+                scroll_line = '▶',
+                scroll_view = '┃',
+			},
+			window = {
+				side = "right",
+				width = 20,
+				winblend = 15,
+                show_cursor = true,
+			},
 		})
 	end,
 }

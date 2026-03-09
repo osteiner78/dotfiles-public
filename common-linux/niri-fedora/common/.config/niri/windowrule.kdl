@@ -26,7 +26,7 @@ window-rule {
 window-rule {
     // match app-id=r#"^org\.keepassxc\.KeePassXC$"#
     // match app-id=r#"^org\.gnome\.World\.Secrets$"#
-    match app-id=r#"^1Password$"#
+    match app-id=r#"^1password$"#
 
     block-out-from "screen-capture"
 
@@ -100,7 +100,7 @@ workspace "comms"
 workspace "chatbots"
 
 window-rule {
-    // Exact match for the TradingView Webapp
+    // Widgets and utilities
     match app-id="1password"
     match app-id="blueman-manager"
     match app-id=r#"^(btrfs-assistant)$"#
@@ -112,7 +112,7 @@ window-rule {
 }
 
 window-rule {
-    // Exact match for the TradingView Webapp
+    // TradingView Webapp
     match app-id=r#"^FFPWA-01KGMNHQ6Y1JDJ5NKE91C62PBT$"#
 
     // Force it to open on a named Workspace
@@ -123,10 +123,10 @@ window-rule {
 }
 
 window-rule {
-    // Exact match for the TradingView Webapp
+    // Communication webapps (Gmail, WhatsApp, Thunderbird)
     match app-id=r#"^FFPWA-01KGN8857HH8M8FSZNZT50GBR8$"# // Gmail webapps
     match app-id=r#"^FFPWA-01KGN9349PCF304VDVY5559Q91$"# // Whatsapp webapp
-    match app-id=r#"^net.thunderbird.Thunderbird"#
+    match app-id=r#"^net.thunderbird.Thunderbird$"#
     // Force it to open on a named Workspace
     open-on-workspace "comms"
 
@@ -135,7 +135,7 @@ window-rule {
 }
 
 window-rule {
-    // Exact match for the TradingView Webapp
+    // Productivity webapps (Calendar, Todoist)
     match app-id=r#"^FFPWA-01KGMQWVW3JRW0REPA40C3ZMBT$"# // Google Calendar webapp
     match app-id=r#"^FFPWA-01KGN8N0548J8DTHMTRAXPS9WH$"# // Todoist webapp
     // Force it to open on a named Workspace
@@ -146,7 +146,7 @@ window-rule {
 }
 
 window-rule {
-    // Exact match for the TradingView Webapp
+    // AI Chatbots (Gemini, Claude, ChatGPT)
     match app-id=r#"^FFPWA-01KGMTR59JM64CJGETEQKEC84A$"# // Gemini webapps
     match app-id=r#"^FFPWA-01KGQ4NG2EEBAD5WT2EDB2JYF2$"# // Claude webapps
     match app-id=r#"^FFPWA-01KGN9AAKHSYHRKNGC1AP55SV5$"# // ChatGPT webapps
@@ -157,4 +157,4 @@ window-rule {
 
 
 // Focuses the first empty dynamic workspace after named ones
-spawn-at-startup "sh" "-c" "sleep 1; niri msg action focus-workspace 6"
+spawn-sh-at-startup "sleep 1; niri msg action focus-workspace 6"

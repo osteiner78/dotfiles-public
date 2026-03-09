@@ -1,32 +1,36 @@
--- [[ Global Options ]]
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- [[ Editor Options ]]
+vim.g.have_nerd_font = true
 vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 vim.opt.mouse = "a"
 vim.opt.showmode = false
 
 -- Sync clipboard
 vim.opt.clipboard = "unnamedplus"
 if vim.fn.has("wsl") == 1 then
-    vim.g.clipboard = {
-        name = "WslClipboard",
-        copy = { ["+"] = "clip.exe", ["*"] = "clip.exe" },
-        paste = { ["+"] = 'powershell.exe -NoLogo -NoProfile -Command Get-Clipboard', ["*"] = 'powershell.exe -NoLogo -NoProfile -Command Get-Clipboard' },
-        cache_enabled = 0,
-    }
+	vim.g.clipboard = {
+		name = "WslClipboard",
+		copy = { ["+"] = "clip.exe", ["*"] = "clip.exe" },
+		paste = {
+			["+"] = "powershell.exe -NoLogo -NoProfile -Command Get-Clipboard",
+			["*"] = "powershell.exe -NoLogo -NoProfile -Command Get-Clipboard",
+		},
+		cache_enabled = 0,
+	}
 elseif vim.env.WAYLAND_DISPLAY then
-    vim.g.clipboard = {
-        name = "wl-copy",
-        copy = { ["+"] = "wl-copy", ["*"] = "wl-copy" },
-        paste = { ["+"] = "wl-paste", ["*"] = "wl-paste" },
-        cache_enabled = 1,
-    }
+	vim.g.clipboard = {
+		name = "wl-copy",
+		copy = { ["+"] = "wl-copy", ["*"] = "wl-copy" },
+		paste = { ["+"] = { "wl-paste", "--no-newline" }, ["*"] = { "wl-paste", "--no-newline" } },
+		cache_enabled = 1,
+	}
 end
 
 -- Appearance & Behavior
+vim.opt.hlsearch = true
 vim.opt.breakindent = true
 vim.opt.undofile = true
 vim.opt.ignorecase = true
@@ -62,9 +66,18 @@ vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_python3_provider = 0
 
--- Diagnostic Icons (Global)
-local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
+-- Diagnostic Configuration (Icons + Defaults)
+vim.diagnostic.config({
+	virtual_text = false, -- Disable virtual text by default
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = " ",
+			[vim.diagnostic.severity.WARN]  = " ",
+			[vim.diagnostic.severity.HINT]  = "󰠠 ",
+			[vim.diagnostic.severity.INFO]  = " ",
+		},
+	},
+})
+
+-- Disable diagnostics engine by default on startup
+vim.diagnostic.enable(false)

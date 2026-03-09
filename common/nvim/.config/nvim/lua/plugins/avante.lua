@@ -1,16 +1,14 @@
 return {
   "yetone/avante.nvim",
   event = "VeryLazy",
-  lazy = false,
-  version = false, -- set this if you want to always pull the latest change
+  version = false, -- always track latest commit
   opts = {
     provider = "gemini",
     auto_suggestions_provider = "gemini",
     -- Gemini Configuration
     providers = {
       gemini = {
-        __inherited_from = "gemini",
-        model = "gemini-2.0-flash", -- More stable than 3.1 for current API endpoints
+        model = "gemini-2.0-flash",
         max_tokens = 8192,
         temperature = 0,
       },
@@ -40,8 +38,8 @@ return {
         dismiss = "<C-]>",
       },
       jump = {
-        next = "]]",
-        prev = "[[",
+        next = "]a",
+        prev = "[a",
       },
       submit = {
         normal = "<CR>",
@@ -52,7 +50,6 @@ return {
   build = "make",
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
-    "stevearc/dressing.nvim",
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
     "nvim-tree/nvim-web-devicons",
@@ -66,8 +63,6 @@ return {
           drag_and_drop = {
             insert_mode = true,
           },
-          -- required for Windows users
-          use_absolute_path = true,
         },
       },
     },
