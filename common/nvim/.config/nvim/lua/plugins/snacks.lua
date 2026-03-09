@@ -10,8 +10,8 @@ return {
       sections = {
         { section = "header" },
         { section = "keys", gap = 1 },
-        { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = { 2, 2 } },
-        { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
+        { icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = { 2, 2 } },
+        { icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
         { section = "startup" },
       },
     },
@@ -24,15 +24,18 @@ return {
       }
     },
     input =         { enabled = true },
-    picker =        { enabled = true },
+    picker =        { 
+        enabled = true,
+        ui_select = true, -- Hijack vim.ui.select (Code Actions, etc)
+    },
     notifier =      { enabled = true },
     quickfile =     { enabled = true },
-    scope =         { enabled = true },
+    scope =         { enabled = true }, -- required by indent.scope internally
     scroll =        { enabled = true },
     statuscolumn =  { enabled = true },
     words =         { enabled = true },
     rename =        { enabled = true },
-    profiler =      { enabled = true },
+    profiler =      { enabled = false },
     win =           { enabled = true },
   },
   keys = {
@@ -53,17 +56,27 @@ return {
     { "<leader>sd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics" },
     { "<leader>sh", function() Snacks.picker.help() end, desc = "Help Tags" },
     { "<leader>sk", function() Snacks.picker.keymaps() end, desc = "Keymaps" },
-    { "<leader>sq", function() Snacks.picker.qflist() end, desc = "Quickfix List" },
     { "<leader>su", function() Snacks.picker.undo() end, desc = "Undo History" },
     { "<leader>ss", function() Snacks.picker.resume() end, desc = "Resume Last Search" },
+    { "<leader>st", function() Snacks.picker.todo_comments() end, desc = "Todo Comments" },
     
     -- Git (Mnemonic: [G]it)
-    { "<leader>gc", function() Snacks.picker.git_log() end, desc = "Git Log" },
+    { "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
     { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git Status" },
     { "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
     
     -- UI / Toggles (Mnemonic: [U]I)
-    { "<leader>ut", function() Snacks.picker.colorschemes() end, desc = "Themes" },
+    { "<leader>ut", function()
+        -- Exclude built-in Vim/Neovim colorschemes; only show plugin-installed ones
+        Snacks.picker.colorschemes({
+            finder = function()
+                local all = require("snacks.picker.source.vim").colorschemes()
+                return vim.tbl_filter(function(item)
+                    return not item.file:find(vim.env.VIMRUNTIME, 1, true)
+                end, all)
+            end,
+        })
+    end, desc = "Themes" },
     { "<leader>un", function() Snacks.notifier.show_history() end, desc = "Notification History" },
     
     -- Buffers (Mnemonic: [B]uffers)

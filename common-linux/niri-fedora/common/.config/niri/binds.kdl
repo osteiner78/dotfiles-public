@@ -31,10 +31,10 @@ binds {
     Ctrl+Super+Alt+Shift+X { spawn-sh "niri-ror --app-id '^Claude$' --command claude-desktop"; }
 
     // =============================== SYSTEM =============================
-    // Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
-    // Ctrl+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+    // Mod+D hotkey-overlay-title="Noctalia Launcher" { spawn "fuzzel"; }
+    // Ctrl+Space hotkey-overlay-title="Noctalia Launcher" { spawn "fuzzel"; }
     Ctrl+Space hotkey-overlay-title="Vicinae" { spawn-sh "vicinae toggle"; }
-    Alt+Space hotkey-overlay-title="Run an Application: fuzzel" { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
+    Alt+Space hotkey-overlay-title="Noctalia Launcher" { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
 
     Mod+O repeat=false { toggle-overview; }
     // MX Keys "six squares" key
@@ -113,11 +113,11 @@ binds {
     // XF86MonBrightnessDown { spawn "sh" "-c" "/usr/bin/ddcutil setvcp 10 - 10 --bus 1 --noverify || true"; }
     
     XF86MonBrightnessUp allow-when-locked=true { 
-        spawn "sh" "-c" "brightnessctl set +5% --exponent=1; /usr/bin/ddcutil setvcp 10 + 10 --bus 1 --noverify || true"; 
+        spawn-sh "brightnessctl set +5% --exponent=1; /usr/bin/ddcutil setvcp 10 + 10 --bus 1 --noverify || true"
     }
 
     XF86MonBrightnessDown allow-when-locked=true { 
-        spawn "sh" "-c" "brightnessctl set 5%- --exponent=1; /usr/bin/ddcutil setvcp 10 - 10 --bus 1 --noverify || true"; 
+        spawn-sh "brightnessctl set 5%- --exponent=1; /usr/bin/ddcutil setvcp 10 - 10 --bus 1 --noverify || true"
     }
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.

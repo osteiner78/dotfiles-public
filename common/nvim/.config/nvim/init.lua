@@ -7,9 +7,6 @@ vim.cmd([[
 vim.filetype.add({
 	extension = {
 		hypr = "hyprlang",
-		conf = "hyprlang",
-        md = "markdown",
-        markdown = "markdown",
 	},
 	filename = {
 		["hyprland.conf"] = "hyprlang",
@@ -19,8 +16,8 @@ vim.filetype.add({
 })
 
 require("options")
-require("keymaps")
 require("lazy-setup")
+require("keymaps")
 
 -- Highlight when yanking
 vim.api.nvim_create_autocmd("TextYankPost", {

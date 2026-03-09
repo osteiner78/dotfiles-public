@@ -7,6 +7,7 @@ return {
 			{ "williamboman/mason.nvim", config = true },
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
+			"hrsh7th/cmp-nvim-lsp",
 			{ "j-hui/fidget.nvim", opts = {} },
 			{ "folke/lazydev.nvim", ft = "lua", opts = { library = { { path = "luvit-meta/library", words = { "vim%.uv" } } } } },
 			{ "Bilal2453/luvit-meta", lazy = true },
@@ -22,7 +23,7 @@ return {
 					map("gd", function() Snacks.picker.lsp_definitions() end, "Definition")
 					map("gr", function() Snacks.picker.lsp_references() end, "References")
 					map("gI", function() Snacks.picker.lsp_implementations() end, "Implementation")
-					map("<leader>D", function() Snacks.picker.lsp_type_definitions() end, "Type Definition")
+					map("<leader>ct", function() Snacks.picker.lsp_type_definitions() end, "Type Definition")
 					map("<leader>cs", function() Snacks.picker.lsp_symbols() end, "Symbols")
 					map("<leader>cw", function() Snacks.picker.lsp_workspace_symbols() end, "Workspace Symbols")
 					map("<leader>cr", vim.lsp.buf.rename, "Rename")
@@ -47,7 +48,15 @@ return {
 				end,
 			})
 
-			local capabilities = vim.tbl_deep_extend("force", 
+			vim.api.nvim_create_autocmd("LspDetach", {
+				group = vim.api.nvim_create_augroup("lsp-detach", { clear = true }),
+				callback = function(event)
+					vim.lsp.buf.clear_references()
+					vim.api.nvim_clear_autocmds({ group = "lsp-highlight", buffer = event.buf })
+				end,
+			})
+
+			local capabilities = vim.tbl_deep_extend("force",
 				vim.lsp.protocol.make_client_capabilities(), 
 				require("cmp_nvim_lsp").default_capabilities()
 			)
@@ -70,8 +79,9 @@ return {
 	-- Formatting
 	{
 		"stevearc/conform.nvim",
+		event = "BufWritePre",
 		keys = {
-			{ "<leader>cf", function() require("conform").format({ async = true, lsp_fallback = true }) end, desc = "Format Buffer" },
+			{ "<leader>cf", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format Buffer" },
 		},
 		opts = {
 			notify_on_error = false,
@@ -79,7 +89,7 @@ return {
 				local disable_filetypes = { c = true, cpp = true }
 				return {
 					timeout_ms = 500,
-					lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+					lsp_format = not disable_filetypes[vim.bo[bufnr].filetype] and "fallback" or "never",
 				}
 			end,
 			formatters_by_ft = {
@@ -131,7 +141,7 @@ return {
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
 					["<C-y>"] = cmp.mapping.confirm({ select = true }),
-					["<CR>"] = cmp.mapping.confirm({ select = true }), -- Confirm with Enter
+					["<CR>"] = cmp.mapping.confirm({ select = false }), -- Confirm only if item is selected
 					["<C-Space>"] = cmp.mapping.complete({}),
 					["<C-l>"] = cmp.mapping(function()
 						if luasnip.expand_or_locally_jumpable() then luasnip.expand_or_jump() end

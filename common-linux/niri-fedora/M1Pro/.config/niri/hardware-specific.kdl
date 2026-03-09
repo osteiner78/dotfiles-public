@@ -25,9 +25,9 @@ Ctrl+Super+Alt+Shift+Z { spawn-sh "niri-ror webapp 01KGMTR59JM64CJGETEQKEC84A"; 
 
 // Other
 // Mod+XF86MonBrightnessDown   {spawn-sh "brightnessctl --device='smc::kbd_backlight' set 10%-"; }
-Mod+XF86MonBrightnessDown   {spawn-sh "brightnessctl -d kbd_backlight set 10%-"; }
+Mod+XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl -d kbd_backlight set 10%-"; }
 // Mod+XF86MonBrightnessUp     {spawn-sh "brightnessctl --device='smc::kbd_backlight' set 10%+"; }
-Mod+XF86MonBrightnessUp   {spawn-sh "brightnessctl -d kbd_backlight set +10%"; }
+Mod+XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl -d kbd_backlight set +10%"; }
 
-XF86Search hotkey-overlay-title="Run an Application: fuzzel" { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
+XF86Search hotkey-overlay-title="Noctalia Launcher" { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
 }

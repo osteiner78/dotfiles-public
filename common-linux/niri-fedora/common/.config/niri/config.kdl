@@ -3,12 +3,12 @@
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
-spawn-at-startup "qs" "-c" "noctalia-shell"
-spawn-at-startup "/usr/libexec/kf6/polkit-kde-authentication-agent-1"
-spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
-spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
-spawn-at-startup "keyd-application-mapper" "-d"
-spawn-at-startup "vicinae" "server"
+spawn-sh-at-startup "qs -c noctalia-shell"
+spawn-sh-at-startup "/usr/libexec/kf6/polkit-kde-authentication-agent-1"
+spawn-sh-at-startup "wl-paste --type text --watch cliphist store"
+spawn-sh-at-startup "wl-paste --type image --watch cliphist store"
+spawn-sh-at-startup "keyd-application-mapper -d"
+spawn-sh-at-startup "vicinae server"
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -36,7 +36,7 @@ animations {
     // off
 
     // Slow down all animations by this factor. Values below 1 speed them up instead.
-    slowdown 2.0
+    slowdown 1.7
 }
 
 overview {
@@ -63,7 +63,7 @@ cursor {
 // Alt-tab switcher
 recent-windows {
     // off
-    debounce-ms 750
+    debounce-ms 300
 
     open-delay-ms 150
 
@@ -84,7 +84,7 @@ recent-windows {
         Mod+Shift+Tab   { previous-window; }
         // Ctrl+dead_grave   { previous-window; }
         Mod+dead_grave       { next-window     filter="app-id"; }
-        Mod+Shift+grave { previous-window filter="app-id"; }
+        Mod+Shift+dead_grave { previous-window filter="app-id"; }
 
         // Mod+Tab         { next-window; }
         // Mod+Shift+Tab   { previous-window; }
