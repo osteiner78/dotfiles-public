@@ -38,6 +38,7 @@
    "providers": {
       "@EvanZhouDev/store.raycast.raycast-gemini": {
          "preferences": {
+            "defaultModel": "gemini-3-flash-preview",
             "safetyThreshold": "BLOCK_NONE"
          }
       },
