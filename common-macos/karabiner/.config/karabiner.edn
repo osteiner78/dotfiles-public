@@ -72,11 +72,11 @@
         ; :launch_focus_front_app for “picky” apps (need activation or slow first window)
         ; :launch_focus_front_bid when the app name has invisible characters or is unstable (e.g. WhatsApp)
         ; :launch_focus_front_app_bid to use both app name and bundle id (to increase switching speed)
-        :launch_focus_cmd       "/usr/local/bin/yabai-launch-focus --app \"%s\""
-        :launch_focus_bid       "/usr/local/bin/yabai-launch-focus --bundle-id \"%s\""
-        :launch_focus_front_app "/usr/local/bin/yabai-launch-focus --app \"%s\" --front --timeout 8"
-        :launch_focus_front_bid "/usr/local/bin/yabai-launch-focus --bundle-id \"%s\" --timeout 8"
-        :launch_focus_front_app_bid "/usr/local/bin/yabai-launch-focus --app \"%s\" --bundle-id \"%s\" --front --timeout 6"
+        :launch_focus_cmd       "/usr/local/bin/launch-focus --app \"%s\""
+        :launch_focus_bid       "/usr/local/bin/launch-focus --bundle-id \"%s\""
+        :launch_focus_front_app "/usr/local/bin/launch-focus --app \"%s\" --front --timeout 8"
+        :launch_focus_front_bid "/usr/local/bin/launch-focus --bundle-id \"%s\" --timeout 8"
+        :launch_focus_front_app_bid "/usr/local/bin/launch-focus --app \"%s\" --bundle-id \"%s\" --front --timeout 6"
 
         ;; Move to an absolute space N and keep the moved window focused
         :mv2space "/usr/bin/env bash -lc 'id=$(/opt/homebrew/bin/yabai -m query --windows --window | /opt/homebrew/bin/jq -r .id); /opt/homebrew/bin/yabai -m window --space %s; /opt/homebrew/bin/yabai -m space --focus %s; sleep 0.06; /opt/homebrew/bin/yabai -m window --focus $id'"
@@ -157,8 +157,8 @@
                 [:q [:launch "/Applications/Alacritty.app"]]
                 [:v [:launch_focus_front_app_bid "Code"     "com.microsoft.VSCode"]]
                 [:w [:launch_focus_front_app_bid "WhatsApp" "net.whatsapp.WhatsApp"]]
-                [:x [:launch_focus_front_app "Gemini"]]
-                [:z [:launch_focus_front_app_bid "ChatGPT" "com.openai.chat"]]
+                [:x [:launch_focus_front_app_bid "ChatGPT" "com.openai.chat"]]
+                [:z [:launch_focus_front_app "Gemini"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
 
         ;;  ========== HYPER KEY (Quality of life) ==================

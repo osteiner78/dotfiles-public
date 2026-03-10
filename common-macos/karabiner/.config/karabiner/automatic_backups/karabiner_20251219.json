@@ -103,7 +103,7 @@
             "key_code" : "a"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Arc\""
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Arc\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -116,7 +116,7 @@
             "key_code" : "c"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Calendar\" --front --timeout 8"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Calendar\" --front --timeout 8"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -169,7 +169,7 @@
             "key_code" : "g"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Gmail\" --front --timeout 8"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Gmail\" --front --timeout 8"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -208,7 +208,7 @@
             "key_code" : "o"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Obsidian\""
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Obsidian\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -221,7 +221,7 @@
             "key_code" : "p"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Paperless-ngx\""
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Paperless-ngx\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -234,7 +234,7 @@
             "key_code" : "t"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Things3\" --bundle-id \"com.culturedcode.ThingsMac\" --front --timeout 6"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Things3\" --bundle-id \"com.culturedcode.ThingsMac\" --front --timeout 6"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -260,7 +260,7 @@
             "key_code" : "v"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Code\" --bundle-id \"com.microsoft.VSCode\" --front --timeout 6"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Code\" --bundle-id \"com.microsoft.VSCode\" --front --timeout 6"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -273,7 +273,7 @@
             "key_code" : "w"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"WhatsApp\" --bundle-id \"net.whatsapp.WhatsApp\" --front --timeout 6"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"WhatsApp\" --bundle-id \"net.whatsapp.WhatsApp\" --front --timeout 6"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -286,7 +286,7 @@
             "key_code" : "x"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"ChatGPT\" --bundle-id \"com.openai.chat\" --front --timeout 6"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"ChatGPT\" --bundle-id \"com.openai.chat\" --front --timeout 6"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -299,7 +299,7 @@
             "key_code" : "z"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Gemini\" --front --timeout 8"
+            "shell_command" : "/usr/local/bin/yabai-launch-focus --app \"Gemini\" --front --timeout 8"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
