@@ -249,3 +249,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # (( ! ${+functions[p10k]} )) || p10k finalize
 eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
+
+# Added by Antigravity
+export PATH="/Users/oliversteiner/.antigravity/antigravity/bin:$PATH"
