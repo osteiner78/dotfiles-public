@@ -1,0 +1,7 @@
+# Enable D-Bus so 'darkman set' can communicate with the running daemon
+dbusserver: true
+# Enable the portal so apps can see the change
+portal: true
+
+lat: -23.5
+lng: -46.6

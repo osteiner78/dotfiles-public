@@ -1,0 +1,33 @@
+// Niri keybinds specific to Macbook Pro M1
+
+// M1 uses swayidle since hypridle not working on ARM
+spawn-sh-at-startup "~/.config/niri/scripts/idle_daemon.sh"
+
+binds {
+// Lock computer using noctalia built-in lock screen
+Super+Alt+L hotkey-overlay-title="Lock the Screen: Noctalia built-in" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
+
+
+// Hyper-layer apps
+Ctrl+Super+Alt+Shift+A { spawn-sh "niri-ror --app-id '^zen$' --command zen-browser"; }
+
+// Webapps by APPID
+Ctrl+Super+Alt+Shift+C { spawn-sh "niri-ror webapp 01KGMQWVW3JRW0REPA40C3ZMBT"; } // Google Calendar
+Ctrl+Super+Alt+Shift+G { spawn-sh "niri-ror webapp 01KGN8857HH8M8FSZNZT50GBR8"; } // Gmail
+Ctrl+Super+Alt+Shift+M { spawn-sh "niri-ror webapp 01KGMKFHT2D3HF568YYX22YNAJ"; } // Google Maps
+Ctrl+Super+Alt+Shift+P { spawn-sh "niri-ror webapp 01KGN8DW6H1Z13GBJE8BB9H8F5"; } // Paperless-ngx
+Ctrl+Super+Alt+Shift+T { spawn-sh "niri-ror webapp 01KGN8N0548J8DTHMTRAXPS9WH"; } // Todoist
+Ctrl+Super+Alt+Shift+W { spawn-sh "niri-ror webapp 01KGN9349PCF304VDVY5559Q91"; } // WhatsApp
+Ctrl+Super+Alt+Shift+Z { spawn-sh "niri-ror webapp 01KGMTR59JM64CJGETEQKEC84A"; } // Gemini
+
+// Ctrl+Super+Alt+Shift+X { spawn-sh "niri-ror webapp 01KGQ4NG2EEBAD5WT2EDB2JYF2"; } // Claude webapp
+// Ctrl+Super+Alt+Shift+V { spawn-sh "niri-ror webapp 01KGN9AAKHSYHRKNGC1AP55SV5"; } // ChatGPT
+
+// Other
+// Mod+XF86MonBrightnessDown   {spawn-sh "brightnessctl --device='smc::kbd_backlight' set 10%-"; }
+Mod+XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl -d kbd_backlight set 10%-"; }
+// Mod+XF86MonBrightnessUp     {spawn-sh "brightnessctl --device='smc::kbd_backlight' set 10%+"; }
+Mod+XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl -d kbd_backlight set +10%"; }
+
+XF86Search hotkey-overlay-title="Noctalia Launcher" { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
+}

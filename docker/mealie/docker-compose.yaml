@@ -1,0 +1,30 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    restart: always
+    ports:
+      - "9925:9000" # Host_Port:Container_Port
+    volumes:
+      - mealie_data:/app/data # Persistent storage for Mealie data
+    environment:
+      # General Settings
+      - TZ=America/Sao_Paulo # Replace with your desired timezone
+      - PUID=1000 # User ID for permissions (match your server user ID)
+      - PGID=1000 # Group ID for permissions (match your server group ID)
+      - ALLOW_SIGNUP=true # Set to false after initial user creation for security
+      - BASE_URL=http://your-server-ip:9925 # Replace with your server's IP address or domain and port
+      - API_DOCS=True # Enable API documentation (optional)
+      # Database Settings
+      - DB_ENGINE=sqlite
+      # Email Settings (Optional: Uncomment and configure for password resets, invitations)
+      # - SMTP_HOST=your.smtp.host
+      # - SMTP_PORT=587
+      # - SMTP_FROM_NAME=Mealie
+      # - SMTP_AUTH_STRATEGY=TLS
+      # - SMTP_FROM_EMAIL=your@email.com
+      # - SMTP_USER=your_smtp_username
+      # - SMTP_PASSWORD=your_smtp_password
+
+volumes:
+  mealie_data: # Define the named volume for persistence

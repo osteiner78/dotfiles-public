@@ -8,25 +8,46 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
       - /dev/serial/by-id:/dev/serial/by-id
-    devices:
-      - /dev/ttyACM0:/dev/ttyACM0
+    # devices:
+      # - /dev/ttyACM0:/dev/ttyACM0
     restart: unless-stopped
     privileged: true
     network_mode: host
 
   mosquitto:
-        container_name: mosquitto
-        restart: always
-        image: eclipse-mosquitto
-        ports:
-            - "1883:1883"
-            - "9001:9001"
-        volumes: 
-            - /opt/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
-            - /opt/mosquitto/data:/mosquitto/data
-            - /opt/mosquitto/log:/mosquitto/log
-        networks:
-            - default
+    container_name: mosquitto
+    restart: always
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes: 
+      - /opt/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - /opt/mosquitto/data:/mosquitto/data
+      - /opt/mosquitto/log:/mosquitto/log
+    networks:
+      - default
+
+  # To use ControllerX in Home Assistant
+  # appdaemon:
+  #   image: acockburn/appdaemon:latest
+  #   container_name: appdaemon
+  #   restart: unless-stopped
+  #   # This depends on Home Assistant, so it will start after HA does
+  #   depends_on:
+  #     - homeassistant
+  #   volumes:
+  #     # This maps your AppDaemon config folder
+  #     - ./appdaemon_config:/conf
+  #   environment:
+  #     # These tell AppDaemon how to connect to Home Assistant
+  #     - HA_URL=http://192.168.1.100:8123
+  #     - TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4ZDQzNjhmMDkzZTQ0NDBiYWFkYWQ5NjYxODU5ZDk3NCIsImlhdCI6MTc1MTk5MTkyNywiZXhwIjoyMDY3MzUxOTI3fQ.FLDYDW4ZBq5Vrv4GRSbEpSFf7KoDLy2eFhonhMaRTsQ
+  #     - TZ=America/Sao_Paulo # Your Timezone
+  #   # ports:
+  #     # This exposes the AppDaemon dashboard on port 5050
+  #     # - "5050:5050"
+  #   network_mode: host
 
   zigbee2mqtt:
     container_name: zigbee2mqtt
@@ -42,14 +63,14 @@ services:
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run
-    network_mode: host # to use 'localhost' in host computer
-    env_file:
-    - .env
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: cloudflared
+  #   restart: unless-stopped
+  #   command: tunnel --no-autoupdate run
+  #   network_mode: host # to use 'localhost' in host computer
+  #   env_file:
+  #   - .env
 
   pihole:
     container_name: pihole
@@ -60,8 +81,10 @@ services:
       - "53:53/udp"
       # - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
       - "80:80/tcp"
+      - "443:443/tcp"
     environment:
       TZ: 'America/Sao_Paulo'
+      FTLCONF_dns_listeningMode: 'ALL'
       # WEBPASSWORD: 'set a secure password here or it will be random'
     # Volumes store your data between container upgrades
     volumes:
