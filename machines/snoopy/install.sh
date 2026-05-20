@@ -6,24 +6,24 @@ MACHINE="$DOTFILES/machines/snoopy"
 SECRETS="$HOME/dotfiles-secrets"
 
 stow_home() {
-  stow -d "$1" -t ~ --restow "${@:2}"
+    stow -d "$1" -t ~ --restow "${@:2}"
 }
 
 stow_root() {
-  sudo stow -d "$1" -t / --restow "${@:2}"
+    sudo stow -d "$1" -t / --restow "${@:2}"
 }
 
 echo "→ common (home)"
-stow_home "$DOTFILES/common" zsh git tmux ssh btop nvim
+stow_home "$DOTFILES/common" zsh git tmux ssh btop nvim claude yazi
 
 echo "→ snoopy (/etc — requires sudo)"
 stow_root "$MACHINE" borgmatic ssh
 
 if [ -d "$SECRETS" ]; then
-  echo "→ secrets (home)"
-  stow_home "$SECRETS/common" "${@:-}"
-  echo "→ secrets/snoopy (/etc — requires sudo)"
-  stow_root "$SECRETS/machines/snoopy" "${@:-}"
+    echo "→ secrets (home)"
+    stow_home "$SECRETS/common"
+    echo "→ secrets/snoopy (/etc — requires sudo)"
+    stow_root "$SECRETS/machines/snoopy"
 fi
 
 echo "✓ done"

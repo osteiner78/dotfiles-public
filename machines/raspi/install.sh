@@ -6,22 +6,22 @@ MACHINE="$DOTFILES/machines/raspi"
 SECRETS="$HOME/dotfiles-secrets"
 
 stow_home() {
-  stow -d "$1" -t ~ --restow "${@:2}"
+    stow -d "$1" -t ~ --restow "${@:2}"
 }
 
 stow_root() {
-  sudo stow -d "$1" -t / --restow "${@:2}"
+    sudo stow -d "$1" -t / --restow "${@:2}"
 }
 
 echo "→ common (home)"
-stow_home "$DOTFILES/common" zsh git ssh btop
+stow_home "$DOTFILES/common" zsh git ssh btop claude nvim tmux yazi
 
 echo "→ raspi (/etc — requires sudo)"
 stow_root "$MACHINE" borgmatic ssh
 
 if [ -d "$SECRETS" ]; then
-  echo "→ secrets/raspi (/etc — requires sudo)"
-  stow_root "$SECRETS/machines/raspi" "${@:-}"
+    echo "→ secrets/raspi (/etc — requires sudo)"
+    stow_root "$SECRETS/machines/raspi"
 fi
 
 echo "✓ done"
