@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Personal dotfiles managed with stow.
 
 ## Structure
 
