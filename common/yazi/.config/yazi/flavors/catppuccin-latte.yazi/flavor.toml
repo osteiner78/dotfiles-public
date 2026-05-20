@@ -22,7 +22,6 @@ marker_selected = { fg = "#df8e1d", bg = "#df8e1d" }
 # Tab
 tab_active   = { reversed = true }
 tab_inactive = {}
-tab_width    = 1
 
 # Count
 count_copied   = { fg = "#eff1f5", bg = "#40a02b" }
@@ -155,8 +154,8 @@ rules = [
 	{ mime = "application/{pdf,doc,rtf,vnd.*}", fg = "#40a02b" },
 
 	# Fallback
-	{ name = "*", fg = "#4c4f69" },
-	{ name = "*/", fg = "#1e66f5" }
+	{ url = "*", fg = "#4c4f69" },
+	{ url = "*/", fg = "#1e66f5" }
 ]
 
 # : }}}

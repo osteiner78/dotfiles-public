@@ -1,3 +1,6 @@
+# Initialize Homebrew for Apple Silicon
+[[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # ==================== AUTOSTART TMUX WHEN SSH =========================
 # Auto-attach/create tmux for interactive SSH sessions.
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
@@ -14,7 +17,7 @@ fi
 # prompt adam1
 
 # Deduplicate PATH entries
-typeset -U path PATH
+typeset -U path PATH fpath
 
 # History & completion behavior
 setopt HISTIGNOREALLDUPS SHAREHISTORY
@@ -95,9 +98,11 @@ alias gs="git status"
 alias gcm='git commit -m'
 alias gd="git diff"
 
-# Wireguard
-alias wd="sudo systemctl stop wg-quick@wg0"
-alias wu="sudo systemctl start wg-quick@wg0"
+# Wireguard (Linux only — systemctl not available on macOS)
+if [[ "$(uname -s)" == "Linux" ]]; then
+  alias wd="sudo systemctl stop wg-quick@wg0"
+  alias wu="sudo systemctl start wg-quick@wg0"
+fi
 
 # Find files in subfolders
 ff() {
@@ -160,24 +165,13 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --strip-cwd-prefix --exc
 _fzf_compgen_path() { fd --hidden --follow --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache . "$1" }
 _fzf_compgen_dir()  { fd --type=d --hidden --follow --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache . "$1" }
 
-_gen_fzf_default_opts() {
-  # Gruvbox palette
-  local color00='#32302f' color01='#3c3836' color02='#504945' color03='#665c54'
-  local color04='#bdae93' color05='#d5c4a1' color06='#ebdbb2' color07='#fbf1c7'
-  local color08='#fb4934' color09='#fe8019' color0A='#fabd2f' color0B='#b8bb26'
-  local color0C='#8ec07c' color0D='#83a598' color0E='#d3869b' color0F='#d65d0e'
+# Gruvbox palette for fzf
+export FZF_DEFAULT_OPTS="\
+--color=bg+:#3c3836,bg:#32302f,spinner:#8ec07c,hl:#83a598 \
+--color=fg:#bdae93,header:#83a598,info:#fabd2f,pointer:#8ec07c \
+--color=marker:#8ec07c,fg+:#ebdbb2,prompt:#fabd2f,hl+:#83a598"
 
-  local opts="$FZF_DEFAULT_OPTS \
---color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D} \
---color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C} \
---color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
-
-  export FZF_DEFAULT_OPTS="$opts"
-}
-_gen_fzf_default_opts
-
-show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
-export FZF_CTRL_T_OPTS="--preview='$show_file_or_dir_preview'"
+export FZF_CTRL_T_OPTS="--preview='if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi'"
 export FZF_ALT_C_OPTS="--preview='eza --tree --color=always {} | head -200'"
 
 # ============== FZF-TAB =================
@@ -188,8 +182,13 @@ fzf_tab_plugin="$HOME/.zsh/fzf-tab/fzf-tab.zsh"
 [[ -r "$fzf_tab_plugin" ]] && fpath=(~/.zsh/fzf-tab $fpath)
 
 # ----- Standard zsh completion system -----
+# Full compinit if dump is older than 24h; use cache otherwise for fast startup.
 autoload -Uz compinit
-compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 # If fzf-tab is present -> configure everything
 if [[ -r "$fzf_tab_plugin" ]]; then
@@ -242,7 +241,7 @@ fi
 # ==================== ZSH PLUGINS  ==========================
 # (Kept at the very end — your original order)
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  local brew_prefix="$(brew --prefix)"
+  brew_prefix="$(/opt/homebrew/bin/brew --prefix)"
   [[ -r "$brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] \
     && source "$brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
   [[ -r "$brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] \
@@ -260,21 +259,24 @@ elif [[ "$(uname -s)" == "Linux" ]]; then
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
-# (Kept as-is; order preserved)
-path+=${HOME}/.local/bin
+[[ -d "$HOME/.local/bin" ]] && path+=("$HOME/.local/bin")
 # path+=('/root/.local/bin/')
-path+=('/opt/nvim')
+[[ -d '/opt/nvim' ]] && path+=('/opt/nvim')
 
 # >>> conda initialize >>>
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  if __conda_setup="$("$HOME/miniconda3/bin/conda" 'shell.zsh' 'hook' 2>/dev/null)"; then
-    eval "$__conda_setup"
-  elif [[ -r "$HOME/miniconda3/etc/profile.d/conda.sh" ]]; then
-    . "$HOME/miniconda3/etc/profile.d/conda.sh"
-  else
-    export PATH="$HOME/miniconda3/bin:$PATH"
+  # Problem: `conda shell.zsh hook` spawns a Python process on every shell start,
+  # costing ~300-600ms even with auto_activate_base=false.
+  # The hook output is a static block of shell functions that only changes when
+  # conda itself is updated — so we cache it and skip the Python spawn on every
+  # subsequent start. The cache is invalidated automatically by comparing mtimes:
+  # if the conda binary is newer than the cache file, the hook is regenerated.
+  _conda_cache="$HOME/.cache/conda_zsh_hook.zsh"
+  if [[ ! -f "$_conda_cache" || "$HOME/miniconda3/bin/conda" -nt "$_conda_cache" ]]; then
+    "$HOME/miniconda3/bin/conda" 'shell.zsh' 'hook' 2>/dev/null >| "$_conda_cache"
   fi
-  unset __conda_setup
+  [[ -f "$_conda_cache" ]] && source "$_conda_cache"
+  unset _conda_cache
 elif [[ "$(uname -s)" == "Linux" ]]; then
   for _conda_prefix in "$HOME/miniconda3" "$HOME/anaconda3" "/opt/miniconda3" "/opt/anaconda3"; do
     if [[ -x "$_conda_prefix/bin/conda" ]]; then
@@ -296,7 +298,7 @@ fi
 # NVM (lazy-loaded for faster shell startup)
 export NVM_DIR="$HOME/.nvm"
 _nvm_lazy_load() {
-  unfunction nvm node npm npx 2>/dev/null
+  unfunction nvm node npm npx gemini opencode 2>/dev/null
   [[ -s "$NVM_DIR/nvm.sh" ]]          && source "$NVM_DIR/nvm.sh"
   [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
 }
@@ -304,12 +306,13 @@ nvm()  { _nvm_lazy_load; nvm  "$@" }
 node() { _nvm_lazy_load; node "$@" }
 npm()  { _nvm_lazy_load; npm  "$@" }
 npx()  { _nvm_lazy_load; npx  "$@" }
+gemini() { _nvm_lazy_load; gemini "$@" }
+opencode() { _nvm_lazy_load; opencode "$@" }
 
-# (( ! ${+functions[p10k]} )) || p10k finalize
 command -v oh-my-posh >/dev/null && eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
 
 # Added by Antigravity
-export PATH="/Users/oliversteiner/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
@@ -320,6 +323,11 @@ esac
 # pnpm end
 export PATH="$PATH:$HOME/.npm-global/bin"
 
+
+# Load secrets from .env
+if [ -f "$HOME/.env" ]; then
+  source "$HOME/.env"
+fi
 
 # Gemini API Key
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

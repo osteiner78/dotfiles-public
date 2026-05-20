@@ -2,6 +2,7 @@
 *.DS_Store
 .env
 lazy-lock.json
+common/nvim/.config/nvim/.history/
 ~/.local/share/nvim/lazy/
 docker/raspi-docker/etc-pihole/
 docker/linkding/data

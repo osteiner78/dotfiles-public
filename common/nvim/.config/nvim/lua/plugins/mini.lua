@@ -38,14 +38,11 @@ return {
 			},
 			symbols = {
 				encode = minimap.gen_encode_symbols.dot("4x2"),
-                scroll_line = '▶',
-                scroll_view = '┃',
 			},
 			window = {
 				side = "right",
 				width = 20,
 				winblend = 15,
-                show_cursor = true,
 			},
 		})
 	end,

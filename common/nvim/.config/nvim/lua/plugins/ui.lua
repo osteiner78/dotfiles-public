@@ -72,16 +72,13 @@ return {
 		"windwp/nvim-ts-autotag",
 		event = { "BufReadPost", "BufNewFile" },
 		opts = {
-			opts = { enable_close = true, enable_rename = true, enable_close_on_slash = false },
-			per_filetype = { ["html"] = { enable_close = true } }
+			opts = {
+				enable_close = true,
+				enable_rename = true,
+				enable_close_on_slash = false,
+			},
 		},
 	},
 
-    -- Render Markdown (Clean version)
-    {
-        "MeanderingProgrammer/render-markdown.nvim",
-        ft = { "markdown", "Avante" },
-        dependencies = { "nvim-tree/nvim-web-devicons" },
-        opts = {},
-    },
+    
 }
