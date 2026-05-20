@@ -3,13 +3,22 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPost", "BufNewFile" },
+		init = function()
+			-- Override auto-discovered stylua LSP config (nvim-lspconfig/lsp/stylua.lua)
+			-- stylua is a formatter, not an LSP server; prevent auto-start on Lua files
+			pcall(function() vim.lsp.config('stylua', { filetypes = {} }) end)
+		end,
 		dependencies = {
 			{ "williamboman/mason.nvim", config = true },
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			"hrsh7th/cmp-nvim-lsp",
 			{ "j-hui/fidget.nvim", opts = {} },
-			{ "folke/lazydev.nvim", ft = "lua", opts = { library = { { path = "luvit-meta/library", words = { "vim%.uv" } } } } },
+			{
+				"folke/lazydev.nvim",
+				ft = "lua",
+				opts = { library = { { path = "luvit-meta/library", words = { "vim%.uv" } } } },
+			},
 			{ "Bilal2453/luvit-meta", lazy = true },
 		},
 		config = function()
@@ -20,12 +29,24 @@ return {
 						vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 					end
 
-					map("gd", function() Snacks.picker.lsp_definitions() end, "Definition")
-					map("gr", function() Snacks.picker.lsp_references() end, "References")
-					map("gI", function() Snacks.picker.lsp_implementations() end, "Implementation")
-					map("<leader>ct", function() Snacks.picker.lsp_type_definitions() end, "Type Definition")
-					map("<leader>cs", function() Snacks.picker.lsp_symbols() end, "Symbols")
-					map("<leader>cw", function() Snacks.picker.lsp_workspace_symbols() end, "Workspace Symbols")
+					map("gd", function()
+						Snacks.picker.lsp_definitions()
+					end, "Definition")
+					map("gr", function()
+						Snacks.picker.lsp_references()
+					end, "References")
+					map("gI", function()
+						Snacks.picker.lsp_implementations()
+					end, "Implementation")
+					map("<leader>ct", function()
+						Snacks.picker.lsp_type_definitions()
+					end, "Type Definition")
+					map("<leader>cs", function()
+						Snacks.picker.lsp_symbols()
+					end, "Symbols")
+					map("<leader>cw", function()
+						Snacks.picker.lsp_workspace_symbols()
+					end, "Workspace Symbols")
 					map("<leader>cr", vim.lsp.buf.rename, "Rename")
 					map("<leader>ca", vim.lsp.buf.code_action, "Code Action")
 					map("K", vim.lsp.buf.hover, "Hover Documentation")
@@ -35,15 +56,21 @@ return {
 					if client and client.server_capabilities.documentHighlightProvider then
 						local highlight_augroup = vim.api.nvim_create_augroup("lsp-highlight", { clear = false })
 						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-							buffer = event.buf, group = highlight_augroup, callback = vim.lsp.buf.document_highlight,
+							buffer = event.buf,
+							group = highlight_augroup,
+							callback = vim.lsp.buf.document_highlight,
 						})
 						vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-							buffer = event.buf, group = highlight_augroup, callback = vim.lsp.buf.clear_references,
+							buffer = event.buf,
+							group = highlight_augroup,
+							callback = vim.lsp.buf.clear_references,
 						})
 					end
 
 					if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-						map("<leader>uh", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toggle Inlay Hints")
+						map("<leader>uh", function()
+							vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+						end, "Toggle Inlay Hints")
 					end
 				end,
 			})
@@ -52,12 +79,16 @@ return {
 				group = vim.api.nvim_create_augroup("lsp-detach", { clear = true }),
 				callback = function(event)
 					vim.lsp.buf.clear_references()
-					vim.api.nvim_clear_autocmds({ group = "lsp-highlight", buffer = event.buf })
+					vim.api.nvim_clear_autocmds({
+						group = vim.api.nvim_create_augroup("lsp-highlight", {}),
+						buffer = event.buf,
+					})
 				end,
 			})
 
-			local capabilities = vim.tbl_deep_extend("force",
-				vim.lsp.protocol.make_client_capabilities(), 
+			local capabilities = vim.tbl_deep_extend(
+				"force",
+				vim.lsp.protocol.make_client_capabilities(),
 				require("cmp_nvim_lsp").default_capabilities()
 			)
 
@@ -73,6 +104,7 @@ return {
 					end,
 				},
 			})
+
 		end,
 	},
 
@@ -81,7 +113,13 @@ return {
 		"stevearc/conform.nvim",
 		event = "BufWritePre",
 		keys = {
-			{ "<leader>cf", function() require("conform").format({ async = true, lsp_format = "fallback" }) end, desc = "Format Buffer" },
+			{
+				"<leader>cf",
+				function()
+					require("conform").format({ async = true, lsp_format = "fallback" })
+				end,
+				desc = "Format Buffer",
+			},
 		},
 		opts = {
 			notify_on_error = false,
@@ -124,16 +162,20 @@ return {
 			local cmp = require("cmp")
 			local luasnip = require("luasnip")
 			cmp.setup({
-				snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
+				snippet = {
+					expand = function(args)
+						luasnip.lsp_expand(args.body)
+					end,
+				},
 				completion = { completeopt = "menu,menuone,noinsert" },
 				experimental = { ghost_text = true },
 				formatting = {
 					format = require("lspkind").cmp_format({
-						mode = 'symbol_text',
+						mode = "symbol_text",
 						maxwidth = 50,
-						ellipsis_char = '...',
+						ellipsis_char = "...",
 						show_label_details = true,
-					})
+					}),
 				},
 				mapping = cmp.mapping.preset.insert({
 					["<C-n>"] = cmp.mapping.select_next_item(),
@@ -144,10 +186,14 @@ return {
 					["<CR>"] = cmp.mapping.confirm({ select = false }), -- Confirm only if item is selected
 					["<C-Space>"] = cmp.mapping.complete({}),
 					["<C-l>"] = cmp.mapping(function()
-						if luasnip.expand_or_locally_jumpable() then luasnip.expand_or_jump() end
+						if luasnip.expand_or_locally_jumpable() then
+							luasnip.expand_or_jump()
+						end
 					end, { "i", "s" }),
 					["<C-h>"] = cmp.mapping(function()
-						if luasnip.locally_jumpable(-1) then luasnip.jump(-1) end
+						if luasnip.locally_jumpable(-1) then
+							luasnip.jump(-1)
+						end
 					end, { "i", "s" }),
 				}),
 				sources = cmp.config.sources({

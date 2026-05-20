@@ -43,22 +43,18 @@ final_space = true
       style = 'full'
 
   [[blocks.segments]]
-    leading_diamond = ''
-    trailing_diamond = ''
-    template = ' {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
-    foreground = '#282828'
+    # Only visible when a conda/venv environment is explicitly active.
+    # Matches auto_activate_base=false: no noise when no env is loaded.
+    template = '  {{ .Venv }} '
+    foreground = '#282828' # gruvbox bg0
     powerline_symbol = ''
-    background = '#98971A'
-    type = 'git'
+    background = '#98971A' # gruvbox green dark
+    type = 'python'
     style = 'powerline'
-    background_templates = ['{{ if or (.Working.Changed) (.Staging.Changed) }}#edc486{{ end }}', '{{ if and (gt .Ahead 0) (gt .Behind 0) }}#ff4500{{ end }}', '{{ if gt .Ahead 0 }}#B388FF{{ end }}', '{{ if gt .Behind 0 }}#B388FF{{ end }}']
 
     [blocks.segments.properties]
-      branch_icon = ' '
-      branch_identical_icon = '●'
-      branch_template = '{{ trunc 25 .Branch }}'
-      fetch_status = true
-
+      display_mode = 'environment' # show only when a virtual/conda env is active
+      fetch_virtual_env = true
   [[blocks.segments]]
     template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
     foreground = '#111111'
@@ -82,19 +78,25 @@ final_space = true
       fetch_version = true
 
   [[blocks.segments]]
-    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
-    foreground = '#111111'
+    leading_diamond = ''
+    trailing_diamond = ''
+    template = ' {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
+    foreground = '#282828'
     powerline_symbol = ''
-    background = '#FFDE57'
-    type = 'python'
+    background = '#fe8019'
+    type = 'git'
     style = 'powerline'
+    background_templates = ['{{ if or (.Working.Changed) (.Staging.Changed) }}#d79921{{ end }}', '{{ if and (gt .Ahead 0) (gt .Behind 0) }}#cc241d{{ end }}', '{{ if gt .Ahead 0 }}#689d6a{{ end }}', '{{ if gt .Behind 0 }}#b16286{{ end }}']
+    # dirty=yellow-dark ahead=aqua-dark behind=purple-dark diverged=red-dark (all gruvbox)
 
     [blocks.segments.properties]
-      display_mode = 'files'
-      fetch_virtual_env = false
+      branch_icon = ' '
+      branch_identical_icon = '●'
+      branch_template = '{{ trunc 25 .Branch }}'
+      fetch_status = true
 
   [[blocks.segments]]
-    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
+    template = '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} '
     foreground = '#ffffff'
     powerline_symbol = ''
     background = '#AE1401'
@@ -142,12 +144,27 @@ final_space = true
   # filler = '.'
 
   [[blocks.segments]]
+    # Official oh-my-posh Claude Code segment.
+    # Shows model name and token usage gauge; hidden when Claude Code is not active.
+    type = "claude"
+    style = "diamond"
+    foreground = "#282828" # gruvbox bg0
+    background = "#d3869b" # gruvbox purple bright
+    leading_diamond = "\ue0b6"
+    trailing_diamond = "\ue0b4"
+    template = " 󰟩 {{ .Model.DisplayName }}  {{ .TokenGauge }} "
+
+    [blocks.segments.properties]
+      gauge_marked_char = "▰"
+      gauge_unmarked_char = "▱"
+
+  [[blocks.segments]]
     type = "session"
     style = "diamond"
     # foreground = "#282828" # gruvbox fg0
     foreground = "#d4be98" # 
     # background = "#504945" # gruvbox fg2
-    background = "#3c3835" # from p10k
+    background = "#3c3836" # gruvbox bg1
     leading_diamond = ""
 
   [[blocks.segments]]

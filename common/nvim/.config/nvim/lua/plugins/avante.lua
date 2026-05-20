@@ -1,58 +1,38 @@
 return {
   "yetone/avante.nvim",
+  build = vim.fn.has("win32") ~= 0
+    and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+    or "make",
   event = "VeryLazy",
-  version = false, -- always track latest commit
+  version = false,
+  ---@module 'avante'
+  ---@type avante.Config
   opts = {
-    provider = "gemini",
-    auto_suggestions_provider = "gemini",
-    -- Gemini Configuration
-    providers = {
-      gemini = {
-        model = "gemini-2.0-flash",
-        max_tokens = 8192,
-        temperature = 0,
+    provider = "opencode",
+    acp_providers = {
+      ["opencode"] = {
+        command = "opencode",
+        args = { "acp" },
+      },
+    },
+    input = {
+      provider = "snacks",
+      provider_opts = {
+        title = "Avante Input",
+        icon = " ",
       },
     },
     behaviour = {
-      auto_suggestions = false, -- Change to true if you want ghost text
-      auto_set_highlight_group = true,
-      auto_set_keymaps = true,
-      auto_apply_diff_after_generation = false,
-      support_paste_from_clipboard = false,
-    },
-    mappings = {
-      --- @class AvanteConflictMappings
-      diff = {
-        ours = "co",
-        theirs = "ct",
-        all_theirs = "ca",
-        both = "cb",
-        cursor = "cc",
-        next = "]x",
-        prev = "[x",
-      },
-      suggestion = {
-        accept = "<M-l>",
-        next = "<M-]>",
-        prev = "<M-[>",
-        dismiss = "<C-]>",
-      },
-      jump = {
-        next = "]a",
-        prev = "[a",
-      },
-      submit = {
-        normal = "<CR>",
-        insert = "<C-s>",
-      },
+      auto_add_current_file = true,
+      auto_approve_tool_permissions = true,
     },
   },
-  build = "make",
   dependencies = {
-    "nvim-treesitter/nvim-treesitter",
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
+    "hrsh7th/nvim-cmp",
     "nvim-tree/nvim-web-devicons",
+    "folke/snacks.nvim",
     {
       "HakonHarnes/img-clip.nvim",
       event = "VeryLazy",
@@ -63,7 +43,15 @@ return {
           drag_and_drop = {
             insert_mode = true,
           },
+          use_absolute_path = true,
         },
+      },
+    },
+    {
+      "MeanderingProgrammer/render-markdown.nvim",
+      ft = { "markdown", "Avante" },
+      opts = {
+        file_types = { "markdown", "Avante" },
       },
     },
   },
