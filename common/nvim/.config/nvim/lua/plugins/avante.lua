@@ -11,7 +11,7 @@ return {
     provider = "opencode",
     acp_providers = {
       ["opencode"] = {
-        command = "/Users/oliversteiner/.nvm/versions/node/v22.17.0/bin/opencode",
+        command = vim.fn.exepath("opencode"),
         args = { "acp" },
       },
     },
