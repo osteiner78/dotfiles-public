@@ -16,8 +16,8 @@ hostname/uname; use MACHINE=<name> to override.
 
 MACHINES
   macbook   macOS (arm64) — full desktop setup
-              common:       btop claude espanso ghostty git helix nvim ssh tmux yazi zsh
-              common-macos: aerospace alfred bin borders karabiner sketchybar swiftbar
+              common:       btop claude espanso ghostty git nvim ssh tmux yazi zsh
+              common-macos: bin borders karabiner swiftbar
               secrets:      common + common-macos (if ~/dotfiles-secrets exists)
 
   garfield  Linux VPS — home server running Docker
@@ -57,7 +57,10 @@ EOF
 }
 
 for arg in "$@"; do
-    [[ "$arg" == "-h" || "$arg" == "--help" ]] && { usage; exit 0; }
+    [[ "$arg" == "-h" || "$arg" == "--help" ]] && {
+        usage
+        exit 0
+    }
 done
 
 # ── conflict-aware stow ───────────────────────────────────────────────────────
@@ -95,10 +98,10 @@ _resolve_conflicts() {
             if [[ -d "$full" && ! -L "$full" ]]; then
                 [[ -n "$use_sudo" ]] && sudo rm -rf "$full" || rm -rf "$full"
             else
-                [[ -n "$use_sudo" ]] && sudo rm -f "$full"  || rm -f "$full"
+                [[ -n "$use_sudo" ]] && sudo rm -f "$full" || rm -f "$full"
             fi
         fi
-    done <<< "$dry"
+    done <<<"$dry"
 }
 
 _stow_pkg() {
@@ -122,12 +125,14 @@ _stow_pkg() {
 }
 
 stow_home() {
-    local dir="$1"; shift
+    local dir="$1"
+    shift
     for pkg in "$@"; do _stow_pkg "$dir" "$HOME" "" "$pkg"; done
 }
 
 stow_root() {
-    local dir="$1"; shift
+    local dir="$1"
+    shift
     for pkg in "$@"; do _stow_pkg "$dir" "/" "sudo" "$pkg"; done
 }
 
@@ -136,27 +141,27 @@ stow_root() {
 # They are copied from the repo template with $HOME substituted.
 
 materialize_evals() {
-    find "$DOTFILES/common/claude/.claude/skills" -name "evals.json" 2>/dev/null \
-    | while read -r tmpl; do
-        local rel="${tmpl#$DOTFILES/common/claude/}"
-        local dest="$HOME/$rel"
-        mkdir -p "$(dirname "$dest")"
-        [[ -L "$dest" ]] && rm "$dest"
-        local tmp
-        tmp=$(mktemp)
-        sed "s|/Users/oliversteiner|$HOME|g" "$tmpl" > "$tmp"
-        mv "$tmp" "$dest"
-    done
+    find "$DOTFILES/common/claude/.claude/skills" -name "evals.json" 2>/dev/null |
+        while read -r tmpl; do
+            local rel="${tmpl#$DOTFILES/common/claude/}"
+            local dest="$HOME/$rel"
+            mkdir -p "$(dirname "$dest")"
+            [[ -L "$dest" ]] && rm "$dest"
+            local tmp
+            tmp=$(mktemp)
+            sed "s|/Users/oliversteiner|$HOME|g" "$tmpl" >"$tmp"
+            mv "$tmp" "$dest"
+        done
 }
 
 # ── machine profiles ──────────────────────────────────────────────────────────
 
 install_macbook() {
     echo "→ common"
-    stow_home "$DOTFILES/common" btop claude espanso ghostty git helix nvim ssh tmux yazi zsh
+    stow_home "$DOTFILES/common" btop claude espanso ghostty git nvim ssh tmux yazi zsh
 
     echo "→ common-macos"
-    stow_home "$DOTFILES/common-macos" aerospace alfred bin borders karabiner sketchybar swiftbar
+    stow_home "$DOTFILES/common-macos" bin borders karabiner swiftbar
 
     if [[ -d "$SECRETS" ]]; then
         echo "→ secrets/common"
@@ -244,11 +249,16 @@ detect_machine() {
     hn=$(hostname -s 2>/dev/null || hostname)
     hn="${hn,,}"
 
-    if   [[ "$os" == "Darwin" ]];                                 then echo "macbook"
-    elif [[ "$hn" == "garfield"* ]];                              then echo "garfield"
-    elif [[ "$hn" == "raspi"* || "$hn" == "raspberrypi"* ]];     then echo "raspi"
-    elif [[ "$hn" == "snoopy"* ]];                                then echo "snoopy"
-    else echo ""
+    if [[ "$os" == "Darwin" ]]; then
+        echo "macbook"
+    elif [[ "$hn" == "garfield"* ]]; then
+        echo "garfield"
+    elif [[ "$hn" == "raspi"* || "$hn" == "raspberrypi"* ]]; then
+        echo "raspi"
+    elif [[ "$hn" == "snoopy"* ]]; then
+        echo "snoopy"
+    else
+        echo ""
     fi
 }
 
@@ -265,16 +275,16 @@ fi
 echo "machine: $MACHINE   dotfiles: $DOTFILES"
 
 case "$MACHINE" in
-    macbook)  install_macbook      ;;
-    garfield) install_garfield     ;;
-    raspi)    install_raspi        ;;
-    snoopy)   install_snoopy       ;;
-    vm)       install_vm "$@"      ;;
-    *)
-        echo "error: unknown machine '$MACHINE'"
-        echo "Run './install.sh --help' for available machines."
-        exit 1
-        ;;
+macbook) install_macbook ;;
+garfield) install_garfield ;;
+raspi) install_raspi ;;
+snoopy) install_snoopy ;;
+vm) install_vm "$@" ;;
+*)
+    echo "error: unknown machine '$MACHINE'"
+    echo "Run './install.sh --help' for available machines."
+    exit 1
+    ;;
 esac
 
 echo "✓ done"

@@ -33,9 +33,9 @@ Custom slash commands available: `/debug`, `/code-review`, `/refactor`, `/test-g
 
 Save structured output to `.agent/` relative to the project root (create dirs as needed):
 
-- `plans/` — NNN-*.md — implementation plans
-- `reports/` — NNN-*.md — debug logs, reviews, test coverage, phase reports
-- `decisions/` — NNN-*.md — architectural decision records
+- `plans/` — NNN-\*.md — implementation plans
+- `reports/` — NNN-\*.md — debug logs, reviews, test coverage, phase reports
+- `decisions/` — NNN-\*.md — architectural decision records
 - `context/` — background files to read before starting work on a project
 
 NNN is always a zero-padded 3-digit integer. Use this convention unless a project-level CLAUDE.md says otherwise.
@@ -45,9 +45,6 @@ NNN is always a zero-padded 3-digit integer. Use this convention unless a projec
 ## Coding style
 
 - No comments by default — only when the WHY is genuinely non-obvious
-- No unnecessary abstractions — don't design for hypothetical future requirements
-- No error handling for impossible cases — only validate at system boundaries
-- Prefer editing existing files over creating new ones
 - No half-finished implementations — if out of scope, say so explicitly
 
 ---
@@ -63,12 +60,77 @@ NNN is always a zero-padded 3-digit integer. Use this convention unless a projec
 
 ## Behaviour
 
-- **If you're not sure, say so. Don't guess.**
-- **Don't just agree. Push back if there are legitimate concerns.**
-- **Before starting any non-trivial task, ask me clarifying questions.**
 - Ask before destructive actions (deleting files/branches, `rm -rf`, force-push)
-- Don't over-engineer — match scope to what was requested
 - No emojis unless asked; concise responses, no padding
 - Only commit when explicitly asked
 - Flag BSD vs GNU tool differences when writing cross-platform scripts
 - Never put secrets, tokens, or credentials in code or config files — always use `.env` or environment variables
+
+---
+
+## Karpathy Rules
+
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
+## 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
