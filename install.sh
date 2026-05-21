@@ -1,12 +1,64 @@
 #!/usr/bin/env bash
-# Unified dotfiles installer — auto-detects machine from hostname/uname.
-# Override: MACHINE=<name> ./install.sh [extra-packages...]
-# Available machines: macbook  garfield  raspi  snoopy  vm
-# vm example: MACHINE=vm ./install.sh claude helix
+# Dotfiles installer — stows configs for the current machine using GNU Stow.
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 SECRETS="$HOME/dotfiles-secrets"
+
+# ── help ──────────────────────────────────────────────────────────────────────
+
+usage() {
+    cat <<EOF
+Usage: [MACHINE=<name>] ./install.sh [-h] [extra-packages...]
+
+Stows dotfiles for the current machine. The machine is auto-detected from
+hostname/uname; use MACHINE=<name> to override.
+
+MACHINES
+  macbook   macOS (arm64) — full desktop setup
+              common:       btop claude espanso ghostty git helix nvim ssh tmux yazi zsh
+              common-macos: aerospace alfred bin borders karabiner sketchybar swiftbar
+              secrets:      common + common-macos (if ~/dotfiles-secrets exists)
+
+  garfield  Linux VPS — home server running Docker
+              common:  btop git nvim ssh tmux yazi zsh
+              etc:     borgmatic caddy ssh  (sudo stow → /)
+              secrets: common + garfield/etc
+
+  raspi     Raspberry Pi — Home Assistant + Pi-hole
+              common:  btop claude git nvim ssh tmux yazi zsh
+              etc:     borgmatic ssh  (sudo stow → /)
+              secrets: raspi/etc
+
+  snoopy    Proxmox VM — media services
+              common:  btop claude git nvim ssh tmux yazi zsh
+              etc:     borgmatic ssh  (sudo stow → /)
+              secrets: common + snoopy/etc
+
+  vm        Temporary/disposable VM — no secrets, no root stow
+              base:    btop git nvim tmux yazi zsh
+              extras:  any additional packages from common/ passed as args
+
+EXAMPLES
+  ./install.sh                          # auto-detect machine, install all
+  MACHINE=vm ./install.sh               # minimal base on a temp VM
+  MACHINE=vm ./install.sh claude helix  # minimal base + extras
+  MACHINE=garfield ./install.sh         # force garfield profile
+
+CONFLICTS
+  If a non-symlinked file already exists at a stow target path, the installer
+  pauses and asks whether to overwrite it. Answering 'n' skips the prompt but
+  stow will still abort that package — resolve manually if needed.
+
+ENVIRONMENT
+  MACHINE   Override auto-detected machine name
+  DOTFILES  Path to this repo (default: ~/dotfiles)
+EOF
+}
+
+for arg in "$@"; do
+    [[ "$arg" == "-h" || "$arg" == "--help" ]] && { usage; exit 0; }
+done
 
 # ── conflict-aware stow ───────────────────────────────────────────────────────
 
@@ -49,6 +101,8 @@ stow_root() {
 }
 
 # ── evals materialization ─────────────────────────────────────────────────────
+# evals.json files contain absolute paths and can't be stowed directly.
+# They are copied from the repo template with $HOME substituted.
 
 materialize_evals() {
     find "$DOTFILES/common/claude/.claude/skills" -name "evals.json" 2>/dev/null \
@@ -134,11 +188,10 @@ install_snoopy() {
 }
 
 install_vm() {
-    # Base packages always installed; pass extra package names as args.
+    # Baseline packages; any positional args are added on top and deduplicated.
     local -a base=(btop git nvim tmux yazi zsh)
     local -a pkgs=("${base[@]}" "$@")
 
-    # Deduplicate (preserve order, no associative arrays needed)
     local -a unique=()
     local p seen=" "
     for p in "${pkgs[@]}"; do
@@ -160,10 +213,10 @@ detect_machine() {
     hn=$(hostname -s 2>/dev/null || hostname)
     hn="${hn,,}"
 
-    if   [[ "$os" == "Darwin" ]];                                    then echo "macbook"
-    elif [[ "$hn" == "garfield"* ]];                                 then echo "garfield"
-    elif [[ "$hn" == "raspi"* || "$hn" == "raspberrypi"* ]];        then echo "raspi"
-    elif [[ "$hn" == "snoopy"* ]];                                   then echo "snoopy"
+    if   [[ "$os" == "Darwin" ]];                                 then echo "macbook"
+    elif [[ "$hn" == "garfield"* ]];                              then echo "garfield"
+    elif [[ "$hn" == "raspi"* || "$hn" == "raspberrypi"* ]];     then echo "raspi"
+    elif [[ "$hn" == "snoopy"* ]];                                then echo "snoopy"
     else echo ""
     fi
 }
@@ -173,8 +226,8 @@ detect_machine() {
 MACHINE="${MACHINE:-$(detect_machine)}"
 
 if [[ -z "$MACHINE" ]]; then
-    echo "Could not detect machine. Set MACHINE=<name> and re-run."
-    echo "Available: macbook  garfield  raspi  snoopy  vm"
+    echo "error: could not detect machine. Set MACHINE=<name> and re-run."
+    echo "Run './install.sh --help' for available machines."
     exit 1
 fi
 
@@ -187,8 +240,8 @@ case "$MACHINE" in
     snoopy)   install_snoopy       ;;
     vm)       install_vm "$@"      ;;
     *)
-        echo "Unknown machine: $MACHINE"
-        echo "Available: macbook  garfield  raspi  snoopy  vm"
+        echo "error: unknown machine '$MACHINE'"
+        echo "Run './install.sh --help' for available machines."
         exit 1
         ;;
 esac
