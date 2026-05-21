@@ -20,7 +20,7 @@
 
 [delta]
 	side-by-side = true
-	line-numebers = true
+	line-numbers = true
 	dark = true
 	features = arctic-fox 
 	navigate = true    # use n and N to move between diff sections

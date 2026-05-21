@@ -14,7 +14,7 @@ stow_root() {
 }
 
 echo "→ common (home)"
-stow_home "$DOTFILES/common" zsh git ssh btop claude nvim tmux yazi
+stow_home "$DOTFILES/common" btop claude git nvim ssh tmux yazi zsh
 
 echo "→ raspi (/etc — requires sudo)"
 stow_root "$MACHINE" borgmatic ssh
@@ -23,5 +23,14 @@ if [ -d "$SECRETS" ]; then
     echo "→ secrets/raspi (/etc — requires sudo)"
     stow_root "$SECRETS/machines/raspi"
 fi
+
+echo "→ materializing evals.json (expand \$HOME)"
+find "$DOTFILES/common/claude/.claude/skills" -name "evals.json" | while read -r tmpl; do
+    rel="${tmpl#$DOTFILES/common/claude/}"
+    dest="$HOME/$rel"
+    mkdir -p "$(dirname "$dest")"
+    [[ -L "$dest" ]] && rm "$dest"
+    tmp=$(mktemp) && sed "s|/Users/oliversteiner|$HOME|g" "$tmpl" > "$tmp" && mv "$tmp" "$dest"
+done
 
 echo "✓ done"

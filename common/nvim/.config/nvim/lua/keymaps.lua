@@ -57,17 +57,19 @@ Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Ba
 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
 
--- Foolproof Minimap Toggle tracking
-local minimap_active = false
 Snacks.toggle
 	.new({
 		name = "Minimap",
 		get = function()
-			return minimap_active
+			return vim.g.minimap_open == true
 		end,
 		set = function(state)
-			minimap_active = state
-			MiniMap.toggle()
+			vim.g.minimap_open = state
+			if state then
+				MiniMap.open()
+			else
+				MiniMap.close()
+			end
 		end,
 	})
 	:map("<leader>um")
