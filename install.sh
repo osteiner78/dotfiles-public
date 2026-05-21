@@ -64,12 +64,29 @@ done
 
 _resolve_conflicts() {
     local target="$1" use_sudo="$2" dry="$3"
+    local rel full
 
     while IFS= read -r line; do
-        [[ "$line" != *"existing target is neither a link nor empty: "* ]] && continue
-        local rel="${line##*: }"
-        local full="$target/$rel"
+        # Older stow: "* existing target is neither a link nor empty: <path>"
+        if [[ "$line" == *"existing target is neither a link nor empty: "* ]]; then
+            rel="${line##*: }"
 
+        # Newer stow (Homebrew): "* cannot stow <src> over existing target <dest> since..."
+        elif [[ "$line" =~ "over existing target "(.*)" since neither" ]]; then
+            rel="${BASH_REMATCH[1]}"
+
+        # Source-side absolute symlink — can't fix by removing a target; warn and skip.
+        # The symlink in the dotfiles repo itself needs to be fixed (remove or make relative).
+        elif [[ "$line" == *"source is an absolute symlink"* ]]; then
+            echo "  warning: broken absolute symlink in source — skipping (fix the repo, not the target)"
+            echo "  $line"
+            continue
+
+        else
+            continue
+        fi
+
+        full="$target/$rel"
         printf "  conflict: %s\n  overwrite? [y/N] " "$full"
         local reply=""
         read -r reply </dev/tty || true
