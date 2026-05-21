@@ -4,8 +4,8 @@ path+=${HOME}/.local/bin
 # For borgmatic
 # path+=('/root/.local/bin/')
 
-EDITOR=/usr/local/bin/nvim
-SUDO_EDITOR=/usr/local/bin/nvim
+EDITOR=$(command -v nvim 2>/dev/null || command -v vim)
+SUDO_EDITOR=$EDITOR
 
 # ==================== PERL LOCALE ==========================
 LC_CTYPE=en_US.UTF-8

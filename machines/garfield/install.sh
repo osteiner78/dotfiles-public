@@ -14,7 +14,7 @@ stow_root() {
 }
 
 echo "→ common (home)"
-stow_home "$DOTFILES/common" zsh git tmux ssh btop nvim yazi
+stow_home "$DOTFILES/common" btop git nvim ssh tmux yazi zsh
 
 echo "→ garfield (home)"
 # none currently
