@@ -104,15 +104,17 @@ _resolve_conflicts() {
 _stow_pkg() {
     local dir="$1" target="$2" use_sudo="$3" pkg="$4"
 
+    local stow_flags=(--ignore='\.DS_Store')
+
     local dry
-    dry=$(stow -d "$dir" -t "$target" --no --restow "$pkg" 2>&1) || true
+    dry=$(stow -d "$dir" -t "$target" --no --restow "${stow_flags[@]}" "$pkg" 2>&1) || true
     _resolve_conflicts "$target" "$use_sudo" "$dry"
 
     local ok=true
     if [[ -n "$use_sudo" ]]; then
-        sudo stow -d "$dir" -t "$target" --restow "$pkg" 2>/dev/null || ok=false
+        sudo stow -d "$dir" -t "$target" --restow "${stow_flags[@]}" "$pkg" 2>/dev/null || ok=false
     else
-        stow -d "$dir" -t "$target" --restow "$pkg" 2>/dev/null || ok=false
+        stow -d "$dir" -t "$target" --restow "${stow_flags[@]}" "$pkg" 2>/dev/null || ok=false
     fi
 
     [[ "$ok" == false ]] && echo "  ! $pkg: skipped (unresolved conflicts)"
