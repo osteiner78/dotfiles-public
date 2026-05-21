@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Unified dotfiles installer — auto-detects machine from hostname/uname.
-# Override: MACHINE=<name> ./install.sh
-# Available machines: macbook  garfield  raspi  snoopy
+# Override: MACHINE=<name> ./install.sh [extra-packages...]
+# Available machines: macbook  garfield  raspi  snoopy  vm
+# vm example: MACHINE=vm ./install.sh claude helix
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
@@ -132,6 +133,25 @@ install_snoopy() {
     materialize_evals
 }
 
+install_vm() {
+    # Base packages always installed; pass extra package names as args.
+    local -a base=(btop git nvim tmux yazi zsh)
+    local -a pkgs=("${base[@]}" "$@")
+
+    # Deduplicate (preserve order, no associative arrays needed)
+    local -a unique=()
+    local p seen=" "
+    for p in "${pkgs[@]}"; do
+        if [[ "$seen" != *" $p "* ]]; then
+            seen+="$p "
+            unique+=("$p")
+        fi
+    done
+
+    echo "→ common (${unique[*]})"
+    stow_home "$DOTFILES/common" "${unique[@]}"
+}
+
 # ── machine detection ─────────────────────────────────────────────────────────
 
 detect_machine() {
@@ -154,20 +174,21 @@ MACHINE="${MACHINE:-$(detect_machine)}"
 
 if [[ -z "$MACHINE" ]]; then
     echo "Could not detect machine. Set MACHINE=<name> and re-run."
-    echo "Available: macbook  garfield  raspi  snoopy"
+    echo "Available: macbook  garfield  raspi  snoopy  vm"
     exit 1
 fi
 
 echo "machine: $MACHINE   dotfiles: $DOTFILES"
 
 case "$MACHINE" in
-    macbook)  install_macbook  ;;
-    garfield) install_garfield ;;
-    raspi)    install_raspi    ;;
-    snoopy)   install_snoopy   ;;
+    macbook)  install_macbook      ;;
+    garfield) install_garfield     ;;
+    raspi)    install_raspi        ;;
+    snoopy)   install_snoopy       ;;
+    vm)       install_vm "$@"      ;;
     *)
         echo "Unknown machine: $MACHINE"
-        echo "Available: macbook  garfield  raspi  snoopy"
+        echo "Available: macbook  garfield  raspi  snoopy  vm"
         exit 1
         ;;
 esac
