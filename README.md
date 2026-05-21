@@ -6,10 +6,11 @@ Personal dotfiles managed with stow.
 
 ```
 dotfiles/
+├── install.sh       unified installer (auto-detects machine)
 ├── common/          cross-platform configs (macOS + Linux)
 ├── common-linux/    Linux-only configs
 ├── common-macos/    macOS-only configs
-├── machines/        per-machine install scripts + machine-specific dotfiles
+├── machines/        machine-specific dotfiles (borgmatic, caddy, ssh, …)
 │   ├── macbook/
 │   ├── garfield/    VPS
 │   ├── snoopy/      Proxmox VM (media services)
@@ -25,9 +26,11 @@ dotfiles/
 git clone git@github.com:osteiner78/dotfiles.git ~/dotfiles
 git clone git@github.com:osteiner78/dotfiles-secrets.git ~/dotfiles-secrets
 
-# 2. Run the install script for this machine
-bash ~/dotfiles/machines/<machine-name>/install.sh
-bash ~/dotfiles-secrets/machines/<machine-name>/install.sh
+# 2. Run the installer — machine is auto-detected from hostname/uname
+bash ~/dotfiles/install.sh
+
+# Override machine detection if needed:
+# MACHINE=garfield bash ~/dotfiles/install.sh
 ```
 
 ## How it works
@@ -41,7 +44,7 @@ stow -d ~/dotfiles/common -t ~ nvim
 # ~/.config/nvim  →  ~/dotfiles/common/nvim/.config/nvim
 ```
 
-The install scripts do this for all packages relevant to a machine.
+`install.sh` does this for all packages relevant to the detected machine. If an existing non-symlinked file would conflict, the installer prompts to overwrite or skip.
 
 ## Secrets
 
@@ -51,15 +54,17 @@ Never commit secrets to this repo. If a config file needs a secret, it belongs i
 
 ## Adding a new machine
 
-1. Create `machines/<name>/install.sh`
-2. Add machine-specific dotfiles under `machines/<name>/<app>/` if needed
-3. Mirror the structure in `dotfiles-secrets` if any configs contain secrets
+1. Add an `install_<name>()` function in `install.sh` with the stow packages for that machine
+2. Add a detection rule in `detect_machine()` (hostname match or uname)
+3. Add a `<name>)` case in the `case "$MACHINE"` block
+4. Add machine-specific dotfiles under `machines/<name>/<app>/` if needed
+5. Mirror the structure in `dotfiles-secrets` if any configs contain secrets
 
 ## Adding a new application config
 
 1. Create `common/<app>/` (or `common-linux/`, `common-macos/` if platform-specific)
 2. Mirror the path structure: `common/<app>/<actual-path-from-home>/`
-3. Add `stow -d "$DOTFILES/common" -t ~ <app>` to the relevant machine install scripts
+3. Add the package name to the relevant `install_<machine>()` call in `install.sh`
 4. Test with `stow -n` (dry run) first
 
 ## Docker
