@@ -1,25 +1,14 @@
-# ============================== POWERLEVEL 10K =================================
-# Keep instant prompt near the top to avoid flicker.
-#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-#fi
+# Initialize Homebrew for Apple Silicon
+[[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # ==================== AUTOSTART TMUX WHEN SSH =========================
 # Auto-attach/create tmux for interactive SSH sessions.
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
-  exec tmux new-session -A -s osteiner
+  tmux attach-session -t osteiner || tmux new-session -s osteiner
+  exit
+  # exec tmux new-session -A -s osteiner
 fi
 
-# ==================== POWERLEVEL 10K ==========================
-# Load p10k theme per-OS (guarded).
-#if [[ "$(uname -s)" == "Darwin" ]]; then
-#  [[ -r /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme ]] \
-#    && source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-#elif [[ "$(uname -s)" == "Linux" ]]; then
-#  [[ -r ~/powerlevel10k/powerlevel10k.zsh-theme ]] \
-#    && source ~/powerlevel10k/powerlevel10k.zsh-theme
-#fi
-#[[ -r ~/.p10k.zsh ]] && source ~/.p10k.zsh
 
 # ============================== ZSHRC DEFAULTS =================================
 # (Legacy promptinit kept to preserve your original behavior)
@@ -27,9 +16,13 @@ fi
 # promptinit
 # prompt adam1
 
+# Deduplicate PATH entries
+typeset -U path PATH fpath
+
 # History & completion behavior
-setopt histignorealldups sharehistory
-setopt completealiases
+setopt HISTIGNOREALLDUPS SHAREHISTORY
+setopt HIST_IGNORE_SPACE EXTENDED_HISTORY HIST_VERIFY
+setopt AUTO_PUSHD PUSHD_SILENT PUSHD_IGNORE_DUPS
 
 # Keybindings style
 bindkey -e
@@ -58,34 +51,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
-# --- FZF-TAB Specific Styles ---
-zstyle ':fzf-tab:*' show-help yes
-zstyle ':fzf-tab:*' group-tidy true
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
 
-# Completion styles (kept as-is; grouped)
-# zstyle ':completion:*' auto-description 'specify: %d'
-# zstyle ':completion:*' completer _expand _complete _correct _approximate
-# command -v dircolors >/dev/null 2>&1 && eval "$(dircolors -b)"
-# zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-# zstyle ':completion:*' list-colors ''
-# zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-# zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-# zstyle ':completion:*' menu select=long
-# zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-# zstyle ':completion:*' use-compctl false
-# zstyle ':completion:*' verbose true
-# zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-# zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
-
-# Enable grouping and descriptions
-# zstyle ':completion:*:descriptions' format '[%d]'
-# zstyle ':completion:*' group-name ''
-
-# Force fzf-tab to show these groups
-# zstyle ':fzf-tab:*' show-help yes
-# zstyle ':fzf-tab:*' group-tidy true
-#
 # =================================== OTHER ====================================================
 # History prefix search on arrows (keep exact sequences)
 bindkey "^[[A" history-search-backward
@@ -112,7 +78,7 @@ alias 7='cd -7'
 alias 8='cd -8'
 alias 9='cd -9'
 
-alias ll="eza -lah --group --color=always --long --icons=always"
+alias ll="eza -lah --group --color=always --icons=always"
 alias vim="nvim"
 alias c="clear"
 
@@ -124,7 +90,7 @@ alias c="clear"
 # alias code='code --enable-features=UseOzonePlatform --ozone-platform=wayland'
 
 # Tmux helpers
-alias ta="tmux new-session -A -s ${USER} >/dev/null 2>&1"
+alias ta="tmux new-session -A -s ${USER} >/dev/null"
 alias td="tmux detach"
 
 # Git QoL
@@ -132,13 +98,15 @@ alias gs="git status"
 alias gcm='git commit -m'
 alias gd="git diff"
 
-# Wireguard
-alias wd="sudo systemctl stop wg-quick@wg0"
-alias wu="sudo systemctl start wg-quick@wg0"
+# Wireguard (Linux only — systemctl not available on macOS)
+if [[ "$(uname -s)" == "Linux" ]]; then
+  alias wd="sudo systemctl stop wg-quick@wg0"
+  alias wu="sudo systemctl start wg-quick@wg0"
+fi
 
 # Find files in subfolders
 ff() {
-  local fd_command="fd --type f --hidden --follow --exclude .git --color=always"
+  local fd_command="fd --type f --hidden --follow --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache --color=always"
   local file_path
   
   # 1. Capture the selected file path
@@ -155,7 +123,7 @@ ff() {
     cd "$(dirname "$file_path")" || return
     
     # Optional: list files in the new directory so you see where you are
-    ls -p --color=always
+    eza --color=always
   fi
 }
 
@@ -194,41 +162,36 @@ export FZF_DEFAULT_COMMAND='fd --hidden --follow --strip-cwd-prefix --exclude .g
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --strip-cwd-prefix --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache'
 
-_fzf_compgen_path() { fd --hidden --follow --exclude .git . "$1" }
-_fzf_compgen_dir()  { fd --type=d --hidden --follow --exclude .git . "$1" }
+_fzf_compgen_path() { fd --hidden --follow --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache . "$1" }
+_fzf_compgen_dir()  { fd --type=d --hidden --follow --exclude .git --exclude .history --exclude node_modules --exclude target --exclude .cache . "$1" }
 
-_gen_fzf_default_opts() {
-  # Gruvbox palette
-  local color00='#32302f' color01='#3c3836' color02='#504945' color03='#665c54'
-  local color04='#bdae93' color05='#d5c4a1' color06='#ebdbb2' color07='#fbf1c7'
-  local color08='#fb4934' color09='#fe8019' color0A='#fabd2f' color0B='#b8bb26'
-  local color0C='#8ec07c' color0D='#83a598' color0E='#d3869b' color0F='#d65d0e'
+# Gruvbox palette for fzf
+export FZF_DEFAULT_OPTS="\
+--color=bg+:#3c3836,bg:#32302f,spinner:#8ec07c,hl:#83a598 \
+--color=fg:#bdae93,header:#83a598,info:#fabd2f,pointer:#8ec07c \
+--color=marker:#8ec07c,fg+:#ebdbb2,prompt:#fabd2f,hl+:#83a598"
 
-  local opts="$FZF_DEFAULT_OPTS \
---color=bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D} \
---color=fg:${color04},header:${color0D},info:${color0A},pointer:${color0C} \
---color=marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}"
-
-  export FZF_DEFAULT_OPTS="$opts"
-}
-_gen_fzf_default_opts
-
-show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
-export FZF_CTRL_T_OPTS="--preview='$show_file_or_dir_preview'"
+export FZF_CTRL_T_OPTS="--preview='if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi'"
 export FZF_ALT_C_OPTS="--preview='eza --tree --color=always {} | head -200'"
 
 # ============== FZF-TAB =================
 
-# ----- Standard zsh completion system -----
-autoload -Uz compinit
-compinit
-
 fzf_tab_plugin="$HOME/.zsh/fzf-tab/fzf-tab.zsh"
+
+# fpath must be updated before compinit so fzf-tab completion functions are registered
+[[ -r "$fzf_tab_plugin" ]] && fpath=(~/.zsh/fzf-tab $fpath)
+
+# ----- Standard zsh completion system -----
+# Full compinit if dump is older than 24h; use cache otherwise for fast startup.
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 # If fzf-tab is present -> configure everything
 if [[ -r "$fzf_tab_plugin" ]]; then
-    fpath=(~/.zsh/fzf-tab $fpath)
-
     if [[ -n $TMUX ]] && (( $+commands[fzf-tmux] )); then
       zstyle ':fzf-tab:*' fzf-command 'fzf-tmux -p 80%,70%'
     else
@@ -237,13 +200,14 @@ if [[ -r "$fzf_tab_plugin" ]]; then
 
     zstyle ':fzf-tab:*' fzf-preview 'if [[ -d $realpath ]]; then eza --tree --color=always $realpath | head -200; else bat --style=numbers --color=always $realpath; fi'
     zstyle ':completion:*:git-checkout:*' sort false
-    zstyle ':completion:*:descriptions' format '[%d]'
     zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
     zstyle ':completion:*' menu no
     zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
     zstyle ':fzf-tab:*' fzf-flags --color=fg:1,fg+:2 --bind=tab:accept
     zstyle ':fzf-tab:*' use-fzf-default-opts yes
     zstyle ':fzf-tab:*' switch-group '<' '>'
+    zstyle ':fzf-tab:*' show-help yes
+    zstyle ':fzf-tab:*' group-tidy true
     zstyle ':fzf-tab:complete:z:*' fzf-preview 'eza -1 --color=always $realpath'
 
     # Load fzf-tab plugin
@@ -258,14 +222,16 @@ fi
 
 # Load fzf keybindings (Ctrl-R / Ctrl-T / Alt-C etc.)
 # Keep this after fzf-tab — your working order.
-source <(fzf --zsh)
+command -v fzf >/dev/null && source <(fzf --zsh)
 
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
 
 # ============ Zoxide (better cd) =========================
-eval "$(zoxide init zsh)"
-alias cd="z"
+if command -v zoxide >/dev/null; then
+  eval "$(zoxide init zsh)"
+  alias cd="z"
+fi
 
 # ==================== PERL LOCALE ==========================
 # (left commented intentionally)
@@ -275,10 +241,11 @@ alias cd="z"
 # ==================== ZSH PLUGINS  ==========================
 # (Kept at the very end — your original order)
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  [[ -r "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] \
-    && source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  [[ -r "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] \
-    && source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  brew_prefix="$(/opt/homebrew/bin/brew --prefix)"
+  [[ -r "$brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] \
+    && source "$brew_prefix/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  [[ -r "$brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] \
+    && source "$brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 elif [[ "$(uname -s)" == "Linux" ]]; then
   [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
     && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -292,41 +259,75 @@ elif [[ "$(uname -s)" == "Linux" ]]; then
 fi
 
 # ==================== ADD CUSTOM SCRIPTS TO PATH ==========================
-# (Kept as-is; order preserved)
-path+=${HOME}/.local/bin
+[[ -d "$HOME/.local/bin" ]] && path+=("$HOME/.local/bin")
 # path+=('/root/.local/bin/')
-path+=('/opt/nvim')
+[[ -d '/opt/nvim' ]] && path+=('/opt/nvim')
 
 # >>> conda initialize >>>
-# (Kept verbatim but guarded)
 if [[ "$(uname -s)" == "Darwin" ]]; then
-  if __conda_setup="$('/Users/oliversteiner/miniconda3/bin/conda' 'shell.zsh' 'hook' 2>/dev/null)"; then
-    eval "$__conda_setup"
-  elif [[ -r "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh" ]]; then
-    . "/Users/oliversteiner/miniconda3/etc/profile.d/conda.sh"
-  else
-    export PATH="/Users/oliversteiner/miniconda3/bin:$PATH"
+  # Problem: `conda shell.zsh hook` spawns a Python process on every shell start,
+  # costing ~300-600ms even with auto_activate_base=false.
+  # The hook output is a static block of shell functions that only changes when
+  # conda itself is updated — so we cache it and skip the Python spawn on every
+  # subsequent start. The cache is invalidated automatically by comparing mtimes:
+  # if the conda binary is newer than the cache file, the hook is regenerated.
+  _conda_cache="$HOME/.cache/conda_zsh_hook.zsh"
+  if [[ ! -f "$_conda_cache" || "$HOME/miniconda3/bin/conda" -nt "$_conda_cache" ]]; then
+    "$HOME/miniconda3/bin/conda" 'shell.zsh' 'hook' 2>/dev/null >| "$_conda_cache"
   fi
-  unset __conda_setup
+  [[ -f "$_conda_cache" ]] && source "$_conda_cache"
+  unset _conda_cache
+elif [[ "$(uname -s)" == "Linux" ]]; then
+  for _conda_prefix in "$HOME/miniconda3" "$HOME/anaconda3" "/opt/miniconda3" "/opt/anaconda3"; do
+    if [[ -x "$_conda_prefix/bin/conda" ]]; then
+      if __conda_setup="$("$_conda_prefix/bin/conda" 'shell.zsh' 'hook' 2>/dev/null)"; then
+        eval "$__conda_setup"
+      elif [[ -r "$_conda_prefix/etc/profile.d/conda.sh" ]]; then
+        . "$_conda_prefix/etc/profile.d/conda.sh"
+      else
+        export PATH="$_conda_prefix/bin:$PATH"
+      fi
+      unset __conda_setup
+      break
+    fi
+  done
+  unset _conda_prefix
 fi
 # <<< conda initialize <<<
 
-# NVM (guarded)
+# NVM (lazy-loaded for faster shell startup)
 export NVM_DIR="$HOME/.nvm"
-[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"
-[[ -s "$NVM_DIR/bash_completion" ]] && . "$NVM_DIR/bash_completion"
+_nvm_lazy_load() {
+  unfunction nvm node npm npx gemini opencode 2>/dev/null
+  [[ -s "$NVM_DIR/nvm.sh" ]]          && source "$NVM_DIR/nvm.sh"
+  [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+}
+nvm()  { _nvm_lazy_load; nvm  "$@" }
+node() { _nvm_lazy_load; node "$@" }
+npm()  { _nvm_lazy_load; npm  "$@" }
+npx()  { _nvm_lazy_load; npx  "$@" }
+gemini() { _nvm_lazy_load; gemini "$@" }
+opencode() { _nvm_lazy_load; opencode "$@" }
 
-# (( ! ${+functions[p10k]} )) || p10k finalize
-eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
+command -v oh-my-posh >/dev/null && eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
 
-# Velocity Bridge PATH
-export PATH="$HOME/.local/bin:$PATH"
+# Added by Antigravity
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # pnpm
-export PNPM_HOME="/home/osteiner/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
-export PATH=$PATH:~/.npm-global/bin
+export PATH="$PATH:$HOME/.npm-global/bin"
+
+
+# Load secrets from .env
+if [ -f "$HOME/.env" ]; then
+  source "$HOME/.env"
+fi
+
+# Gemini API Key
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

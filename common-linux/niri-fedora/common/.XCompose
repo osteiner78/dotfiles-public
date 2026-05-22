@@ -1,0 +1,4 @@
+include "%L" # Include the default system rules
+
+<dead_acute> <c> : "ç" ccedilla # Lowercase cedilha
+<dead_acute> <C> : "Ç" Ccedilha # Uppercase cedilha

@@ -1,0 +1,49 @@
+{
+  "skill_name": "code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this file for issues: /Users/oliversteiner/.claude/skills/skill-creator/scripts/utils.py",
+      "expected_output": "A structured review with severity-classified issues (🔴/🟡/🟢), specific line quotes, concrete fixes, confidence ratings, and a top-3 priority list. Report saved to .agent/reports/.",
+      "files": ["/Users/oliversteiner/.claude/skills/skill-creator/scripts/utils.py"],
+      "expectations": [
+        "Each issue includes a severity label (🔴 Critical, 🟡 Important, or 🟢 Suggestion)",
+        "Each issue quotes the specific lines from the file",
+        "Each issue shows a concrete fix as a diff or code snippet — not a vague suggestion",
+        "Each issue includes a confidence rating (certain, likely, or speculative)",
+        "A 'top 3 things to fix first' list is included at the end",
+        "A report file is saved to .agent/reports/"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review this file for issues: /Users/oliversteiner/.claude/skills/skill-creator/scripts/package_skill.py",
+      "expected_output": "A structured review with severity-classified issues, specific line quotes, concrete fixes, confidence ratings, architectural observations, and a top-3 priority list. Report saved to .agent/reports/.",
+      "files": ["/Users/oliversteiner/.claude/skills/skill-creator/scripts/package_skill.py"],
+      "expectations": [
+        "Each issue includes a severity label (🔴 Critical, 🟡 Important, or 🟢 Suggestion)",
+        "Each issue quotes the specific lines from the file",
+        "Each issue shows a concrete fix as a diff or code snippet — not a vague suggestion",
+        "Each issue includes a confidence rating (certain, likely, or speculative)",
+        "A 'top 3 things to fix first' list is included at the end",
+        "Architectural concerns beyond the file are flagged (or explicitly noted as absent)",
+        "A report file is saved to .agent/reports/"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review this file for issues: /Users/oliversteiner/.claude/skills/skill-creator/scripts/run_eval.py",
+      "expected_output": "A structured review of the full file covering bugs, security, performance, and maintainability issues with severity classification, line quotes, fixes, confidence ratings, test coverage observations, and top-3 priorities. Report saved to .agent/reports/.",
+      "files": ["/Users/oliversteiner/.claude/skills/skill-creator/scripts/run_eval.py"],
+      "expectations": [
+        "Each issue includes a severity label (🔴 Critical, 🟡 Important, or 🟢 Suggestion)",
+        "Each issue quotes the specific lines from the file",
+        "Each issue shows a concrete fix as a diff or code snippet — not a vague suggestion",
+        "Each issue includes a confidence rating (certain, likely, or speculative)",
+        "A 'top 3 things to fix first' list is included at the end",
+        "The review notes what should be tested but isn't",
+        "A report file is saved to .agent/reports/"
+      ]
+    }
+  ]
+}

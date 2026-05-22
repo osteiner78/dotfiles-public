@@ -2,5 +2,12 @@
 *.DS_Store
 .env
 lazy-lock.json
+common/nvim/.config/nvim/.history/
 ~/.local/share/nvim/lazy/
 docker/raspi-docker/etc-pihole/
+docker/linkding/data
+common/ssh/.ssh/id_ed25519
+common/ssh/.ssh/id_ed25519.pub
+common/ssh/.ssh/known_hosts
+common/ssh/.ssh/known_hosts.*
+common-macos/karabiner/.config/karabiner/automatic_backups/

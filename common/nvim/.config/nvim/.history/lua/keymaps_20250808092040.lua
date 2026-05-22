@@ -32,7 +32,7 @@ vim.keymap.set("n", "<tab>", "<cmd>bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<s-tab>", "<cmd>bprevious<CR>", { desc = "Next buffer" })
 
 -- Window Management
-vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split [w]indow [v]ertically" })z
+vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split [w]indow [v]ertically" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
 vim.keymap.set("n", "<leader>de", vim.diagnostic.open_float, { desc = "Show [d]iagnostic [e]rror messages" })
