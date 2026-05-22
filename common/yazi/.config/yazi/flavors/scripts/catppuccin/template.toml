@@ -22,7 +22,7 @@ marker_selected = { fg = "{{ yellow }}", bg = "{{ yellow }}" }
 # Tab
 tab_active   = { reversed = true }
 tab_inactive = {}
-tab_width    = 1
+# tab_width    = 1
 
 # Count
 count_copied   = { fg = "{{ base }}", bg = "{{ green }}" }
@@ -156,7 +156,7 @@ rules = [
 
 	# Fallback
 	{ name = "*", fg = "{{ text }}" },
-	{ name = "*/", fg = "{{ blue }}" }
+	{ url = "*/", fg = "{{ blue }}" }
 ]
 
 # : }}}

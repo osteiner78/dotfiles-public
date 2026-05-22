@@ -1,47 +1,58 @@
-return { -- Useful plugin to show you pending keybinds.
-		"folke/which-key.nvim",
-		event = "VimEnter", -- Sets the loading event to 'VimEnter'
-		config = function() -- This is the function that runs, AFTER loading
-			require("which-key").setup()
+return {
+	"folke/which-key.nvim",
+	event = "VimEnter",
+	opts = {
+		preset = "modern",
+		win = { border = "rounded" },
+		icons = {
+			breadcrumb = "»",
+			separator = "➜",
+			group = "+",
+		},
+	},
+	config = function(_, opts)
+		local wk = require("which-key")
+		wk.setup(opts)
 
-			-- Document existing key chains
-			-- require("which-key").register({
-			-- 	["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
-			-- 	["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-			-- 	["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-			-- 	["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
-			-- 	["<leader>w"] = { name = "[W]indow", _ = "which_key_ignore" },
-			-- 	["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-			-- 	["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
-			-- 	["<leader>x"] = { name = "Trouble", _ = "which_key_ignore" },
-			-- 	["<leader>n"] = { name = "[N]avigation Tree", _ = "which_key_ignore" },
-			-- })
-        require("which-key").add({
-            { "<leader>c", group = "[C]ode" },
-            { "<leader>c_", hidden = true },
-            { "<leader>d", group = "[D]ocument" },
-            { "<leader>d_", hidden = true },
-            { "<leader>h", group = "Git [H]unk" },
-            { "<leader>h_", hidden = true },
-            { "<leader>n", group = "[N]avigation Tree" },
-            { "<leader>n_", hidden = true },
-            { "<leader>r", group = "[R]ename" },
-            { "<leader>r_", hidden = true },
-            { "<leader>s", group = "[S]earch" },
-            { "<leader>s_", hidden = true },
-            { "<leader>t", group = "[T]oggle" },
-            { "<leader>t_", hidden = true },
-            { "<leader>w", group = "[W]indow" },
-            { "<leader>w_", hidden = true },
-            { "<leader>x", group = "Trouble" },
-            { "<leader>x_", hidden = true },
-        })
-			-- visual mode
-			-- require("which-key").register({
-			-- 	["<leader>h"] = { "Git [H]unk" },
-			-- }, { mode = "v" })
-        require("which-key").add({
-            { "<leader>h", desc = "Git [H]unk", mode = "v" },
-        })
-		end,
-	}
+		wk.add({
+			-- Top Level Group Labels
+			{ "<leader>f", group = "󰈔 [F]iles" },
+			{ "<leader>s", group = "󰈞 [S]earch" },
+			{ "<leader>c", group = "󰅱 [C]ode" },
+			{ "<leader>g", group = "󰊢 [G]it" },
+			{ "<leader>u", group = "󰙵 [U]I / Toggles" },
+			{ "<leader>w", group = "󰖲 [W]indows" },
+			{ "<leader>t", group = "󰓩 [T]abs" },
+			{ "<leader>b", group = "󱡃 [B]uffers" },
+			{ "<leader>x", group = "󰒡 [X] Trouble" },
+			{ "<leader>a", group = "󰚩 [A]I (Avante)" },
+			{ "<leader>q", group = "󰗼 [Q]uit / Session" },
+
+			-- Clipboard delete/change fallbacks (black-hole remaps in keymaps.lua)
+			{ "<leader>D", desc = "Delete into Clipboard" },
+			{ "<leader>C", desc = "Change into Clipboard" },
+
+			-- Git Sub-group: hunks
+			{ "<leader>gh",  group = "󰊢 [H]unks" },
+
+			-- Surround (Sub-labels for better visibility)
+			{ "gz",  group = "󰗄 Surround" },
+			{ "gza", desc = "Add Surrounding" },
+			{ "gzd", desc = "Delete Surrounding" },
+			{ "gzr", desc = "Replace Surrounding" },
+			{ "gzf", desc = "Find Surrounding (right)" },
+			{ "gzF", desc = "Find Surrounding (left)" },
+			{ "gzh", desc = "Highlight Surrounding" },
+			{ "gzn", desc = "Update n_lines" },
+
+			-- Treesitter: swap parameters (not auto-picked, defined in textobjects spec)
+			{ "<leader>cp", desc = "Swap Next Parameter" },
+			{ "<leader>cP", desc = "Swap Prev Parameter" },
+
+			-- Native Vim Groups
+			{ "z",  group = "󰘖 Fold / UI" },
+			{ "\"", group = "󰅪 Registers" },
+			{ "g",  group = "󰒕 Goto / Nav" },
+		})
+	end,
+}
