@@ -3,7 +3,7 @@ services:
     container_name: "${LD_CONTAINER_NAME:-linkding}"
     image: sissbruecker/linkding:latest
     ports:
-      - "${LD_HOST_PORT:-9090}:9090"
+      - "127.0.0.1:${LD_HOST_PORT:-9090}:9090" # loopback-only: Docker bypasses UFW, so without this the port is publicly reachable; Caddy proxies from the host and only needs localhost
     volumes:
       - "${LD_HOST_DATA_DIR:-./data}:/etc/linkding/data"
     env_file:

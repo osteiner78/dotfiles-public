@@ -6,6 +6,6 @@ services:
     env_file:
       - .env
     ports:
-      - 5984:5984
+      - 127.0.0.1:5984:5984 # loopback-only: Docker bypasses UFW, so without this the port is publicly reachable; Caddy proxies from the host and only needs localhost
     volumes:
       - /opt/couchdb/data:/opt/couchdb/data
