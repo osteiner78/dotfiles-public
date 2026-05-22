@@ -6,5 +6,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       # <Host Port>:<Container Port>
-      - 3001:3001
+      - 127.0.0.1:3001:3001 # loopback-only: Docker bypasses UFW, so without this the port is publicly reachable; Caddy proxies from the host and only needs localhost
     restart: unless-stopped
