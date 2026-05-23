@@ -1,8 +1,8 @@
 {
   "id": "network-indicator",
   "name": "Network Indicator",
-  "version": "1.0.5",
-  "minNoctaliaVersion": "3.7.5",
+  "version": "2.0.0",
+  "minNoctaliaVersion": "4.7.6",
   "author": "tonigineer",
   "license": "MIT",
   "repository": "https://github.com/noctalia-dev/noctalia-plugins",
@@ -10,6 +10,7 @@
   "tags": ["Bar", "Network", "Indicator"],
   "entryPoints": {
     "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml",
     "settings": "Settings.qml"
   },
   "dependencies": {
@@ -17,15 +18,20 @@
   },
   "metadata": {
     "defaultSettings": {
-      "arrowType": "caret",
-      "byteThresholdActive": 1024,
-      "fontSizeModifier": 1.0,
-      "forceMegabytes": false,
+      "iconType": "caret",
+      "byteThresholdActive": 5000,
+      "fontSizeModifier": 0.75,
       "iconSizeModifier": 1.0,
-      "minWidth": 0,
-      "showNumbers": true,
-      "spacingInbetween": 0,
-      "useCustomColors": false
+      "useCustomColors": false,
+      "useCustomFont": false,
+      "customFontBold": false,
+      "customFontItalic": false,
+      "columnSpacing": 0,
+      "rowSpacing": -8,
+      "paddingLeft": 5,
+      "paddingRight": 0,
+      "layout": "vertical",
+      "slots": ["txSpeed", "txIcon", "rxSpeed", "rxIcon"]
     }
   }
 }

@@ -1,12 +1,73 @@
 {
+  "actions": {
+    "widget-settings": "Widget-Einstellungen",
+    "toggle-panel": "Monitor umschalten"
+  },
+  "panel": {
+    "title": "Netzwerkaktivität",
+    "close": "Schließen",
+    "download": "Download",
+    "upload": "Upload"
+  },
   "settings": {
-    "byteThresholdActive": {
-      "desc": "Aktivitätsschwellwert in Byte pro Sekunde (B/s) festlegen.",
-      "label": "Aktivitätsschwellwert anzeigen"
+    "layout": {
+      "label": "Layout",
+      "desc": "Zellen in einer Reihe (horizontal) oder in einem 2×2-Raster (vertikal) anordnen.",
+      "horizontal": "Horizontal",
+      "vertical": "Vertikal"
     },
-    "colorBackground": {
-      "desc": "Hintergrundfarbe festlegen.",
-      "label": "Hintergrund"
+    "slots": {
+      "label": "Zellenbelegung",
+      "desc": "Wähle, was jede Zelle anzeigt. Keine Duplikate möglich. Z.\u00a0B. leere Zellen verwenden, um nur Symbole anzuzeigen."
+    },
+    "slot": {
+      "txIcon": "TX-Symbol",
+      "rxIcon": "RX-Symbol",
+      "txSpeed": "TX-Geschwindigkeit",
+      "rxSpeed": "RX-Geschwindigkeit",
+      "none": "Leer"
+    },
+    "iconType": {
+      "desc": "Symbolstil für die TX/RX-Anzeigen auswählen.",
+      "label": "Symboltyp"
+    },
+    "byteThresholdActive": {
+      "desc": "Datenverkehr unter diesem Wert (B/s) wird als inaktiv angezeigt.",
+      "label": "Aktivitätsschwellwert"
+    },
+    "fontSizeModifier": {
+      "desc": "Schriftgröße relativ zum Standard skalieren.",
+      "label": "Schriftgröße"
+    },
+    "iconSizeModifier": {
+      "desc": "Symbolgröße relativ zum Standard skalieren.",
+      "label": "Symbolgröße"
+    },
+    "useCustomFont": {
+      "desc": "Standardschriftart für Geschwindigkeitswerte überschreiben.",
+      "label": "Eigene Schriftart"
+    },
+    "customFontFamily": {
+      "desc": "Schriftart für die Geschwindigkeitswerte wählen.",
+      "label": "Schriftart",
+      "placeholder": "Schriftart auswählen",
+      "searchPlaceholder": "Schriften suchen…"
+    },
+    "customFontBold": {
+      "desc": "Geschwindigkeitswerte fett darstellen.",
+      "label": "Fett"
+    },
+    "customFontItalic": {
+      "desc": "Geschwindigkeitswerte kursiv darstellen.",
+      "label": "Kursiv"
+    },
+    "useCustomColors": {
+      "desc": "Eigene Farben statt der Standard-Themefarben verwenden.",
+      "label": "Eigene Farben"
+    },
+    "colorTx": {
+      "desc": "Symbolfarbe für Upload (TX), wenn der Schwellwert überschritten ist.",
+      "label": "TX aktiv"
     },
     "colorRx": {
       "desc": "Symbolfarbe für Download (RX), wenn der Schwellwert überschritten ist.",
@@ -14,47 +75,27 @@
     },
     "colorSilent": {
       "desc": "Symbolfarbe, wenn der Datenverkehr unter dem Schwellwert liegt.",
-      "label": "RX/TX inaktiv"
+      "label": "Inaktiv"
     },
     "colorText": {
-      "desc": "Textfarbe für RX- und TX-Werte festlegen.",
+      "desc": "Textfarbe für Geschwindigkeitswerte.",
       "label": "Text"
     },
-    "colorTx": {
-      "desc": "Symbolfarbe für Upload (TX), wenn der Schwellwert überschritten ist.",
-      "label": "TX aktiv"
+    "paddingLeft": {
+      "label": "Abstand links",
+      "desc": "Innenabstand des Inhalts auf der linken Seite."
     },
-    "fontSizeModifier": {
-      "desc": "Schriftgröße relativ zum Standard skalieren.",
-      "label": "Schriftgrößen-Faktor"
+    "paddingRight": {
+      "label": "Abstand rechts",
+      "desc": "Innenabstand des Inhalts auf der rechten Seite."
     },
-    "forceMegabytes": {
-      "desc": "Alle Verkehrs­werte in MB anzeigen, statt bei geringer Nutzung auf KB zu wechseln.",
-      "label": "Immer Megabyte (MB) verwenden"
+    "columnSpacing": {
+      "label": "Spaltenabstand",
+      "desc": "Abstand zwischen Spalten im Rasterlayout."
     },
-    "iconSizeModifier": {
-      "desc": "Symbolgröße relativ zum Standard skalieren.",
-      "label": "Symbolgrößen-Faktor"
-    },
-    "iconType": {
-      "desc": "Symbolstil auswählen",
-      "label": "Symboltyp"
-    },
-    "minWidth": {
-      "desc": "Mindestbreite für das Widget festlegen (in px).",
-      "label": "Minimale Widget-Breite"
-    },
-    "showNumbers": {
-      "desc": "Aktuelle RX/TX-Geschwindigkeiten als Zahlen anzeigen.",
-      "label": "Werte anzeigen"
-    },
-    "spacingInbetween": {
-      "desc": "Den Abstand zwischen den RX/TX-Elementen anpassen.",
-      "label": "Vertikaler Abstand"
-    },
-    "useCustomColors": {
-      "desc": "Eigene Farben statt der Standard-Themefarben verwenden.",
-      "label": "Eigene Farben"
+    "rowSpacing": {
+      "label": "Zeilenabstand",
+      "desc": "Abstand zwischen Zeilen im Rasterlayout (hat keine Wirkung im horizontalen Layout)."
     }
   }
 }
