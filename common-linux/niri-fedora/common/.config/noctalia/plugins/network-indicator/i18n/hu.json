@@ -1,60 +1,101 @@
 {
+  "actions": {
+    "widget-settings": "Widget beállítások",
+    "toggle-panel": "Monitor váltása"
+  },
+  "panel": {
+    "title": "Hálózati aktivitás",
+    "close": "Bezárás",
+    "download": "Letöltés",
+    "upload": "Feltöltés"
+  },
   "settings": {
-    "byteThresholdActive": {
-      "desc": "Állítsa be az aktivitási küszöbértéket bájt/másodpercben (B/s).",
-      "label": "Aktív küszöbérték mutatása"
+    "layout": {
+      "label": "Elrendezés",
+      "desc": "Cellák elrendezése sorban (vízszintes) vagy 2×2-es rácsban (függőleges).",
+      "horizontal": "Vízszintes",
+      "vertical": "Függőleges"
     },
-    "colorBackground": {
-      "desc": "Állítsa be a widget háttérszínét.",
-      "label": "Háttér"
+    "slots": {
+      "label": "Cellák hozzárendelése",
+      "desc": "Válaszd ki, mit jelenítsen meg az egyes cellák. Duplikátumok nem lehetségesek. Pl. üres cellákkal csak ikonok jeleníthetők meg."
     },
-    "colorRx": {
-      "desc": "Állítsa be a letöltés (RX) ikon színét, ha az meghaladja a küszöbértéket.",
-      "label": "RX Aktív"
-    },
-    "colorSilent": {
-      "desc": "Állítsa be az ikon színét, ha a forgalom a küszöbérték alatt van.",
-      "label": "RX/TX inaktív"
-    },
-    "colorText": {
-      "desc": "Állítsa be az RX és TX értékekhez használt szövegszínt.",
-      "label": "Általános"
-    },
-    "colorTx": {
-      "desc": "Állítsa be a feltöltés (TX) ikon színét, ha a küszöbérték felett van.",
-      "label": "TX Aktív"
-    },
-    "fontSizeModifier": {
-      "desc": "A szövegméret skálázása az alapértelmezett mérethez képest.",
-      "label": "Betűméret módosító"
-    },
-    "forceMegabytes": {
-      "desc": "Az összes forgalmi értéket MB-ban mutassa, ahelyett, hogy alacsony használat esetén KB-ra váltana.",
-      "label": "Megabájt (MB) kényszerítése"
-    },
-    "iconSizeModifier": {
-      "desc": "Az ikonméret skálázása az alapértelmezett mérethez képest.",
-      "label": "Ikonméret módosító"
+    "slot": {
+      "txIcon": "TX ikon",
+      "rxIcon": "RX ikon",
+      "txSpeed": "TX sebesség",
+      "rxSpeed": "RX sebesség",
+      "none": "Üres"
     },
     "iconType": {
       "desc": "Válaszd ki az TX/RX indikátorokhoz használt ikonkészletet.",
       "label": "Ikon típusa"
     },
-    "minWidth": {
-      "desc": "Állítson be egy minimális szélességet a widget számára (px-ben).",
-      "label": "Minimum Widget Szélesség"
+    "byteThresholdActive": {
+      "desc": "Az e küszöbérték alatti forgalom (B/s) inaktívként jelenik meg.",
+      "label": "Aktivitási küszöbérték"
     },
-    "showNumbers": {
-      "desc": "A pillanatnyi RX/TX sebességek megjelenítése számként.",
-      "label": "Értékek megjelenítése"
+    "fontSizeModifier": {
+      "desc": "A szövegméret skálázása az alapértelmezett mérethez képest.",
+      "label": "Betűméret"
     },
-    "spacingInbetween": {
-      "desc": "Állítsa be a RX/TX elemek közötti távolságot.",
-      "label": "Függőleges térköz"
+    "iconSizeModifier": {
+      "desc": "Az ikonméret skálázása az alapértelmezett mérethez képest.",
+      "label": "Ikonméret"
+    },
+    "useCustomFont": {
+      "desc": "Az alapértelmezett betűtípus felülírása a sebességértékekhez.",
+      "label": "Egyéni betűtípus"
+    },
+    "customFontFamily": {
+      "desc": "Válasszon betűtípust a sebességértékekhez.",
+      "label": "Betűtípus",
+      "placeholder": "Betűtípus kiválasztása",
+      "searchPlaceholder": "Betűtípusok keresése…"
+    },
+    "customFontBold": {
+      "desc": "Sebességértékek vastag betűvel.",
+      "label": "Vastag"
+    },
+    "customFontItalic": {
+      "desc": "Sebességértékek dőlt betűvel.",
+      "label": "Dőlt"
     },
     "useCustomColors": {
       "desc": "Egyéni színek engedélyezése a téma alapértelmezett színei helyett.",
       "label": "Egyéni színek"
+    },
+    "colorTx": {
+      "desc": "Feltöltés (TX) ikon színe, ha a küszöbérték felett van.",
+      "label": "TX Aktív"
+    },
+    "colorRx": {
+      "desc": "Letöltés (RX) ikon színe, ha az meghaladja a küszöbértéket.",
+      "label": "RX Aktív"
+    },
+    "colorSilent": {
+      "desc": "Ikon színe, ha a forgalom a küszöbérték alatt van.",
+      "label": "Inaktív"
+    },
+    "colorText": {
+      "desc": "Szövegszín a sebességértékekhez.",
+      "label": "Szöveg"
+    },
+    "paddingLeft": {
+      "label": "Bal oldali kitöltés",
+      "desc": "A tartalom kitöltése a bal oldalon."
+    },
+    "paddingRight": {
+      "label": "Jobb oldali kitöltés",
+      "desc": "A tartalom kitöltése a jobb oldalon."
+    },
+    "columnSpacing": {
+      "label": "Oszlopköz",
+      "desc": "Oszlopok közötti távolság a rácsos elrendezésben."
+    },
+    "rowSpacing": {
+      "label": "Sorköz",
+      "desc": "Sorok közötti távolság a rácsos elrendezésben (nincs hatása vízszintes elrendezésben)."
     }
   }
 }

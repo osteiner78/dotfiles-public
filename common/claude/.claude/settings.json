@@ -7,6 +7,7 @@
     "code-simplifier@claude-plugins-official": true
   },
   "effortLevel": "high",
+  "theme": "dark",
   "verbose": false,
   "agentPushNotifEnabled": true,
   "voiceEnabled": true

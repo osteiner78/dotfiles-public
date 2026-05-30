@@ -176,7 +176,7 @@ install_macbook() {
 
 install_garfield() {
     echo "→ common"
-    stow_home "$DOTFILES/common" btop git nvim ssh tmux yazi zsh
+    stow_home "$DOTFILES/common" btop claude git nvim ssh tmux yazi zsh
 
     echo "→ garfield (/etc)"
     stow_root "$DOTFILES/machines/garfield" borgmatic caddy ssh
