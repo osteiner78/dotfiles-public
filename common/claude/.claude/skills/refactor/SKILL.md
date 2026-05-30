@@ -1,9 +1,13 @@
 ---
 name: refactor
-description: Scan for refactoring opportunities with value/effort ranking. Usage: /refactor <file-path>
+description: >
+  Scan for structural debt (duplication, coupling, god objects, missing test
+  seams) with value/effort ranking and behavior-preservation prerequisites.
+  NOT bug-finding or security review — use /code-review for those.
+  Usage: /refactor <path>
 ---
 
-Scan the provided file for refactoring opportunities. Don't report on bugs or style — focus on structural debt.
+Scan the provided path (file or directory) for refactoring opportunities. Don't report on bugs or style — focus on structural debt.
 
 Look for: duplicated logic, god objects/functions, leaky abstractions, primitive obsession, tight coupling, missing seams for testing, conditionals that should be polymorphism, modules with multiple responsibilities, naming that obscures intent, hot spots that change frequently and break things.
 
@@ -14,14 +18,20 @@ For each opportunity, give me:
 3. **Proposed refactor** — describe the target shape, not full code
 4. **Effort estimate** — S / M / L / XL with a rough hours range and the riskiest part
 5. **Blast radius** — how many files, tests, or callers are affected?
-6. **Value vs effort verdict** — explicitly answer: is this worth doing now? Possible answers:
+6. **Test coverage status** — is the affected code currently covered by tests? State: covered / partially covered / uncovered. If uncovered or partial, the safe path is to run `/add-tests` to pin current behavior BEFORE refactoring — note that as a prerequisite.
+7. **Value vs effort verdict** — explicitly answer: is this worth doing now? Possible answers:
    - ✅ Worth it now (high value, manageable risk)
    - 🕐 Worth it eventually (good idea but not urgent)
    - ⚠️ Risky (real value but high blast radius — defer unless forced)
    - ❌ Not worth it (cost exceeds plausible value — leave it alone)
-7. **Trigger to revisit** — what would change the verdict? (e.g. "if this file changes 3+ times in a quarter")
+8. **Trigger to revisit** — what would change the verdict? (e.g. "if this file changes 3+ times in a quarter")
 
 Be honest about ❌ verdicts. Most refactoring "opportunities" aren't worth the disruption. I'd rather you tell me to leave things alone than chase elegance.
+
+Behavior-preservation contract (state this in the report, for whoever executes a refactor):
+
+- A refactor must NOT change observable behavior. The proof is that existing tests stay green before and after. If the affected code is uncovered, characterization tests (`/add-tests`) must be written and passing FIRST — they are the safety net the refactor is verified against.
+- Factor in this prerequisite when assessing effort: an "uncovered" refactor's true cost includes writing the anchor tests, and a verdict can shift from ✅ to 🕐 once that's counted.
 
 At the end:
 
@@ -33,6 +43,6 @@ Save your output:
 
 - Save to `./.agent/reports/NNN-refactor-scan-[target-slug].md`
 - Determine NNN by listing `./.agent/reports/` and using the next zero-padded 3-digit integer (start at 001 if empty or missing)
-- `[target-slug]` is the kebab-case filename of the scanned file without extension
+- `[target-slug]`: if the target is a single file, the kebab-case filename without extension; if a directory, a short kebab-case label for the module or path (e.g. `auth`, `api-handlers`)
 - Create `./.agent/reports/` if it doesn't exist
-- At the top, include: target path scanned, date, count of opportunities by verdict (e.g. "2 ✅, 3 🕐, 1 ⚠️, 4 ❌")
+- At the top, include: target path scanned, date, count of opportunities by verdict (e.g. "2 ✅, 3 🕐, 1 ⚠️, 4 ❌"), and a count of how many touch uncovered code

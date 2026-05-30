@@ -1,6 +1,10 @@
 ---
 name: debug
-description: Methodical hypothesis-driven debugging. Usage: /debug <bug-description>
+description: >
+  Methodical hypothesis-driven debugging for a SPECIFIC reported bug.
+  Reproduces the bug as a failing regression test before fixing.
+  NOT for general code quality review — use /code-review for that.
+  Usage: /debug <bug-description>
 ---
 
 I'm stuck on a bug. Help me debug it methodically — no guessing, no shotgun fixes.
@@ -27,7 +31,9 @@ Work through this in stages — don't skip ahead:
 
 4. **ITERATE**: Based on test results, either narrow to the actual cause or update the hypothesis list. Don't propose a fix until we've confirmed the cause.
 
-5. **FIX**: Once the cause is confirmed, propose the minimum fix. Then separately note any related issues you noticed that we should address (but not in this fix — keep scope tight).
+5. **REPRODUCE AS A TEST**: Once the cause is confirmed, write a regression test that reproduces the bug — it should FAIL against the current (broken) code, and fail for the reason matching your confirmed cause (not an unrelated error). Show me it failing. This both proves the diagnosis and becomes a permanent guard against the bug returning. (If the bug genuinely can't be expressed as an automated test — e.g. it's environmental or UI-visual — say so and explain why, rather than skipping this step silently.)
+
+6. **FIX**: Propose the minimum fix. Apply it, then run the regression test from step 5 and confirm it now passes, AND run the surrounding existing tests to confirm the fix didn't break anything else. Show the output. Separately note any related issues you noticed that we should address (but NOT in this fix — keep scope tight; route them to a follow-up).
 
 Rules:
 
@@ -35,6 +41,7 @@ Rules:
 - If two hypotheses are equally likely, say so — don't pretend confidence you don't have.
 - If your best hypothesis turns out wrong, say so explicitly and revise. Don't quietly switch theories.
 - Symptoms can lie. Verify the bug is actually what I described before deep-diving.
+- The regression test is owned by this debug session the same way orchestrator tests are owned by the plan: once it passes, do not weaken or delete it to make other things green.
 
 Save your output:
 
@@ -42,5 +49,5 @@ Save your output:
 - Determine NNN by listing `./.agent/reports/` and using the next zero-padded 3-digit integer (start at 001 if empty or missing)
 - `[bug-slug]` is a 3–5 word kebab-case summary of the bug (e.g. `auth-token-expiry-loop`)
 - Create `./.agent/reports/` if it doesn't exist
-- The log should contain: symptom described, hypotheses considered (with confidence), tests run and results, root cause identified, fix applied, related issues noted for follow-up
+- The log should contain: symptom described, hypotheses considered (with confidence), tests run and results, root cause identified, the regression test added (path + what it asserts), fix applied, post-fix test output, related issues noted for follow-up
 - If we stopped without resolution, save anyway with status "unresolved" and the current state of investigation
