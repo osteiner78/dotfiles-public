@@ -9,6 +9,7 @@
   "effortLevel": "high",
   "theme": "dark",
   "verbose": false,
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "voiceEnabled": true
 }
