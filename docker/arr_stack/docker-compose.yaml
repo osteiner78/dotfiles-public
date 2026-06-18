@@ -31,7 +31,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/radarr:/config
-      - /mnt/nfs:/data
       - /mnt/nfs/videos:/data/videos
       - /mnt/nfs/torrents:/data/torrents
     ports:
@@ -50,7 +49,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/sonarr:/config:rw
-      - /mnt/nfs:/data
       - /mnt/nfs/videos:/data/videos
       - /mnt/nfs/torrents:/data/torrents
     ports:
