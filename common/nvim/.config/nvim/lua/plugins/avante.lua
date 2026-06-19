@@ -11,7 +11,7 @@ return {
     provider = "opencode",
     acp_providers = {
       ["opencode"] = {
-        command = vim.fn.exepath("opencode"),
+        command = "opencode",
         args = { "acp" },
       },
     },

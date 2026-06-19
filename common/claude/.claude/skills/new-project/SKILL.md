@@ -30,6 +30,7 @@ Before writing any code, do the following — in this order:
 
    Plan content requirements:
    - 4–6 phases, each shippable as a vertical slice
+   - Per phase, OPEN with a short **Intent** block (3–4 sentences): why this phase exists, the single most important design decision and the reasoning behind it, and what is explicitly OUT of scope for this phase. This is the human-readable steering layer — it captures the "why" that tests cannot express, and it's what I review to confirm you understood the goal. Keep it tight; it is not a restatement of the tasks.
    - Each phase: 6–10 concrete tasks, numbered as PHASE.TASK (e.g., 2.3)
    - Per phase: list specific file paths to be created or modified
    - Per phase: flag key design decisions, open questions, risks
@@ -76,3 +77,5 @@ Before writing any code, do the following — in this order:
    - Anything else you'd want a future Claude instance to know
 
 Do not write any application code until I approve the plan and CLAUDE.md.
+
+After I approve, remind me in one line that the plan and tests are the handoff artifacts, and the implementation should run in a fresh session (clear context) so the coder starts clean rather than inheriting the planning conversation.

@@ -20,7 +20,9 @@ First, determine the SCOPE of the target:
 
 If you're unsure of the scope from my argument, ask one clarifying question before starting.
 
-If a plan and report exist for this work (look in `./.agent/plans/` and `./.agent/reports/` or a matching NNN), read them first. Tests have already verified correctness in this workflow, so do NOT spend the review re-checking "does it work" — focus on what tests cannot catch: design, coupling, security, readability, and whether the change stayed in scope. If there is no plan (a standalone file review), just review the file directly.
+Token discipline: review the DIFF, not whole files. `git diff` shows exactly what changed; that is the review surface. Read a full file ONLY when a change's correctness genuinely can't be judged without surrounding context (e.g. a change relies on a function defined elsewhere) — and when you do, note why you needed it. Do not read entire files, or crawl the codebase, by default. The diff is the default; full-file reads are the deliberate exception.
+
+If a plan and report exist for this work (look in `./.agent/plans/` and `./.agent/reports/` for a matching NNN), read them first. Tests have already verified correctness in this workflow, so do NOT spend the review re-checking "does it work" — focus on what tests cannot catch: design, coupling, security, readability, and whether the change stayed in scope. If there is no plan (a standalone file review), just review the file directly.
 
 For each issue found, classify it as:
 
@@ -60,3 +62,5 @@ Save your output:
 - `[target-slug]`: if the target is a single file, the kebab-case filename without extension (e.g. `user-service` for `UserService.ts`); otherwise a short kebab-case label for what was reviewed (e.g. `phase-2-003`, `auth-refactor`)
 - Create `./.agent/reports/` if it doesn't exist
 - At the top of the file, include: target path reviewed, date, summary verdict (clean / minor issues / significant issues / critical issues)
+
+- Flag any CLAUDE.md updates needed (new patterns, structural changes, or outdated information discovered during review)
