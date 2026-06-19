@@ -333,3 +333,6 @@ export PATH=/root/.opencode/bin:$PATH
 if command -v zoxide >/dev/null; then
   eval "$(zoxide init zsh --cmd cd)"
 fi
+
+# Added by Antigravity IDE
+export PATH="/Users/oliversteiner/.antigravity-ide/antigravity-ide/bin:$PATH"

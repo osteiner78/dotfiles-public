@@ -51,3 +51,5 @@ Save your output:
 - Create `./.agent/reports/` if it doesn't exist
 - The log should contain: symptom described, hypotheses considered (with confidence), tests run and results, root cause identified, the regression test added (path + what it asserts), fix applied, post-fix test output, related issues noted for follow-up
 - If we stopped without resolution, save anyway with status "unresolved" and the current state of investigation
+
+After saving, remind me in one line that the debug log is the durable record and I can clear context before moving to the next task.

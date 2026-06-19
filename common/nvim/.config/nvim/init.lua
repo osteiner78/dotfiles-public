@@ -3,6 +3,23 @@ vim.cmd([[
   syntax enable
 ]])
 
+-- Prepend nvm's active node bin to PATH so spawned processes can find node tools
+do
+  local nvm_dir = vim.fn.expand("~/.nvm")
+  local alias_file = io.open(nvm_dir .. "/alias/default", "r")
+  if alias_file then
+    local alias = alias_file:read("*l"):gsub("%s+", "")
+    alias_file:close()
+    -- alias may be "22", "v22.17.0", or an lts name — normalise to a glob prefix
+    local prefix = alias:match("^v?(%d+)") or alias
+    local matches = vim.fn.glob(nvm_dir .. "/versions/node/v" .. prefix .. "*/bin", false, true)
+    if #matches > 0 then
+      -- take the last entry (highest patch version)
+      vim.env.PATH = matches[#matches] .. ":" .. vim.env.PATH
+    end
+  end
+end
+
 -- Filetype detection rules
 vim.filetype.add({
 	extension = {
