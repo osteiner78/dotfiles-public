@@ -11,7 +11,7 @@ services:
     volumes:
       - /opt/qbittorrent/appdata:/config
       # - /mnt/nfs/torrents:/downloads #optional
-      - /mnt/nfs/torrents:/data/torrents #optional
+      # - /mnt/nfs/torrents:/data/torrents #optional
     ports:
       - 8180:8180
       # - 6881:6881
@@ -31,8 +31,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/radarr:/config
-      - /mnt/nfs/videos:/data/videos
-      - /mnt/nfs/torrents:/data/torrents
+      # - /mnt/nfs/videos:/data/videos
+      # - /mnt/nfs/torrents:/data/torrents
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -49,8 +49,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /opt/sonarr:/config:rw
-      - /mnt/nfs/videos:/data/videos
-      - /mnt/nfs/torrents:/data/torrents
+      # - /mnt/nfs/videos:/data/videos
+      # - /mnt/nfs/torrents:/data/torrents
     ports:
       - 8989:8989
     restart: unless-stopped
