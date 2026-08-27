@@ -105,6 +105,29 @@ sudo mount /mnt/nfs/photos
 
 ---
 
+### 6. `snoopy` — `borgmatic.timer` stopped and disabled
+
+**Discovered:** 2026-08-26 (log-analyst audit). Not an intentional day-1 freeze change,
+but an untracked side effect of the move: the borgmatic backup target is a Raspberry
+Pi at `192.168.1.100:49237`, which went unreachable starting 2026-08-06 (one day
+before the freeze began) — presumably packed up / relocated along with everything else.
+
+Symptom before this fix: `borgmatic.service` retried every 3h via its timer and failed
+every single time with `ssh: connect to host 192.168.1.100 port 49237: No route to
+host`, for 20 days straight with zero successful backups. The Uptime Kuma
+failure-heartbeat was also 404ing on its push URL, so this was failing silently.
+
+**To revert (once the Pi is back on the network):**
+```bash
+sudo systemctl enable --now borgmatic.timer
+```
+Then verify the next scheduled run succeeds:
+```bash
+journalctl -u borgmatic.service -n 50 --no-pager
+```
+
+---
+
 ## Services Left Running
 
 These continue to work normally on SSD-backed NFS shares:
@@ -147,3 +170,4 @@ When back with the HDDs:
 - [ ] On `snoopy`: restore the `ExecStartPre` check in the Docker override (step 1 above)
 - [ ] On `snoopy`: uncomment NFS volumes in `arr_stack/docker-compose.yaml` and bring stack up (steps 2–3 above)
 - [ ] On `snoopy`: enable and start `plexmediaserver` (step 4 above)
+- [ ] On `snoopy`: enable and start `borgmatic.timer` once the backup Pi (`192.168.1.100`) is back online (step 6 above)
