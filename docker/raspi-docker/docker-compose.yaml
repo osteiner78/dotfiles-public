@@ -47,7 +47,7 @@ services:
   #   environment:
   #     # These tell AppDaemon how to connect to Home Assistant
   #     - HA_URL=http://192.168.1.100:8123
-  #     - TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI4ZDQzNjhmMDkzZTQ0NDBiYWFkYWQ5NjYxODU5ZDk3NCIsImlhdCI6MTc1MTk5MTkyNywiZXhwIjoyMDY3MzUxOTI3fQ.FLDYDW4ZBq5Vrv4GRSbEpSFf7KoDLy2eFhonhMaRTsQ
+  #     - TOKEN=${APPDAEMON_HA_TOKEN} # set in .env, never in this file
   #     - TZ=Europe/Zurich # Your Timezone
   #   # ports:
   #     # This exposes the AppDaemon dashboard on port 5050
