@@ -32,6 +32,7 @@ services:
     mem_limit: 64m
     volumes:
       - /opt/sagemcom-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /home/pi/.homeassistant/ics:/ics:ro
 
   # To use ControllerX in Home Assistant
   # appdaemon:
