@@ -331,3 +331,6 @@ fi
 
 # Gemini API Key
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# opencode
+export PATH=/home/osteiner/.opencode/bin:$PATH
