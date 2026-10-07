@@ -227,12 +227,6 @@ command -v fzf >/dev/null && source <(fzf --zsh)
 # ============== BAT THEME ==================
 export BAT_THEME=gruvbox-dark
 
-# ============ Zoxide (better cd) =========================
-if command -v zoxide >/dev/null; then
-  eval "$(zoxide init zsh)"
-  alias cd="z"
-fi
-
 # ==================== PERL LOCALE ==========================
 # (left commented intentionally)
 # LC_CTYPE=en_US.UTF-8
@@ -333,4 +327,12 @@ fi
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # opencode
-export PATH=/home/osteiner/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
+
+# ============ Zoxide (smarter cd) =========================
+if command -v zoxide >/dev/null; then
+  eval "$(zoxide init zsh --cmd cd)"
+fi
+
+# Added by Antigravity IDE
+export PATH="/Users/oliversteiner/.antigravity-ide/antigravity-ide/bin:$PATH"

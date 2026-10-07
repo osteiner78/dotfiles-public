@@ -16,10 +16,9 @@ don't soft-pedal real problems, but don't cry wolf over normal noise either.
 
 Default: **24 hours**. Use whatever the user specified ("last 3 days" = 72h, etc.).
 
-Also create the report output directory if it doesn't exist:
-```bash
-mkdir -p ~/temp
-```
+Also determine the report sequence number and create the output directory if it doesn't exist:
+- List `./.agent/reports/` and use the next zero-padded 3-digit integer as NNN (start at 001 if empty or missing)
+- Create `./.agent/reports/` if it doesn't exist
 
 ## Step 2 — Run the collection script
 
@@ -38,7 +37,7 @@ journalctl, dmesg, auth logs, Docker containers, disk usage, memory, and
 - "show context around that error" → `docker logs --since <HOURS>h X 2>&1 | grep -A 10 -B 5 "<snippet>"`
 - "read /var/log/syslog directly" → do it
 
-## Step 3 — Analyse and tier
+## Step 3 — Analyze and tier
 
 | Tier | Label | Criteria |
 |------|-------|----------|
@@ -92,10 +91,10 @@ Fetch additional context only when the user agrees.
 Save the full report (all tiers, all findings, any implementation plans) to:
 
 ```
-~/temp/log-report-<YYYYMMDD-HHMM>.md
+./.agent/reports/NNN-log-report-YYYYMMDD.md
 ```
 
-Tell the user the full path at the end of your response.
+Use the NNN and directory determined in Step 1. Tell the user the full path at the end of your response.
 
 ## Output format
 
@@ -114,12 +113,12 @@ Tell the user the full path at the end of your response.
 ### 🟡 Medium
 <findings, or "None">
 
-### 🟢 Low / Informational
+### 🟢 Low
 <findings, or "None">
 
 ### Clean
 <services/containers with no issues>
 
 ---
-Report saved to: ~/temp/log-report-YYYYMMDD-HHMM.md
+Report saved to: ./.agent/reports/NNN-log-report-YYYYMMDD.md
 ```
