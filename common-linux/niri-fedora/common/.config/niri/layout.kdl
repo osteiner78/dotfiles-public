@@ -155,3 +155,12 @@ layout {
         // bottom 64
     }
 }
+
+
+blur {
+    // off
+    passes 3
+    offset 2.0
+    noise 0.02  // Helps mitigate color banding
+}
+
