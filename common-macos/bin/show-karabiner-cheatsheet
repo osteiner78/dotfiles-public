@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Minimal popup (WKWebView) — centered, floating, close with Esc or q
-HTML="${1:-$HOME/.config/karabiner/keybinds-cheatsheet.html}"
+if [ -n "$1" ]; then
+  HTML="$1"
+else
+  HTML="${XDG_CACHE_HOME:-$HOME/.cache}/karabiner-cheatsheet.html"
+  mkdir -p "$(dirname "$HTML")"
+  "$(cd "$(dirname "$0")" && pwd)/karabiner-cheatsheet-gen" "$HTML" || exit 1
+fi
 
 CHEATSHEET_PATH="$HTML" osascript -l JavaScript <<'JXA'
 ObjC.import('Cocoa'); ObjC.import('WebKit');
@@ -8,7 +14,7 @@ ObjC.import('Cocoa'); ObjC.import('WebKit');
 function run() {
   const env = $.NSProcessInfo.processInfo.environment;
   const raw = env.objectForKey('CHEATSHEET_PATH');
-  const path = $(raw ? ObjC.unwrap(raw) : '~/.config/karabiner/keybinds-cheatsheet.html').stringByExpandingTildeInPath;
+  const path = $(raw ? ObjC.unwrap(raw) : '~/.cache/karabiner-cheatsheet.html').stringByExpandingTildeInPath;
 
   const app = $.NSApplication.sharedApplication;
   app.setActivationPolicy($.NSApplicationActivationPolicyRegular);
