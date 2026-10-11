@@ -327,7 +327,7 @@ fi
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # opencode
-export PATH=/root/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # ============ Zoxide (smarter cd) =========================
 if command -v zoxide >/dev/null; then

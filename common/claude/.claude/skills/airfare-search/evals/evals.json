@@ -1,0 +1,23 @@
+{
+  "skill_name": "airfare-search",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Find me the cheapest one-way flights from Geneva to Tokyo next March 20th. Save the report.",
+      "expected_output": "Clarify IATA codes (GVA, NRT or HND), confirm date as 2027-03-20, run search, produce .agent/reports/ markdown report with top 5 ranked by price including airline codes and stop details.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need to fly from Zurich to New York JFK, departing November 15 2026 and returning November 29 2026. Economy, just me. What are the cheapest options?",
+      "expected_output": "Round-trip search ZRH→JFK, 2026-11-15 depart, 2026-11-29 return. Report saved, inline summary with price + stops + duration. Should show both outbound and return legs in detail.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "cheap flights lisbon to berlin, october 10",
+      "expected_output": "Handle casual input: resolve LIS→BER, assume 2026-10-10 (within booking window), one-way, run search, present report with real prices.",
+      "files": []
+    }
+  ]
+}

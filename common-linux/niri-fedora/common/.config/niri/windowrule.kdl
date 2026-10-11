@@ -41,6 +41,15 @@ window-rule {
     clip-to-geometry true
 }
 
+//layer-rule {
+//    match layer="top"
+//    match layer="overlay"
+//    background-effect {
+//        xray true
+//        blur true
+//    }
+//}
+
 // Set the overview wallpaper on the backdrop.
 layer-rule {
   match namespace="^noctalia-overview*"
