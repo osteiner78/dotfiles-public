@@ -1,0 +1,78 @@
+#!/bin/zsh
+# Start/stop the jankyborders LaunchAgent. Used both by the AC-power watcher
+# (on/off) and by the Karabiner hotkey (toggle).
+set -e
+
+LABEL="sh.brew.borders"
+PLIST="$HOME/Library/LaunchAgents/${LABEL}.plist"
+UID_N=$(id -u)
+
+is_running() {
+    pgrep -x borders >/dev/null 2>&1
+}
+
+start() {
+    is_running && return 0
+    # KeepAlive=true in the plist makes launchd start the job immediately
+    # on bootstrap, so no separate kickstart is needed (kickstart -k would
+    # just kill-and-wait-restart what's already running, adding ~10s).
+    launchctl bootstrap "gui/${UID_N}" "$PLIST" 2>/dev/null || true
+}
+
+stop() {
+    is_running || return 0
+    launchctl bootout "gui/${UID_N}/${LABEL}" 2>/dev/null || true
+}
+
+case "$1" in
+    on)
+        start
+        ;;
+    off)
+        stop
+        ;;
+    toggle)
+        if is_running; then stop; else start; fi
+        # Mark a manual override so the next poll ticks don't fight it
+        # until an actual power transition happens.
+        STATE_DIR="$HOME/.local/state"
+        mkdir -p "$STATE_DIR"
+        touch "$STATE_DIR/borders-ctl.override"
+        ;;
+    auto)
+        STATE_DIR="$HOME/.local/state"
+        POWER_FILE="$STATE_DIR/borders-ctl.power"
+        OVERRIDE_FILE="$STATE_DIR/borders-ctl.override"
+        mkdir -p "$STATE_DIR"
+
+        if pmset -g batt | head -1 | grep -q "AC Power"; then
+            current="AC"
+        else
+            current="BATT"
+        fi
+        last=""
+        [ -f "$POWER_FILE" ] && last=$(cat "$POWER_FILE")
+
+        if [ "$current" != "$last" ]; then
+            # Real transition: policy takes authority back from any
+            # manual override, and we record the new power state.
+            rm -f "$OVERRIDE_FILE"
+            echo "$current" > "$POWER_FILE"
+        fi
+
+        if [ ! -f "$OVERRIDE_FILE" ]; then
+            # No active manual override: enforce the policy every tick.
+            # This also self-heals if something external (e.g. a `brew
+            # upgrade borders` restarting the service) started/stopped
+            # it outside our control.
+            if [ "$current" = "AC" ]; then start; else stop; fi
+        fi
+        ;;
+    status)
+        is_running && echo "running" || echo "stopped"
+        ;;
+    *)
+        echo "usage: borders-ctl {on|off|toggle|auto|status}" >&2
+        exit 1
+        ;;
+esac

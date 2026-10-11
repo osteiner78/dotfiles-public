@@ -50,7 +50,7 @@
             "key_code" : "a"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Arc\""
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Arc\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -63,7 +63,7 @@
             "key_code" : "c"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Calendar\" --front"
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Calendar\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -76,21 +76,7 @@
             "key_code" : "d"
           },
           "to" : [ {
-            "shell_command" : "/usr/bin/env bash -lc \"/opt/homebrew/bin/dark-mode\""
-          } ],
-          "conditions" : [ {
-            "name" : "hyper-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "e"
-          },
-          "to" : [ {
-            "key_code" : "e",
-            "modifiers" : [ "fn" ]
+            "shell_command" : "/usr/bin/shortcuts run \"Toggle Dark Mode\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -116,7 +102,7 @@
             "key_code" : "g"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Gmail\" --front"
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Gmail\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -142,7 +128,7 @@
             "key_code" : "o"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Obsidian\""
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Obsidian\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -155,7 +141,7 @@
             "key_code" : "p"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Paperless-ngx\""
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Paperless-ngx\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -168,7 +154,7 @@
             "key_code" : "t"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Todoist\""
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Todoist\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -194,7 +180,7 @@
             "key_code" : "v"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --bundle-id \"com.microsoft.VSCode\" --front"
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --bundle-id \"com.microsoft.VSCode\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -207,7 +193,7 @@
             "key_code" : "w"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --bundle-id \"net.whatsapp.WhatsApp\" --front"
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --bundle-id \"net.whatsapp.WhatsApp\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -220,7 +206,7 @@
             "key_code" : "z"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Claude\" --front"
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Claude\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -233,7 +219,7 @@
             "key_code" : "x"
           },
           "to" : [ {
-            "shell_command" : "/usr/local/bin/launch-focus --app \"Gemini\" --front"
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Gemini\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -426,23 +412,6 @@
           }, {
             "type" : "frontmost_application_if",
             "bundle_identifiers" : [ "^com\\.visualstudio\\.code\\.oss$", "^com\\.microsoft\\.VSCode(Insiders)?$" ]
-          } ],
-          "type" : "basic"
-        }, {
-          "from" : {
-            "key_code" : "s"
-          },
-          "to" : [ {
-            "key_code" : "s",
-            "modifiers" : [ "left_command", "left_shift" ]
-          } ],
-          "conditions" : [ {
-            "name" : "hyper-mode",
-            "value" : 1,
-            "type" : "variable_if"
-          }, {
-            "type" : "frontmost_application_if",
-            "bundle_identifiers" : [ "^company\\.thebrowser\\.dia" ]
           } ],
           "type" : "basic"
         }, {
@@ -881,7 +850,23 @@
             }
           },
           "to" : [ {
-            "shell_command" : "/usr/bin/env bash -lc \"$HOME/dotfiles/common-macos/bin/show-karabiner-cheatsheet\""
+            "shell_command" : "$HOME/dotfiles/common-macos/bin/show-karabiner-cheatsheet"
+          } ],
+          "conditions" : [ {
+            "name" : "hyper-mode",
+            "value" : 1,
+            "type" : "variable_if"
+          } ],
+          "type" : "basic"
+        } ]
+      }, {
+        "description" : "Hyper+B: Toggle jankyborders",
+        "manipulators" : [ {
+          "from" : {
+            "key_code" : "b"
+          },
+          "to" : [ {
+            "shell_command" : "$HOME/.local/bin/borders-ctl toggle"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -1019,7 +1004,7 @@
           "type" : "basic"
         } ]
       }, {
-        "description" : "In Arc/Dia/Code: left_control alone -> ctrl + tab to last tab",
+        "description" : "In Arc/Code/Zen/Safari/Obsidian/Ghostty: left_control alone -> ctrl + tab to last tab",
         "manipulators" : [ {
           "to_if_alone" : [ {
             "key_code" : "tab",
@@ -1049,7 +1034,7 @@
           } ],
           "conditions" : [ {
             "type" : "frontmost_application_if",
-            "bundle_identifiers" : [ "^company\\.thebrowser\\.dia" ]
+            "bundle_identifiers" : [ "^com\\.visualstudio\\.code\\.oss$", "^com\\.microsoft\\.VSCode(Insiders)?$" ]
           } ],
           "type" : "basic"
         }, {
@@ -1065,7 +1050,55 @@
           } ],
           "conditions" : [ {
             "type" : "frontmost_application_if",
-            "bundle_identifiers" : [ "^com\\.visualstudio\\.code\\.oss$", "^com\\.microsoft\\.VSCode(Insiders)?$" ]
+            "bundle_identifiers" : [ "^app\\.zen-browser\\.zen$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_control" ]
+          } ],
+          "from" : {
+            "key_code" : "left_control"
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "conditions" : [ {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.apple\\.Safari$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_control" ]
+          } ],
+          "from" : {
+            "key_code" : "left_control"
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "conditions" : [ {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^md\\.obsidian$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_control" ]
+          } ],
+          "from" : {
+            "key_code" : "left_control"
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "conditions" : [ {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.mitchellh\\.ghostty$" ]
           } ],
           "type" : "basic"
         } ]
