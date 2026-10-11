@@ -75,8 +75,9 @@ def shorten_app(arg):
 def fmt_shell(cmd):
     if "show-karabiner-cheatsheet" in cmd:
         return "this cheatsheet"
-    if "dark-mode" in cmd:
-        return "toggle dark mode"
+    m = re.search(r'shortcuts run "([^"]+)"', cmd)
+    if m:
+        return m.group(1).lower()
     m = re.search(r'launch-focus --app "([^"]+)"', cmd)
     if m:
         return "focus " + m.group(1)
@@ -89,7 +90,7 @@ def fmt_shell(cmd):
     m = re.search(r"open -a (.+)$", cmd)
     if m:
         return "open " + shorten_app(m.group(1))
-    return re.sub(r"^/usr/bin/env bash -lc\s*", "", cmd)[:60]
+    return cmd[:60]
 
 
 def fmt_to(items):
