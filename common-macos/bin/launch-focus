@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-# Usage: launch-focus --app "Arc" [--bundle-id BID] [--timeout 6] [--front]
+# Usage: launch-focus --app "Arc" [--bundle-id BID] [--timeout 6]
 set -euo pipefail
 
-APP=""; BID=""; TIMEOUT=6; FRONT=0
+APP=""; BID=""; TIMEOUT=6
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --app)       APP="${2:-}"; shift 2;;
     --bundle-id) BID="${2:-}"; shift 2;;
     --timeout)   TIMEOUT="${2:-6}"; shift 2;;
-    --front)     FRONT=1; shift;;
-    -h|--help)   echo 'Usage: launch-focus --app "Arc" [--bundle-id BID] [--timeout 6] [--front]'; exit 0;;
+    -h|--help)   echo 'Usage: launch-focus --app "Arc" [--bundle-id BID] [--timeout 6]'; exit 0;;
     *) echo "Unknown arg: $1" >&2; exit 2;;
   esac
 done
@@ -49,9 +48,9 @@ fi
 
 # Cold launch
 if [[ -n "$BID" ]]; then
-  [[ "$FRONT" -eq 1 ]] && /usr/bin/open -b "$BID" || /usr/bin/open -g -b "$BID"
+  /usr/bin/open -b "$BID"
 else
-  [[ "$FRONT" -eq 1 ]] && /usr/bin/open -a "$APP" || /usr/bin/open -g -a "$APP"
+  /usr/bin/open -a "$APP"
 fi
 
 # Polling for the app to initialize
