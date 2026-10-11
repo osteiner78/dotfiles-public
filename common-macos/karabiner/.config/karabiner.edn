@@ -104,7 +104,7 @@
                 [:1 [:launch "/Applications/1Password.app"]]
                 [:a [:focus "Arc"]]
                 [:c [:focus "Calendar"]]
-                [:d "/opt/homebrew/bin/dark-mode"]
+                [:d "/usr/bin/shortcuts run \"Toggle Dark Mode\""]
                 [:e :!Fe]                                       ;; Emoji picker (Fn+E)
                 [:f [:launch "/System/Library/CoreServices/Finder.app"]]
                 [:g [:focus "Gmail"]]
