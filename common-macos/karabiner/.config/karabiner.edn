@@ -1,6 +1,6 @@
 {
-    ;; !  | means mandatory -   modifier(s) alone when pressend change behavior
-    ;; #  | means optional  -   modifiers are optional (but atleast one necessary)
+    ;; !  | mandatory: the modifier must be held for the rule to match
+    ;; #  | optional: the modifier may be held
 
     ;; :!Ca is keycode :a and prefix a with !C
 
@@ -16,37 +16,18 @@
     ;; P  | caps_lock
 
     ;; ## | optional any
-    ;; !! | command + control + optional + shift (hyper)
+    ;; !! | command + control + option + shift (hyper)
 
-    ;; (custom variables) & modifiers -> Advanced
-    ;; https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org#custom-variable
-
-    ;; Examples: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org
-    ;; https://gist.github.com/kaushikgopal/ff7a92bbc887e59699c804b59074a126
-    ;; https://github.com/kchen0x/k-goku/blob/master/karabiner.edn
-    ;; https://github.com/tIsGoud/goku/blob/master/karabiner.edn
+    ;; Goku examples: https://github.com/yqrashawn/GokuRakuJoudo/blob/master/examples.org
+    ;; Karabiner JSON reference: https://karabiner-elements.pqrs.org/docs/json/
 
 :profiles {
     :Default {
         :default true
-        :sim     50     ;; simultaneous key press threshold (def: 50)
-                        ;; simlayer is implemented with to_if_alone and simultaneous key press feature
-                        ;; if keydown event for two different keys are pressed within :sim ms, the keypresses are considered simultaneous
-        :delay   500    ;; to_delayed_action_delay_milliseconds (def: 500)
-                       ;; checkout karabiner's documentation
-                       ;; https://pqrs.org/osx/karabiner/json.html
-                       ;; basically it means time after which the key press is count delayed
-
-                        ;; after :delay ms, the key press is considered to be delayed
-                        ;; (used for double-press macros)
-        :alone   300    ;; to_if_alone_timeout_milliseconds (def: 1000)
-                        ;; https://pqrs.org/osx/karabiner/json.html#to-if-alone
-                        ;; affects to_if_alone behavior
-                        ;; simlayer is implemented with to_if_alone and simultaneous key press feature
-
-                        ;; if keyup event comes within :alone ms from keydown, the key is not just pressed but held
-        :held    500    ;; to_if_held_down_threshold_milliseconds (def: 500)
-                        ;; minimum duration a key must be held before to_if_held_down actions fire
+        :sim     50     ;; ms: two keydowns within this time count as simultaneous (only simlayers use it; none defined)
+        :delay   500    ;; ms: to_delayed_action timeout (not used)
+        :alone   300    ;; ms: a key released within this time with no other key pressed counts as a tap (to_if_alone): caps -> esc, left_command and left_control taps
+        :held    500    ;; ms: how long a key must be held before to_if_held_down fires (not used)
     }
 }
 :devices {:apple-internal [{:vendor_id 1452 :product_id 834}]
@@ -56,9 +37,9 @@
 
 :templates {
         :launch "open -a %s"
-        :launch_new "open -n -a %s"
+        :launch_new "open -n -a %s"        ; -n: separate process per window (Ghostty)
 
-        ; App launchers and focusers (launch-focus is a custom script in /usr/local/bin, not a Homebrew package)
+        ; launch-focus (common-macos/bin): activates the app if it is running, otherwise opens it and waits for it to start
         :focus            "$HOME/dotfiles/common-macos/bin/launch-focus --app \"%s\""
         :focus_bid        "$HOME/dotfiles/common-macos/bin/launch-focus --bundle-id \"%s\""
 }
@@ -84,19 +65,12 @@
         :zen            ["^app\\.zen-browser\\.zen$"]
 }
 
-;; layers are basically "hyper" keys
-;; press this in combination with something else and depending on your rule, make things happen
-:layers {:hyper-mode {:key :caps_lock :alone {:key :escape}}    ;; make the caps_lock key the hyper key
-                                                                ;; In "System Preferences/Keyboard/Modifier Keys..."
-                                                                ;; the Caps Lock Key is set to "No Action".
+;; layers: while the key is held, the variable :hyper-mode is set and rules that list it apply
+:layers {:hyper-mode {:key :caps_lock :alone {:key :escape}}    ;; caps_lock is the hyper key, tap = escape
+                                                                ;; needs System Settings > Keyboard > Keyboard Shortcuts > Modifier Keys: Caps Lock = No Action
 }
 
 :main [
-        ;; {:des "Caps Lock → Escape (if alone) | Caps Lock (simple)"
-        ;;  CapsLock to Hyperkey:
-        ;;  :rules [[:##caps_lock :!CTOleft_shift nil {:alone [:escape]}]]
-        ;;  :rules [[:##caps_lock :caps_lock nil {:alone [:escape]}]]
-        ;;  }
         ;;  ========== HYPER KEY (App launcher) ==================
         {:des "Launch apps with hyperkey"
         :rules [:hyper-mode
@@ -104,19 +78,17 @@
                 [:a [:focus "Arc"]]
                 [:c [:focus "Calendar"]]
                 [:d "/usr/bin/shortcuts run \"Toggle Dark Mode\""]
-                [:f [:launch "/System/Library/CoreServices/Finder.app"]]
+                [:f [:launch "/System/Library/CoreServices/Finder.app"]]  ;; open -a, not activate: opens a window when Finder has none
                 [:g [:focus "Gmail"]]
                 [:m [:launch "~/Applications/'Google Maps'.app"]]
                 ; [:n [:launch "/Applications/SnippetsLab.app"]]
                 [:o [:focus "Obsidian"]]
                 [:p [:focus "Paperless-ngx"]]
                 [:t [:focus "Todoist"]]
-                ; [:t [:launch_focus_front_app_bid "Things3" "com.culturedcode.ThingsMac"]]
                 [:q [:launch_new "Ghostty"]]
                 [:v [:focus_bid "com.microsoft.VSCode"]]
                 [:w [:focus_bid "net.whatsapp.WhatsApp"]]
                 [:z [:focus "Claude"]]
-                ; [:x [:launch_focus_front_app_bid "ChatGPT" "com.openai.chat"]]
                 [:x [:focus "Gemini"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
 
@@ -187,6 +159,7 @@
                 ]}
 
         ;;  ========== KEYBOARD MODIFICATIONS (external keyboards) ==================
+        ;; Home/End/PgUp/PgDn shortcuts are used with the right hand only, hence the right-side modifiers
         {:des "Home and End keys (external keyboards)"
         :rules [
                 [:home :!Cleft_arrow]
@@ -207,13 +180,12 @@
                 [:!Wpage_down :!QRclose_bracket]
                 ]}
 
-       ;  ================= TAP-TO_TOGGLE ====================
+        ;;  ========== TAP TO TOGGLE ==================
         {:des "left_command alone -> ⌘ + tab to last app"
          :rules [[:left_command :left_command nil
          {:alone :!Ctab}
         ]]}
 
-       ; Left control -> switch to last tab (in Arc browser and VSCode)
         {:des "In Arc/Code/Zen/Safari/Obsidian/Ghostty: left_control alone -> ctrl + tab to last tab"
         :rules [
                 [:left_control :left_control :arc {:alone :!Ttab}]
