@@ -75,6 +75,8 @@ def shorten_app(arg):
 def fmt_shell(cmd):
     if "show-karabiner-cheatsheet" in cmd:
         return "this cheatsheet"
+    if "borders-ctl toggle" in cmd:
+        return "toggle jankyborders"
     m = re.search(r'shortcuts run "([^"]+)"', cmd)
     if m:
         return m.group(1).lower()

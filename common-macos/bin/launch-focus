@@ -16,7 +16,7 @@ done
 
 [[ -n "$APP$BID" ]] || { echo "Need --app NAME or --bundle-id BID" >&2; exit 2; }
 
-# Helper: Check if app is running and has a window
+# Helper: check whether the app is running
 is_running() {
   if [[ -n "$BID" ]]; then
     /usr/bin/osascript -e "application id \"$BID\" is running" 2>/dev/null
@@ -42,7 +42,7 @@ RUNNING=$(is_running)
 
 if [[ "$RUNNING" == "true" ]]; then
   # Warm path: Just focus
-  [[ -n "$BID" ]] && focus_app "$BID" "id" || focus_app "$APP" "name"
+  if [[ -n "$BID" ]]; then focus_app "$BID" "id"; else focus_app "$APP" "name"; fi
   exit 0
 fi
 
@@ -57,7 +57,7 @@ fi
 loops=$(( TIMEOUT * 5 )) # 200ms intervals
 for ((i=0; i<loops; i++)); do
   if [[ "$(is_running)" == "true" ]]; then
-    [[ -n "$BID" ]] && focus_app "$BID" "id" || focus_app "$APP" "name"
+    if [[ -n "$BID" ]]; then focus_app "$BID" "id"; else focus_app "$APP" "name"; fi
     exit 0
   fi
   sleep 0.2
