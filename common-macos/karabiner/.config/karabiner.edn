@@ -57,14 +57,10 @@
 :templates {
         :launch "open -a %s"
         :launch_new "open -n -a %s"
-        :sh "/usr/bin/env bash -lc \"%s\""
-        ; :sh "/opt/homebrew/bin/bash -lc %s"
 
         ; App launchers and focusers (launch-focus is a custom script in /usr/local/bin, not a Homebrew package)
         :focus            "/usr/local/bin/launch-focus --app \"%s\""
-        :focus_front      "/usr/local/bin/launch-focus --app \"%s\" --front"
         :focus_bid        "/usr/local/bin/launch-focus --bundle-id \"%s\""
-        :focus_bid_front  "/usr/local/bin/launch-focus --bundle-id \"%s\" --front"
 }
 
 :applications{
@@ -107,11 +103,11 @@
         :rules [:hyper-mode
                 [:1 [:launch "/Applications/1Password.app"]]
                 [:a [:focus "Arc"]]
-                [:c [:focus_front "Calendar"]]
-                [:d [:sh "/opt/homebrew/bin/dark-mode"]]
+                [:c [:focus "Calendar"]]
+                [:d "/opt/homebrew/bin/dark-mode"]
                 [:e :!Fe]                                       ;; Emoji picker (Fn+E)
                 [:f [:launch "/System/Library/CoreServices/Finder.app"]]
-                [:g [:focus_front "Gmail"]]
+                [:g [:focus "Gmail"]]
                 [:m [:launch "~/Applications/'Google Maps'.app"]]
                 ; [:n [:launch "/Applications/SnippetsLab.app"]]
                 [:o [:focus "Obsidian"]]
@@ -119,11 +115,11 @@
                 [:t [:focus "Todoist"]]
                 ; [:t [:launch_focus_front_app_bid "Things3" "com.culturedcode.ThingsMac"]]
                 [:q [:launch_new "Ghostty"]]
-                [:v [:focus_bid_front "com.microsoft.VSCode"]]
-                [:w [:focus_bid_front "net.whatsapp.WhatsApp"]]
-                [:z [:focus_front "Claude"]]
+                [:v [:focus_bid "com.microsoft.VSCode"]]
+                [:w [:focus_bid "net.whatsapp.WhatsApp"]]
+                [:z [:focus "Claude"]]
                 ; [:x [:launch_focus_front_app_bid "ChatGPT" "com.openai.chat"]]
-                [:x [:focus_front "Gemini"]]
+                [:x [:focus "Gemini"]]
                 [:equal_sign [:launch "/Applications/'Soulver 3'.app"]]]}
 
         ;;  ========== HYPER KEY (Quality of life) ==================
@@ -185,7 +181,7 @@
 
         {:des "Cheatsheet (Hyper + ?)"
         :rules [:hyper-mode
-                [:##slash [:sh "$HOME/dotfiles/common-macos/bin/show-karabiner-cheatsheet"]]
+                [:##slash "$HOME/dotfiles/common-macos/bin/show-karabiner-cheatsheet"]
                 ]}
 
         ;;  ========== KEYBOARD MODIFICATIONS (external keyboards) ==================
