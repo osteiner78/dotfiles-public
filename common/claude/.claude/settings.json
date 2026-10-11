@@ -1,4 +1,5 @@
 {
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "bash /Users/oliversteiner/.claude/statusline-command.sh"
@@ -10,8 +11,9 @@
   "effortLevel": "high",
   "theme": "dark",
   "verbose": false,
+  "preferredNotifChannel": "ghostty",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "voiceEnabled": true,
-  "model": "opus"
+  "tui": "fullscreen"
 }
