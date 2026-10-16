@@ -13,6 +13,8 @@
 #                             deletes the test documents unless --keep
 #   search                    full-text search finds known documents (run after index rebuild)
 #   ai                        AI backend reachability, LLM index status, suggestions, chat
+#   patches [image]           local patches/*.py: upstream file unchanged in the image (default:
+#                             the one in docker-compose.yaml), active, own tests pass
 #
 # Env: PAPERLESS_TOKEN  API token (profile menu -> "My Profile" -> API Auth Token);
 #                       needed for API checks, cleanup, search and ai stages.
@@ -111,6 +113,9 @@ stage_preflight() {
   if [ -n "$dump" ] && [ -n "$(find "$dump" -mmin -1440)" ]; then pass "recent DB dump: $dump"
   else warn "no DB dump from the last 24h in $BACKUP_DIR (run: $0 backup)"; fi
   warn "Proxmox snapshot/backup of this CT cannot be checked from inside; confirm it manually"
+
+  # The image named in docker-compose.yaml: run this after changing the tag, before `up -d`.
+  stage_patches
 }
 
 # ------------------------------------------------------------------- backup
@@ -289,6 +294,8 @@ for section in ("database", "tasks"):
     else fail "sanity checker exit=$rc, $serr error lines:"; grep -E 'ERROR|\[E' <<<"$out" | head -20 | sed 's/^/      /'; fi
     grep -i -c 'warn' <<<"$out" | { read -r n; [ "$n" -gt 0 ] && echo "    ($n warning lines; review with: docker compose exec webserver document_sanity_checker)"; }
   fi
+
+  stage_patches
 }
 
 # ------------------------------------------------------------------ consume
@@ -595,6 +602,40 @@ PY
     || fail "CT memory ${p#* } used (${p%% *}%), webserver $u; raise CT RAM"
 }
 
+# ------------------------------------------------------------------ patches
+# Local source patches (patches/*.py with a "# TARGET:" header) are bind-mounted read-only
+# over the image's files. Each records the sha256 of the upstream file it was based on, so
+# an image whose file changed fails here instead of silently running a stale copy.
+stage_patches() {
+  local image="${1:-$(dc config --format json 2>/dev/null | json 'print(d["services"]["webserver"]["image"])')}"
+  local running p target want have live mine t out
+  running=$(docker inspect "$(dc ps -q webserver)" --format '{{.Config.Image}}' 2>/dev/null)
+  section "Local patches (image $image)"
+  for p in "$DIR"/patches/*.py; do
+    target=$(sed -n 's/^# TARGET: //p' "$p")
+    [ -z "$target" ] && continue
+    want=$(sed -n 's/.*upstream sha256 \([0-9a-f]\{64\}\).*/\1/p' "$p" | head -1)
+    have=$(docker run --rm --entrypoint sha256sum "$image" "$target" 2>/dev/null | cut -d' ' -f1)
+    if [ -z "$have" ]; then fail "$(basename "$p"): $target not found in $image"
+    elif [ "$have" = "$want" ]; then pass "$(basename "$p"): upstream $target unchanged"
+    else fail "$(basename "$p"): upstream $target CHANGED in $image; rebase the patch on the new" \
+      "file (diff against patches/$(basename "$p").orig) or remove its mount from docker-compose.yaml"
+    fi
+    [ "$image" = "$running" ] || continue
+    live=$(web sha256sum "$target" 2>/dev/null | cut -d' ' -f1)
+    mine=$(sha256sum "$p" | cut -d' ' -f1)
+    [ "$live" = "$mine" ] && pass "$(basename "$p"): active in the running webserver" \
+      || fail "$(basename "$p"): NOT active in the running webserver (mount missing?)"
+    t="$DIR/patches/test_$(basename "$p" .py)_patch.py"
+    if [ -f "$t" ]; then
+      out=$(web_user python3 manage.py shell -c \
+        "exec(open('/usr/src/paperless/patches/$(basename "$t")').read())" 2>&1)
+      grep -q '^ALL PASS' <<<"$out" && pass "$(basename "$t"): $(grep -c '  PASS' <<<"$out") checks pass" \
+        || { fail "$(basename "$t"):"; grep -E 'FAIL|Error' <<<"$out" | head -10 | sed 's/^/      /'; }
+    fi
+  done
+}
+
 case "${1:-}" in
   preflight) stage_preflight ;;
   backup) stage_backup ;;
@@ -603,6 +644,7 @@ case "${1:-}" in
   consume) shift; stage_consume "$@" ;;
   search) stage_search ;;
   ai) stage_ai ;;
-  *) sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+  patches) shift; stage_patches "$@" ;;
+  *) sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
 esac
 summary

@@ -36,6 +36,10 @@ services:
       - /home/osteiner/paperless-ngx/scripts/:/usr/src/paperless/scripts
       - /mnt/nfs/paperless_ngx_consume:/usr/src/paperless/consume
       - /home/osteiner/paperless-ngx/export/:/usr/src/paperless/export
+      # Local patch: accent-insensitive + whole-word prefix matching of AI-suggested
+      # correspondents. Guarded by `./upgrade-tests.sh patches` (also run by preflight/verify).
+      - ./patches/matching.py:/usr/src/paperless/src/paperless_ai/matching.py:ro
+      - ./patches:/usr/src/paperless/patches:ro
     env_file: .env
     environment:
       USERMAP_UID: 1000

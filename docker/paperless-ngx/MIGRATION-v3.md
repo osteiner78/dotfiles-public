@@ -401,8 +401,23 @@ train on prompts; the `zdr: true` routing enforces zero retention per request an
   SA", "Bradesco Seguros") that paperless's name matching rejects (accents kept, ≥0.8 ratio, no
   whole-word containment); 5–7 are ignored abbreviation candidates (LIFSP, CET, BofA, Vivo).
   Simulated accent-insensitive + whole-word matching: DeepSeek **62 → 77**, Haiku 62 → 72, with
-  2–3 doubtful matches, all on catch-all documents. Decision: keep DeepSeek; the matching fix
-  belongs upstream in `paperless_ai/matching.py`.
+  2–3 doubtful matches, all on catch-all documents. Decision: keep DeepSeek.
+- **Local patch (2026-10-16):** `patches/matching.py`, bind-mounted read-only over
+  `src/paperless_ai/matching.py`. (1) Name normalization ignores accents and splits on
+  punctuation, for tags, types, paths and correspondents. (2) Correspondents only: if exact and
+  ≥0.8 fuzzy matching fail, a suggested name that *starts with* an existing name as whole words
+  matches it (longest wins: "EFG Bank AG" → EFG), or the one existing name that starts with the
+  suggested name ("Helsana" → "Helsana AG"). (3) Names matched that way aren't also listed as new.
+  Replay of the evaluation: DeepSeek 62 → 76/100, 21 added matches correct, 5 follow names the
+  model itself got wrong. Live check: #6083 → Itau, #5792 → EFG, #466 → Swisscom.
+  - **Guard:** `./upgrade-tests.sh patches [image]` (also run at the end of `preflight` and
+    `verify`) fails when the image's `matching.py` no longer has the sha256 the patch was based
+    on, when the patch isn't active, or when `patches/test_matching_patch.py` (13 checks on the
+    live taxonomy) fails. **On every paperless upgrade:** change the tag, `docker compose pull`,
+    then `./upgrade-tests.sh patches` *before* `up -d`. On FAIL, diff the new upstream file
+    against `patches/matching.py.orig`, re-apply the marked `LOCAL PATCH` blocks (or remove the
+    two mounts to run unpatched), and update the hash in the header and `.orig`.
+  - Rollback: remove the two `patches` mounts from `docker-compose.yaml` and `up -d`.
 
 1. Create an OpenRouter key, add a few dollars of credit, and set the privacy filter.
 2. Add `PAPERLESS_AI_LLM_API_KEY=sk-or-...` to `.env`, which is git-ignored.
