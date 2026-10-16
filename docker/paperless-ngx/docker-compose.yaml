@@ -1,36 +1,8 @@
-services:
-# Docker Compose file for running paperless from the docker container registry.
-# This file contains everything paperless needs to run.
-# Paperless supports amd64, arm and arm64 hardware.
-#
-# All compose files of paperless configure paperless in the following way:
-#
-# - Paperless is (re)started on system boot, if it was running before shutdown.
-# - Docker volumes for storing data are managed by Docker.
-# - Folders for importing and exporting files are created in the same directory
-#   as this file and mounted to the correct folders inside the container.
-# - Paperless listens on port 8000.
-#
-# In addition to that, this Docker Compose file adds the following optional
-# configurations:
-#
-# - Instead of SQLite (default), PostgreSQL is used as the database server.
-# - Apache Tika and Gotenberg servers are started with paperless and paperless
-#   is configured to use these services. These provide support for consuming
-#   Office documents (Word, Excel, Power Point and their LibreOffice counter-
-#   parts.
-#
-# To install and update paperless with this file, do the following:
-#
-# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
-#   and '.env' into a folder.╰─                                                                           ─╯
-# - Run 'docker compose pull'.
-# - Run 'docker compose run --rm webserver createsuperuser' to create a user.
-# - Run 'docker compose up -d'.
-#
-# For more extensive installation and update instructions, refer to the
-# documentation.
+# paperless-ngx v3 target configuration. See MIGRATION-v3.md (phase 3) before
+# swapping this in for docker-compose.yaml. Secrets (PAPERLESS_SECRET_KEY and, in
+# phase 5, AI API keys) live in the git-ignored .env file.
 
+services:
   broker:
     image: docker.io/library/redis:7
     restart: unless-stopped
@@ -38,14 +10,18 @@ services:
       - redisdata:/data
 
   db:
+    # Stay on 16: a Postgres major upgrade (dump/restore) is a separate project.
     image: docker.io/library/postgres:16
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
-    env_file: .env
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
 
   webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.1
     restart: unless-stopped
     depends_on:
       - db
@@ -58,9 +34,7 @@ services:
       - /home/osteiner/paperless-ngx/data/:/usr/src/paperless/data
       - /home/osteiner/paperless-ngx/media/:/usr/src/paperless/media
       - /home/osteiner/paperless-ngx/scripts/:/usr/src/paperless/scripts
-      # Line below does not work !!?? Permission denied
-      # - /media/nvme/paperless/scripts:/usr/src/paperless/scripts
-      - /home/osteiner/paperless-ngx/consume/:/usr/src/paperless/consume
+      - /mnt/nfs/paperless_ngx_consume:/usr/src/paperless/consume
       - /home/osteiner/paperless-ngx/export/:/usr/src/paperless/export
     env_file: .env
     environment:
@@ -68,7 +42,10 @@ services:
       USERMAP_GID: 1000
       PAPERLESS_URL: https://paperless.osteiner.xyz
       PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBENGINE: postgresql # v3: required, no longer inferred from DBHOST
       PAPERLESS_DBHOST: db
+      # Only if logging in through the reverse proxy returns 403 after the upgrade:
+      # PAPERLESS_TRUSTED_PROXIES: <IP the proxy connects from>
 
       # Optional services
       PAPERLESS_TIKA_ENABLED: 1
@@ -79,58 +56,53 @@ services:
       PAPERLESS_PRE_CONSUME_SCRIPT: /usr/src/paperless/scripts/removepassword.py
       PAPERLESS_POST_CONSUME_SCRIPT: /usr/src/paperless/scripts/push_notifications.sh
       PAPERLESS_FILENAME_DATE_ORDER: 'Y-M-D' # To recognize dates in filenames
-      PAPERLESS_DATE_ORDER: 'DMY' 
-      PAPERLESS_CONSUMER_POLLING: 10 # If set to 0 (disable polling) it will consume empty files from smb share as files are being created
-      PAPERLESS_CONSUMER_POLLING_DELAY: 5 
+      PAPERLESS_IGNORE_DATES: '27/07/1978, 26/12/1976, 10/06/2016, 23/07/2020'
+      PAPERLESS_DATE_ORDER: 'DMY'
+      PAPERLESS_CONSUMER_POLLING_INTERVAL: 10 # v3 name of CONSUMER_POLLING; polling is required on NFS
+      PAPERLESS_CONSUMER_STABILITY_DELAY: 5 # v3 replacement for CONSUMER_POLLING_DELAY
+      PAPERLESS_CONSUMER_DELETE_DUPLICATES: 'true' # keep v2 behaviour: never import duplicates
 
       # Paths and folders
       PAPERLESS_FILENAME_FORMAT: '{{correspondent}}/{{created_year}}-{{created_month}}-{{created_day}} - {{correspondent}} - {{title}}'
 
-      #OCR
-      PAPERLESS_OCR_LANGUAGES: por eng fra
-      PAPERLESS_OCR_LANGUAGE: por+eng
-      PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true, "continue_on_soft_render_error": true}' # To process signed documents and process pdf with ghostscript errors
+      # OCR
+      PAPERLESS_OCR_LANGUAGES: por eng fra # extra packs; deu/eng/fra are in the image already
+      PAPERLESS_OCR_LANGUAGE: deu+eng+fra+por
+      PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true, "continue_on_soft_render_error": true}' # signed PDFs, ghostscript errors
+      PAPERLESS_ARCHIVE_FILE_GENERATION: auto # no PDF/A copy for born-digital PDFs; existing archives are kept
 
       # Software tweaks
-      PAPERLESS_TIME_ZONE: America/Sao_Paulo
+      PAPERLESS_TIME_ZONE: Europe/Zurich
       PAPERLESS_TASK_WORKERS: 2 # Processes in parallel
 
+      # AI (phase 5, see MIGRATION-v3.md). PAPERLESS_AI_LLM_API_KEY goes in .env, not here.
+      # 5a: suggestions
+      PAPERLESS_AI_ENABLED: 'true'
+      PAPERLESS_AI_LLM_BACKEND: openai-like
+      PAPERLESS_AI_LLM_ENDPOINT: https://openrouter.ai/api/v1
+      PAPERLESS_AI_LLM_MODEL: deepseek/deepseek-v4.1-flash
+      PAPERLESS_AI_LLM_ALLOW_INTERNAL_ENDPOINTS: 'false'
+      PAPERLESS_AI_LLM_EXTRA_PARAMS: '{"extra_body": {"provider": {"order": ["deepinfra"], "zdr": true}, "reasoning": {"enabled": false}}}' # DeepInfra first, zero-retention fallbacks only, reasoning off
+      # 5b: chat (needs CT RAM 6 GB)
+      # Hosted via the LLM endpoint (OpenRouter; account-wide ZDR, DeepSeek/SiliconFlow ignored).
+      # qwen3-8b beat local e5-small 54/60 vs 42/60 in a retrieval test (MIGRATION-v3.md 5.3).
+      PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
+      PAPERLESS_AI_LLM_EMBEDDING_MODEL: qwen/qwen3-embedding-8b
+
   gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.7
+    image: docker.io/gotenberg/gotenberg:8.37
     restart: unless-stopped
-  #
-  #   # The gotenberg chromium route is used to convert .eml files. We do not
-  #   # want to allow external content like tracking pixels or even javascript.
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
     command:
       - "gotenberg"
       - "--chromium-disable-javascript=true"
-      - "--chromium-allow-list=file:///tmp/.*"
-  #
-  tika:
-    image: docker.io/apache/tika:latest
-    restart: unless-stopped
+      - "--chromium-allow-list=^file:///tmp/.*"
 
-  paperless-ai:
-    image: clusterzx/paperless-ai
-    container_name: paperless-ai
-    network_mode: bridge
+  tika:
+    image: docker.io/apache/tika:3.3.1.0
     restart: unless-stopped
-    cap_drop:
-      - ALL
-    security_opt:
-      - no-new-privileges=true
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - PAPERLESS_AI_PORT=${PAPERLESS_AI_PORT:-3000}
-    ports:
-      - "3000:${PAPERLESS_AI_PORT:-3000}"
-    volumes:
-      - paperless-ai_data:/app/data
 
 volumes:
   pgdata:
-    # external: true
   redisdata:
-    # external: true
-  paperless-ai_data:

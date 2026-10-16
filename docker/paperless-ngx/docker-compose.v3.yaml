@@ -1,0 +1,106 @@
+# paperless-ngx v3 target configuration. See MIGRATION-v3.md (phase 3) before
+# swapping this in for docker-compose.yaml. Secrets (PAPERLESS_SECRET_KEY and, in
+# phase 5, AI API keys) live in the git-ignored .env file.
+
+services:
+  broker:
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  db:
+    # Stay on 16: a Postgres major upgrade (dump/restore) is a separate project.
+    image: docker.io/library/postgres:16
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.1
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    ports:
+      - "8000:8000"
+    volumes:
+      - /home/osteiner/paperless-ngx/data/:/usr/src/paperless/data
+      - /home/osteiner/paperless-ngx/media/:/usr/src/paperless/media
+      - /home/osteiner/paperless-ngx/scripts/:/usr/src/paperless/scripts
+      - /mnt/nfs/paperless_ngx_consume:/usr/src/paperless/consume
+      - /home/osteiner/paperless-ngx/export/:/usr/src/paperless/export
+    env_file: .env
+    environment:
+      USERMAP_UID: 1000
+      USERMAP_GID: 1000
+      PAPERLESS_URL: https://paperless.osteiner.xyz
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBENGINE: postgresql # v3: required, no longer inferred from DBHOST
+      PAPERLESS_DBHOST: db
+      # Only if logging in through the reverse proxy returns 403 after the upgrade:
+      # PAPERLESS_TRUSTED_PROXIES: <IP the proxy connects from>
+
+      # Optional services
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+
+      # Document consumption
+      PAPERLESS_PRE_CONSUME_SCRIPT: /usr/src/paperless/scripts/removepassword.py
+      PAPERLESS_POST_CONSUME_SCRIPT: /usr/src/paperless/scripts/push_notifications.sh
+      PAPERLESS_FILENAME_DATE_ORDER: 'Y-M-D' # To recognize dates in filenames
+      PAPERLESS_IGNORE_DATES: '27/07/1978, 26/12/1976, 10/06/2016, 23/07/2020'
+      PAPERLESS_DATE_ORDER: 'DMY'
+      PAPERLESS_CONSUMER_POLLING_INTERVAL: 10 # v3 name of CONSUMER_POLLING; polling is required on NFS
+      PAPERLESS_CONSUMER_STABILITY_DELAY: 5 # v3 replacement for CONSUMER_POLLING_DELAY
+      PAPERLESS_CONSUMER_DELETE_DUPLICATES: 'true' # keep v2 behaviour: never import duplicates
+
+      # Paths and folders
+      PAPERLESS_FILENAME_FORMAT: '{{correspondent}}/{{created_year}}-{{created_month}}-{{created_day}} - {{correspondent}} - {{title}}'
+
+      # OCR
+      PAPERLESS_OCR_LANGUAGES: por eng fra # extra packs; deu/eng/fra are in the image already
+      PAPERLESS_OCR_LANGUAGE: deu+eng+fra+por
+      PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true, "continue_on_soft_render_error": true}' # signed PDFs, ghostscript errors
+      PAPERLESS_ARCHIVE_FILE_GENERATION: auto # no PDF/A copy for born-digital PDFs; existing archives are kept
+
+      # Software tweaks
+      PAPERLESS_TIME_ZONE: Europe/Zurich
+      PAPERLESS_TASK_WORKERS: 2 # Processes in parallel
+
+      # AI (phase 5, see MIGRATION-v3.md). PAPERLESS_AI_LLM_API_KEY goes in .env, not here.
+      # 5a: suggestions
+      # PAPERLESS_AI_ENABLED: 'true'
+      # PAPERLESS_AI_LLM_BACKEND: openai-like
+      # PAPERLESS_AI_LLM_ENDPOINT: https://openrouter.ai/api/v1
+      # PAPERLESS_AI_LLM_MODEL: deepseek/deepseek-v4.1-flash
+      # PAPERLESS_AI_LLM_ALLOW_INTERNAL_ENDPOINTS: 'false'
+      # PAPERLESS_AI_LLM_EXTRA_PARAMS: '{"extra_body": {"provider": {"order": ["deepinfra"], "zdr": true}, "reasoning": {"enabled": false}}}' # DeepInfra first, zero-retention fallbacks only, reasoning off
+      # 5b: chat (needs CT RAM 6 GB)
+      # PAPERLESS_AI_LLM_EMBEDDING_BACKEND: huggingface
+      # PAPERLESS_AI_LLM_EMBEDDING_MODEL: intfloat/multilingual-e5-small
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.37
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=^file:///tmp/.*"
+
+  tika:
+    image: docker.io/apache/tika:3.3.1.0
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
