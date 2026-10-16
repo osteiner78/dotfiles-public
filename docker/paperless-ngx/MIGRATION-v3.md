@@ -386,6 +386,23 @@ train on prompts; the `zdr: true` routing enforces zero retention per request an
   then name-matches the rest (exact, or ≥ 0.8 fuzzy, accents **not** stripped: "Itaú" ≠ "Itau").
 - 5-document sample, reasoning off vs on: similar results (on matched one catch-all "Other
   correspondents" more), but on was 3–6× slower (12–31 s). Keep reasoning off.
+- **Evaluation 2026-10-16** (`upgrade-state/eval/sugg_eval.py`, 100 random classified documents,
+  qwen3 embeddings for candidates, same matching as the v3.3.1 view; $0.06 for both models):
+
+  | | DeepSeek V4.1 Flash | Haiku 5.5 |
+  |---|---|---|
+  | Correspondent correct | 62/100 | 62/98 (2 schema errors) |
+  | Document type correct (1st / any) | 76 / 83 | 77 / 78 |
+  | Tags recall / precision | 70/85, 70/111 | 72/84, 72/106 |
+  | Median time | 3.7 s | 2.1 s |
+
+  Correspondent misses: ~18 are catch-alls ("Other correspondents", "Doctores varios") the model
+  can't guess; 10–15 are **name variants** (Itaú→Itau ×6, "EFG Bank AG"→EFG, "Swisscom (Suisse)
+  SA", "Bradesco Seguros") that paperless's name matching rejects (accents kept, ≥0.8 ratio, no
+  whole-word containment); 5–7 are ignored abbreviation candidates (LIFSP, CET, BofA, Vivo).
+  Simulated accent-insensitive + whole-word matching: DeepSeek **62 → 77**, Haiku 62 → 72, with
+  2–3 doubtful matches, all on catch-all documents. Decision: keep DeepSeek; the matching fix
+  belongs upstream in `paperless_ai/matching.py`.
 
 1. Create an OpenRouter key, add a few dollars of credit, and set the privacy filter.
 2. Add `PAPERLESS_AI_LLM_API_KEY=sk-or-...` to `.env`, which is git-ignored.
@@ -430,6 +447,24 @@ cache in `data/`. `./upgrade-tests.sh ai`: chat answers with source links. Notes
   Use normal search for keyword lookups and per-document chat for questions about one document.
 - `upgrade-tests.sh` memory check now uses the CT's `free` total: `docker stats` kept
   reporting the old 3 GB as the limit after `pct set --memory`.
+
+**Update 2026-10-16: switched to hosted `qwen/qwen3-embedding-8b`** (OpenRouter, `openai-like`
+backend reusing the LLM endpoint and key). Scripts and results: `~/paperless-ngx/upgrade-state/eval/`.
+
+- Retrieval test (`emb_eval.py`: 371 documents, 12 questions in pt/de/fr/en/es, relevance from
+  the user's own correspondents/types): relevant docs in top 5 — e5-small 42/60, bge-m3 47/60,
+  **qwen3-8b 54/60**; mean reciprocal rank of the first relevant doc 0.83 / 0.86 / **1.00**.
+- Routing: paperless can't pin providers for embeddings. The OpenRouter account enforces ZDR
+  globally and ignores DeepSeek (first-party API) and SiliconFlow, so requests go to DeepInfra
+  or Nebius (verified). Note: OpenRouter checks the **sum** of a request's inputs against the
+  model's context (bge-m3: 8,192); paperless sends 10 × 1,024-token chunks, fine for qwen3 (32K).
+- Rebuild: 6,334 documents in **2 h 36 min** (sequential requests of 10 chunks), ~$0.20,
+  index 551 MB (4,096 dims). Peak CT memory 2.5 GB; webserver ~1 GB (was ~2.7 GB).
+  The local model cache `data/hf_cache` (471 MB) is no longer used.
+- Chat across the archive now finds IPTU 2026 (amounts, discount, instalments), Assura/Helsana
+  premiums, Salt invoices. Chat uses the 5 most similar passages with no recency bias, so
+  "current" questions may be answered from older documents.
+- RAM can go back to 4 GB (`pct set 206 --memory 4096`).
 
 1. On the Proxmox host: `pct set 206 --memory 6144`. Then `./upgrade-tests.sh preflight` shows RAM PASS.
 2. Uncomment the "5b" lines (`EMBEDDING_BACKEND: huggingface`,
