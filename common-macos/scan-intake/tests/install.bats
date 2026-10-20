@@ -45,6 +45,14 @@ plist_get() { plutil -extract "$1" raw -o - "$HOME/$PLIST_REL"; }
     ! grep -q bootstrap "$STUB_LOG/launchctl.log"
 }
 
+@test "install with .env but an empty token: exits non-zero, asks for the token, does not load the agent" {
+    sed -i '' 's/^PAPERLESS_TOKEN=.*/PAPERLESS_TOKEN=/' "$ENV_FILE"
+    run "$ROOT/install.sh"
+    [[ "$status" -ne 0 ]]
+    [[ "$output" == *"API Auth Token"* ]]
+    ! grep -q bootstrap "$STUB_LOG/launchctl.log"
+}
+
 # ── install with a token ────────────────────────────────────────────────────
 
 @test "install: exits 0, creates the scan folders" {

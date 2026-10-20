@@ -158,10 +158,12 @@ count_pending() {
     echo "$n"
 }
 
+# api_get and upload discard curl's stderr: launchd appends stderr to the log, and
+# the callers log the exit code and HTTP status as proper lines instead.
 api_get() { # base-url path -> HTTP_CODE, TMP_BODY; returns curl's exit code
     local rc=0
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
-        curl -sS --connect-timeout 10 --max-time 30 -o "$TMP_BODY" -w '%{http_code}' -H @- "$1$2") || rc=$?
+        curl -sS --connect-timeout 10 --max-time 30 -o "$TMP_BODY" -w '%{http_code}' -H @- "$1$2" 2>/dev/null) || rc=$?
     return "$rc"
 }
 
@@ -201,7 +203,7 @@ upload() { # path base-url -> HTTP_CODE, TMP_BODY; returns curl's exit code
     fi
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
         curl -sS --fail-with-body --connect-timeout 10 --max-time 600 -o "$TMP_BODY" -w '%{http_code}' -H @- \
-            "${form[@]}" "$2/api/documents/post_document/") || rc=$?
+            "${form[@]}" "$2/api/documents/post_document/" 2>/dev/null) || rc=$?
     return "$rc"
 }
 

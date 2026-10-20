@@ -11,14 +11,19 @@ PLIST=$HOME/Library/LaunchAgents/$LABEL.plist
 LINK=$HOME/.local/bin/scan-intake
 LOG=$HOME/Library/Logs/scan-intake.log
 
+ask_for_token() {
+    echo "Paste the token into PAPERLESS_TOKEN in $ENV_FILE (paperless web UI -> My Profile -> API Auth Token), then rerun install.sh."
+    exit 1
+}
+
 if [[ ! -f $ENV_FILE ]]; then
     mkdir -p "${ENV_FILE%/*}"
     cp "$DIR/.env.example" "$ENV_FILE"
     chmod 600 "$ENV_FILE"
     echo "Created $ENV_FILE."
-    echo "Paste the token into PAPERLESS_TOKEN (paperless web UI -> My Profile -> API Auth Token), then rerun install.sh."
-    exit 1
+    ask_for_token
 fi
+grep -Eq '^[[:space:]]*PAPERLESS_TOKEN=.+' "$ENV_FILE" || ask_for_token
 
 for d in outbox pending "done" duplicates failed; do
     mkdir -p "$HOME/Scans/$d"
