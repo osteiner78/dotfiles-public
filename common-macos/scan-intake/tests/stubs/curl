@@ -69,6 +69,7 @@ fi
 [[ -n "$fmt" ]] && printf '%s' "${fmt//%\{http_code\}/$code}"
 
 if ((fail_with_body)) && ((code >= 400)); then
+    echo "curl: (22) The requested URL returned error: $code" >&2
     exit 22
 fi
 exit 0
