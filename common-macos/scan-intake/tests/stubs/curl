@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Fake curl for the scan-intake tests. Never touches the network.
+#
+# Responses come from $FIXTURES/<host>/<endpoint>.{code,body,exit}, where
+# <endpoint> is post_document, tasks or tags. Missing files mean code 200,
+# empty body, exit 0. A non-zero .exit simulates a transport error (6, 7, 28)
+# and produces no body or status code.
+#
+# Every call appends one line to $STUB_LOG/curl.log (URL + argv) and whatever
+# arrived on stdin to $STUB_LOG/curl.stdin, so tests can check that the token
+# travels on stdin and never in argv.
+
+set -u
+
+url="" out="" fmt="" fail_with_body=0 read_stdin=0
+args=("$@")
+for ((i = 0; i < ${#args[@]}; i++)); do
+    a="${args[$i]}"
+    case "$a" in
+        -o | --output) out="${args[$((i + 1))]}"; i=$((i + 1)) ;;
+        -w | --write-out) fmt="${args[$((i + 1))]}"; i=$((i + 1)) ;;
+        --fail-with-body) fail_with_body=1 ;;
+        -H | --header)
+            [[ "${args[$((i + 1))]}" == "@-" ]] && read_stdin=1
+            i=$((i + 1))
+            ;;
+        http://* | https://*) url="$a" ;;
+    esac
+done
+
+{
+    printf 'URL=%s ARGS=' "$url"
+    printf '%s\x1f' "$@"
+    printf '\n'
+} >>"$STUB_LOG/curl.log"
+
+if ((read_stdin)); then
+    cat >>"$STUB_LOG/curl.stdin" || true
+fi
+
+host="${url#*://}"
+host="${host%%/*}"
+host="${host%%:*}"
+case "$url" in
+    */api/documents/post_document/*) ep=post_document ;;
+    */api/tasks/*) ep=tasks ;;
+    */api/tags/*) ep=tags ;;
+    *) ep=other ;;
+esac
+
+base="$FIXTURES/$host/$ep"
+exit_code=0
+[[ -f "$base.exit" ]] && exit_code="$(cat "$base.exit")"
+if ((exit_code != 0)); then
+    echo "curl: ($exit_code) simulated transport error" >&2
+    exit "$exit_code"
+fi
+
+code=200
+[[ -f "$base.code" ]] && code="$(cat "$base.code")"
+body=""
+[[ -f "$base.body" ]] && body="$(cat "$base.body")"
+
+if [[ -n "$out" ]]; then
+    printf '%s' "$body" >"$out"
+else
+    printf '%s' "$body"
+fi
+[[ -n "$fmt" ]] && printf '%s' "${fmt//%\{http_code\}/$code}"
+
+if ((fail_with_body)) && ((code >= 400)); then
+    exit 22
+fi
+exit 0

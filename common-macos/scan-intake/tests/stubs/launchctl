@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Fake launchctl: records each call so install/uninstall never touch the real
+# launchd domain.
+printf '%s\n' "$*" >>"$STUB_LOG/launchctl.log"
