@@ -2,7 +2,7 @@
 # Uploads scans from ~/Scans/outbox to paperless-ngx. See README.md.
 # Targets macOS: BSD tools, and /usr/bin/env bash is bash 3.2 under launchd.
 
-# shellcheck disable=SC2034  # config keys and flags are consumed by later phases
+# shellcheck disable=SC2034  # DRY_RUN, LAN_FALLBACK_URL, DONE_RETENTION_DAYS are consumed in phase 3
 set -euo pipefail
 
 PAPERLESS_TOKEN=
@@ -25,6 +25,12 @@ DRY_RUN=false
 VERBOSE=false
 CONFIG_ERR=
 TMP_BODY=
+N_SUB=()
+N_BODY=()
+N_ERR=()
+N_OK=0
+N_DUP=0
+N_FAIL=0
 
 log() { # LEVEL event [key=value...]
     local level=$1 event=$2
@@ -47,6 +53,36 @@ notify() { # subtitle body [error]
     body=${body//$q/$bs$q}
     [[ ${3:-} == error ]] && sound=' sound name "Basso"'
     osascript -e "display notification \"$body\" with title \"Scan intake\" subtitle \"$sub\"$sound" >/dev/null 2>&1 || true
+}
+
+queue_notify() { # subtitle body [error]
+    N_SUB+=("$1")
+    N_BODY+=("$2")
+    N_ERR+=("${3:-}")
+}
+
+plural() { # count word
+    if (($1 == 1)); then echo "$1 $2"; else echo "$1 $2s"; fi
+}
+
+flush_notifications() {
+    local i n=${#N_SUB[@]} parts=() summary
+    ((n > 0)) || return 0
+    if ((n <= 5)); then
+        for ((i = 0; i < n; i++)); do
+            notify "${N_SUB[$i]}" "${N_BODY[$i]}" "${N_ERR[$i]}"
+        done
+        return 0
+    fi
+    ((N_OK == 0)) || parts+=("$(plural "$N_OK" scan) uploaded")
+    ((N_DUP == 0)) || parts+=("$(plural "$N_DUP" duplicate) skipped")
+    ((N_FAIL == 0)) || parts+=("$(plural "$N_FAIL" error)")
+    summary=$(printf '%s, ' "${parts[@]}")
+    if ((N_FAIL > 0)); then
+        notify "Summary" "${summary%, }" error
+    else
+        notify "Summary" "${summary%, }"
+    fi
 }
 
 load_env() {
@@ -93,13 +129,16 @@ ensure_dirs() {
     done
 }
 
+lower_ext() { # name
+    printf '%s' "${1##*.}" | tr '[:upper:]' '[:lower:]'
+}
+
 is_scan_file() { # path
-    local path=$1 name ext
+    local path=$1 name
     [[ -f $path ]] || return 1
     name=${path##*/}
     [[ $name != .* && $name == *.* ]] || return 1
-    ext=$(printf '%s' "${name##*.}" | tr '[:upper:]' '[:lower:]')
-    case $ext in pdf | jpg | jpeg | png | tif | tiff) return 0 ;; esac
+    case $(lower_ext "$name") in pdf | jpg | jpeg | png | tif | tiff) return 0 ;; esac
     return 1
 }
 
@@ -124,6 +163,109 @@ api_get() { # base-url path -> HTTP_CODE, TMP_BODY; returns curl's exit code
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
         curl -sS --connect-timeout 10 --max-time 30 -o "$TMP_BODY" -w '%{http_code}' -H @- "$1$2") || rc=$?
     return "$rc"
+}
+
+is_stable() { # path
+    local before after
+    before=$(stat -f '%z %m' "$1" 2>/dev/null) || return 1
+    if ((STABLE_SECS > 0)); then sleep "$STABLE_SECS"; fi
+    after=$(stat -f '%z %m' "$1" 2>/dev/null) || return 1
+    [[ $before == "$after" ]]
+}
+
+file_into() { # path subdir -> sets DEST (never overwrites an existing file)
+    local path=$1 name=${1##*/}
+    DEST=$SCAN_ROOT/$2/$name
+    if [[ -e $DEST ]]; then
+        DEST=$SCAN_ROOT/$2/$(date +%s)-$name
+    fi
+    mv "$path" "$DEST"
+}
+
+upload() { # path -> HTTP_CODE, TMP_BODY; returns curl's exit code
+    local path=$1 name=${1##*/} rc=0
+    local dated_re='^[0-9]{4}-[0-9]{2}-[0-9]{2} - .+'
+    local form=()
+    if [[ $name =~ $dated_re ]]; then
+        form=(-F "document=@$path;filename=$name")
+    else
+        form=(-F "document=@$path;filename=scan.$(lower_ext "$name")" -F "title=Scan $(date '+%Y-%m-%d %H.%M')")
+    fi
+    HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
+        curl -sS --fail-with-body --connect-timeout 10 --max-time 600 -o "$TMP_BODY" -w '%{http_code}' -H @- \
+            "${form[@]}" "$PAPERLESS_URL/api/documents/post_document/") || rc=$?
+    return "$rc"
+}
+
+# Polls until the task is final or POLL_TIMEOUT passes. Sets TASK_STATUS.
+poll_task() { # uuid
+    local start=$SECONDS
+    TASK_STATUS=
+    while :; do
+        if api_get "$PAPERLESS_URL" "/api/tasks/?task_id=$1" && [[ $HTTP_CODE == 200 ]]; then
+            TASK_STATUS=$(jq -r '.[0].status // empty' <"$TMP_BODY" 2>/dev/null || true)
+            debug poll_attempt "task=$1 status=${TASK_STATUS:-none}"
+            case $TASK_STATUS in SUCCESS | FAILURE) return 0 ;; esac
+        else
+            debug poll_attempt "task=$1 http=${HTTP_CODE:-none}"
+        fi
+        ((SECONDS - start < POLL_TIMEOUT)) || return 1
+        sleep "$POLL_INTERVAL"
+    done
+}
+
+file_result() { # path uuid started
+    local path=$1 task=$2 started=$3 name=${1##*/}
+    local result doc existing first
+    result=$(jq -r '.[0].result // ""' <"$TMP_BODY")
+    if [[ $TASK_STATUS == SUCCESS ]]; then
+        doc=$(jq -r '.[0].related_document // empty' <"$TMP_BODY")
+        file_into "$path" "done"
+        log INFO success "file=\"$name\" doc=$doc secs=$((SECONDS - started))"
+        N_OK=$((N_OK + 1))
+        if [[ $NOTIFY_SUCCESS == true ]]; then queue_notify "Uploaded" "$name → document #$doc"; fi
+    elif [[ $(jq -r '(.[0].duplicate_documents // []) | length' <"$TMP_BODY") -gt 0 ]] ||
+        printf '%s' "$result" | grep -qi duplicate; then
+        existing=$(jq -r '.[0].duplicate_documents[0].id // empty' <"$TMP_BODY")
+        if [[ -z $existing ]]; then
+            existing=$(printf '%s' "$result" | grep -Eo '#[0-9]+' | head -n 1 | tr -d '#' || true)
+        fi
+        file_into "$path" duplicates
+        log WARN duplicate "file=\"$name\" existing=${existing:-unknown}"
+        N_DUP=$((N_DUP + 1))
+        queue_notify "Duplicate, skipped" "$name: already document #${existing:-unknown}"
+    else
+        first=${result%%$'\n'*}
+        file_into "$path" failed
+        printf '%s\n' "$result" >"$DEST.error"
+        log ERROR failed "file=\"$name\" reason=\"$first\""
+        N_FAIL=$((N_FAIL + 1))
+        queue_notify "Error" "$name: $first" error
+    fi
+}
+
+process_file() { # path
+    local path=$1 name=${1##*/} task started=$SECONDS rc=0
+    is_stable "$path" || return 0
+    upload "$path" || rc=$?
+    if ((rc != 0)); then
+        # HTTP and network error handling is phase 3; the file stays in outbox.
+        log ERROR failed "file=\"$name\" http=${HTTP_CODE:-none} curl=$rc"
+        return 0
+    fi
+    task=$(jq -r 'if type == "string" then . else empty end' <"$TMP_BODY" 2>/dev/null || true)
+    if [[ -z $task ]]; then
+        log ERROR failed "file=\"$name\" reason=\"no task id in response\""
+        return 0
+    fi
+    log INFO uploaded "file=\"$name\" task=$task via=public"
+    if poll_task "$task"; then
+        file_result "$path" "$task" "$started"
+    else
+        file_into "$path" pending
+        printf '%s\n' "$task" >"$DEST.task"
+        log WARN pending "file=\"$name\" task=$task"
+    fi
 }
 
 selftest() {
@@ -180,6 +322,12 @@ run_once() {
     fi
     ensure_dirs
     log INFO run_start "outbox=$(count_outbox) pending=$(count_pending)"
+
+    local f
+    for f in "$SCAN_ROOT"/outbox/*; do
+        if is_scan_file "$f"; then process_file "$f"; fi
+    done
+    flush_notifications
 }
 
 main() {
