@@ -182,14 +182,22 @@ file_into() { # path subdir -> sets DEST (never overwrites an existing file)
     mv "$path" "$DEST"
 }
 
+form_quote() { # value -> value with \ and " escaped, for a quoted curl -F field
+    local bs=$'\\' q='"' s=$1
+    s=${s//$bs/$bs$bs}
+    printf '%s' "${s//$q/$bs$q}"
+}
+
 upload() { # path -> HTTP_CODE, TMP_BODY; returns curl's exit code
     local path=$1 name=${1##*/} rc=0
     local dated_re='^[0-9]{4}-[0-9]{2}-[0-9]{2} - .+'
-    local form=()
+    local doc form=()
+    # Unquoted, curl splits -F values on ';' and ',' and fails with exit 26.
+    doc="document=@\"$(form_quote "$path")\""
     if [[ $name =~ $dated_re ]]; then
-        form=(-F "document=@$path;filename=$name")
+        form=(-F "$doc;filename=\"$(form_quote "$name")\"")
     else
-        form=(-F "document=@$path;filename=scan.$(lower_ext "$name")" -F "title=Scan $(date '+%Y-%m-%d %H.%M')")
+        form=(-F "$doc;filename=scan.$(lower_ext "$name")" -F "title=Scan $(date '+%Y-%m-%d %H.%M')")
     fi
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
         curl -sS --fail-with-body --connect-timeout 10 --max-time 600 -o "$TMP_BODY" -w '%{http_code}' -H @- \
