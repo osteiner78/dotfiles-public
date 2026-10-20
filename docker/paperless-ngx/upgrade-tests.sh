@@ -102,10 +102,6 @@ stage_preflight() {
 
   section "Compose files"
   dc config -q && pass "docker-compose.yaml is valid" || fail "docker-compose.yaml invalid"
-  if [ -f "$DIR/docker-compose.v3.yaml" ]; then
-    docker compose --project-directory "$DIR" -f "$DIR/docker-compose.v3.yaml" config -q \
-      && pass "docker-compose.v3.yaml is valid" || fail "docker-compose.v3.yaml invalid"
-  fi
 
   section "Backups"
   local dump
