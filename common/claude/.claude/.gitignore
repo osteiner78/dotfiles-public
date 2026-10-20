@@ -7,3 +7,7 @@
 !settings.json
 !skills/
 !skills/**
+
+# Editor snapshots and app-synced skills
+skills/.history/
+skills/synced/
