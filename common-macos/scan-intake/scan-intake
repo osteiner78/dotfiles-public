@@ -2,7 +2,6 @@
 # Uploads scans from ~/Scans/outbox to paperless-ngx. See README.md.
 # Targets macOS: BSD tools, and /usr/bin/env bash is bash 3.2 under launchd.
 
-# shellcheck disable=SC2034  # DRY_RUN, LAN_FALLBACK_URL, DONE_RETENTION_DAYS are consumed in phase 3
 set -euo pipefail
 
 PAPERLESS_TOKEN=
@@ -31,6 +30,7 @@ N_ERR=()
 N_OK=0
 N_DUP=0
 N_FAIL=0
+N_WAITING=0
 
 log() { # LEVEL event [key=value...]
     local level=$1 event=$2
@@ -188,7 +188,7 @@ form_quote() { # value -> value with \ and " escaped, for a quoted curl -F field
     printf '%s' "${s//$q/$bs$q}"
 }
 
-upload() { # path -> HTTP_CODE, TMP_BODY; returns curl's exit code
+upload() { # path base-url -> HTTP_CODE, TMP_BODY; returns curl's exit code
     local path=$1 name=${1##*/} rc=0
     local dated_re='^[0-9]{4}-[0-9]{2}-[0-9]{2} - .+'
     local doc form=()
@@ -201,16 +201,16 @@ upload() { # path -> HTTP_CODE, TMP_BODY; returns curl's exit code
     fi
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
         curl -sS --fail-with-body --connect-timeout 10 --max-time 600 -o "$TMP_BODY" -w '%{http_code}' -H @- \
-            "${form[@]}" "$PAPERLESS_URL/api/documents/post_document/") || rc=$?
+            "${form[@]}" "$2/api/documents/post_document/") || rc=$?
     return "$rc"
 }
 
 # Polls until the task is final or POLL_TIMEOUT passes. Sets TASK_STATUS.
-poll_task() { # uuid
+poll_task() { # uuid base-url
     local start=$SECONDS
     TASK_STATUS=
     while :; do
-        if api_get "$PAPERLESS_URL" "/api/tasks/?task_id=$1" && [[ $HTTP_CODE == 200 ]]; then
+        if api_get "$2" "/api/tasks/?task_id=$1" && [[ $HTTP_CODE == 200 ]]; then
             TASK_STATUS=$(jq -r '.[0].status // empty' <"$TMP_BODY" 2>/dev/null || true)
             debug poll_attempt "task=$1 status=${TASK_STATUS:-none}"
             case $TASK_STATUS in SUCCESS | FAILURE) return 0 ;; esac
@@ -222,14 +222,15 @@ poll_task() { # uuid
     done
 }
 
-file_result() { # path uuid started
-    local path=$1 task=$2 started=$3 name=${1##*/}
+file_result() { # path secs
+    local path=$1 secs=$2 name=${1##*/}
     local result doc existing first
     result=$(jq -r '.[0].result // ""' <"$TMP_BODY")
     if [[ $TASK_STATUS == SUCCESS ]]; then
         doc=$(jq -r '.[0].related_document // empty' <"$TMP_BODY")
         file_into "$path" "done"
-        log INFO success "file=\"$name\" doc=$doc secs=$((SECONDS - started))"
+        touch "$DEST"
+        log INFO success "file=\"$name\" doc=$doc secs=$secs"
         N_OK=$((N_OK + 1))
         if [[ $NOTIFY_SUCCESS == true ]]; then queue_notify "Uploaded" "$name → document #$doc"; fi
     elif [[ $(jq -r '(.[0].duplicate_documents // []) | length' <"$TMP_BODY") -gt 0 ]] ||
@@ -252,13 +253,59 @@ file_result() { # path uuid started
     fi
 }
 
+is_network_error() { # curl-exit-code
+    case $1 in 6 | 7 | 28) return 0 ;; esac
+    return 1
+}
+
+fail_file() { # path error-text notify-text
+    local path=$1 name=${1##*/}
+    file_into "$path" failed
+    printf '%s\n' "$2" >"$DEST.error"
+    N_FAIL=$((N_FAIL + 1))
+    queue_notify "Error" "$name: $3" error
+}
+
+# Returns 1 when the run must stop (token rejected).
 process_file() { # path
-    local path=$1 name=${1##*/} task started=$SECONDS rc=0
+    local path=$1 name=${1##*/} task started=$SECONDS rc=0 base=$PAPERLESS_URL via=public body
     is_stable "$path" || return 0
-    upload "$path" || rc=$?
-    if ((rc != 0)); then
-        # HTTP and network error handling is phase 3; the file stays in outbox.
-        log ERROR failed "file=\"$name\" http=${HTTP_CODE:-none} curl=$rc"
+    upload "$path" "$base" || rc=$?
+    if is_network_error "$rc" && [[ -n $LAN_FALLBACK_URL ]]; then
+        base=${LAN_FALLBACK_URL%/}
+        via=lan
+        rc=0
+        upload "$path" "$base" || rc=$?
+    fi
+    if is_network_error "$rc"; then
+        log WARN network_error "file=\"$name\" curl=$rc"
+        if (($(date +%s) - $(stat -f %m "$path" 2>/dev/null || date +%s) > 3600)); then
+            N_WAITING=$((N_WAITING + 1))
+        fi
+        return 0
+    fi
+    if ((rc != 0)) || [[ $HTTP_CODE != 2* ]]; then
+        body=$(cat "$TMP_BODY")
+        case $HTTP_CODE in
+            401 | 403)
+                log ERROR failed "file=\"$name\" http=$HTTP_CODE"
+                CONFIG_ERR="paperless rejected the API token (HTTP $HTTP_CODE); update PAPERLESS_TOKEN in $ENV_FILE"
+                return 1
+                ;;
+            413)
+                log ERROR failed "file=\"$name\" http=413"
+                fail_file "$path" "too large for reverse proxy" "too large for the reverse proxy"
+                ;;
+            [45]??)
+                log ERROR failed "file=\"$name\" http=$HTTP_CODE"
+                body=${body:-HTTP $HTTP_CODE}
+                fail_file "$path" "$body" "${body%%$'\n'*}"
+                ;;
+            *)
+                # No HTTP answer (e.g. TLS error): not a final answer, retry on the next trigger.
+                log ERROR failed "file=\"$name\" reason=\"curl exit $rc, http=${HTTP_CODE:-none}\""
+                ;;
+        esac
         return 0
     fi
     task=$(jq -r 'if type == "string" then . else empty end' <"$TMP_BODY" 2>/dev/null || true)
@@ -266,14 +313,67 @@ process_file() { # path
         log ERROR failed "file=\"$name\" reason=\"no task id in response\""
         return 0
     fi
-    log INFO uploaded "file=\"$name\" task=$task via=public"
-    if poll_task "$task"; then
-        file_result "$path" "$task" "$started"
+    log INFO uploaded "file=\"$name\" task=$task via=$via"
+    if poll_task "$task" "$base"; then
+        file_result "$path" "$((SECONDS - started))"
     else
         file_into "$path" pending
         printf '%s\n' "$task" >"$DEST.task"
         log WARN pending "file=\"$name\" task=$task"
     fi
+}
+
+recheck_pending() {
+    local t file task age
+    for t in "$SCAN_ROOT"/pending/*.task; do
+        [[ -f $t ]] || continue
+        file=${t%.task}
+        if [[ ! -f $file ]]; then
+            debug pending_orphan "task_file=\"${t##*/}\""
+            rm -f "$t"
+            continue
+        fi
+        task=$(head -n 1 "$t")
+        age=$(($(date +%s) - $(stat -f %m "$t")))
+        if api_get "$PAPERLESS_URL" "/api/tasks/?task_id=$task" && [[ $HTTP_CODE == 200 ]]; then
+            TASK_STATUS=$(jq -r '.[0].status // empty' <"$TMP_BODY" 2>/dev/null || true)
+        else
+            continue
+        fi
+        case $TASK_STATUS in
+            SUCCESS | FAILURE)
+                file_result "$file" "$age"
+                rm -f "$t"
+                ;;
+            *)
+                if ((age > 86400)); then
+                    log ERROR failed "file=\"${file##*/}\" reason=\"no result from paperless\""
+                    fail_file "$file" "no result from paperless" "no result from paperless"
+                    rm -f "$t"
+                fi
+                ;;
+        esac
+    done
+}
+
+delete_old_done() {
+    local f
+    while IFS= read -r -d '' f; do
+        rm -f "$f"
+        log INFO deleted "file=\"${f##*/}\""
+    done < <(find "$SCAN_ROOT/done" -maxdepth 1 -type f -mtime "+$DONE_RETENTION_DAYS" -print0)
+}
+
+rotate_log() {
+    local size n
+    [[ -f $LOG ]] || return 0
+    size=$(stat -f %z "$LOG")
+    ((size > 5242880)) || return 0
+    rm -f "$LOG.3"
+    for n in 2 1; do
+        if [[ -e $LOG.$n ]]; then mv "$LOG.$n" "$LOG.$((n + 1))"; fi
+    done
+    mv "$LOG" "$LOG.1"
 }
 
 selftest() {
@@ -324,6 +424,7 @@ selftest() {
 }
 
 run_once() {
+    local f rc=0
     if ! load_env; then
         config_error
         return 1
@@ -331,11 +432,31 @@ run_once() {
     ensure_dirs
     log INFO run_start "outbox=$(count_outbox) pending=$(count_pending)"
 
-    local f
+    if [[ $DRY_RUN == true ]]; then
+        for f in "$SCAN_ROOT"/outbox/*; do
+            if is_scan_file "$f"; then echo "would upload ${f##*/}"; fi
+        done
+        return 0
+    fi
+
+    recheck_pending
     for f in "$SCAN_ROOT"/outbox/*; do
-        if is_scan_file "$f"; then process_file "$f"; fi
+        is_scan_file "$f" || continue
+        process_file "$f" || {
+            rc=1
+            break
+        }
     done
     flush_notifications
+    if ((rc != 0)); then
+        config_error
+        return 1
+    fi
+    if ((N_WAITING > 0)); then
+        notify "Waiting" "$(plural "$N_WAITING" scan) queued, paperless unreachable"
+    fi
+    delete_old_done
+    rotate_log
 }
 
 main() {
