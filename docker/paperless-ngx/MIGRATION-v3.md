@@ -1,5 +1,8 @@
 # Paperless-ngx migration: 2.18.4 → 3.3.1 (+ AI features)
 
+> **Completed 2026-10-20.** For future updates follow [`UPGRADING.md`](UPGRADING.md); for
+> scanner/document intake see [`SCANNER-INTAKE.md`](SCANNER-INTAKE.md). This file is the history.
+
 Written 2026-10-14 against the running instance in the `paperless-ngx` LXC. Every
 finding below was checked on the live system or in the v3.3.1 source/docs, not
 taken from release-note summaries.
@@ -305,6 +308,8 @@ git add -A . && git commit   # compose, tests, plan
 ```
 
 - Delete `docker-compose.v2.yaml.bak` and `docker-compose.v3.yaml` after ~2 weeks of stable running.
+  **Done 2026-10-20** (early, at the user's request), together with the 2.20.15 image. Rolling
+  back to v2 now means restoring a Proxmox backup. Both files remain in git history.
 - Delete `data/db.sqlite3` and the unused local `consume/` directory.
 - Optional later: Postgres 16 → 18 (dump/restore) and Redis → Valkey, as in v3's reference
   compose. Do these as separate changes.

@@ -46,7 +46,11 @@ check("Itaú Unibanco S.A. -> Itau", names(C(["Itaú Unibanco S.A."], user)), ["
 check("BNP Paribas Epargne Salariale -> longest prefix",
       names(C(["BNP Paribas Epargne Salariale France"], user)), ["BNP Paribas Epargne Salariale"])
 check("Telefonica Brasil S.A. -> no match (Brasil not a prefix)", names(C(["Telefonica Brasil S.A."], user)), [])
-check("Bank of America -> no match (abbreviation, unchanged)", names(C(["Bank of America"], user)), [])
+check("Bank of America -> 'Bank of America (BofA)' (reverse prefix)",
+      names(C(["Bank of America"], user)), ["Bank of America (BofA)"])
+check("Lycée Pasteur -> 'Lycée Pasteur (LIFSP)' (reverse prefix)",
+      names(C(["Lycée Pasteur"], user)), ["Lycée Pasteur (LIFSP)"])
+check("BofA alone -> no match (abbreviation inside parentheses)", names(C(["BofA"], user)), [])
 check("exact match still wins", names(C(["UBS"], user)), ["UBS"])
 check("two names never map to one object", names(C(["Itaú", "Itau Unibanco"], user)), ["Itau"])
 check("unmatched new names exclude prefix matches",
