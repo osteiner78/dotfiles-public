@@ -36,6 +36,25 @@ post_args() { grep 'post_document' "$STUB_LOG/curl.log"; }
     ! post_args | grep -q 'filename=scan'
 }
 
+# Real curl splits an unquoted -F value on ';' and ',' and fails with exit 26.
+@test "dated name with ';' and ',' is sent as a quoted filename" {
+    make_scan "2026-01-15 - A; B, C.pdf"
+    run_intake --once
+    post_args | grep -qF 'filename="2026-01-15 - A; B, C.pdf"'
+}
+
+@test "path with ';' is sent as a quoted document path" {
+    make_scan "Brief; Mai.pdf"
+    run_intake --once
+    post_args | grep -qF "document=@\"$SCANS/outbox/Brief; Mai.pdf\""
+}
+
+@test "double quote in a dated name is backslash-escaped inside the quoted filename" {
+    make_scan '2026-01-15 - "Q".pdf'
+    run_intake --once
+    post_args | grep -qF 'filename="2026-01-15 - \"Q\".pdf"'
+}
+
 @test "date without ' - ' separator is not treated as deliberate (neutral filename)" {
     make_scan "2026-01-15Test.pdf"
     run_intake --once
