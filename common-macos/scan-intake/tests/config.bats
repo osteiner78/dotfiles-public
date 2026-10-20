@@ -1,0 +1,92 @@
+#!/usr/bin/env bats
+# Phase 1 — loading ~/.config/scan-intake/.env and creating the folders.
+
+load helpers
+
+@test "missing .env: exits 1" {
+    rm "$ENV_FILE"
+    run_intake --once
+    assert_status 1
+}
+
+@test "missing .env: notifies Config error" {
+    rm "$ENV_FILE"
+    run_intake --once
+    assert_notified 'Config error'
+}
+
+@test "empty token: exits 1 with Config error notification" {
+    write_env
+    sed -i '' 's/^PAPERLESS_TOKEN=.*/PAPERLESS_TOKEN=/' "$ENV_FILE"
+    run_intake --once
+    assert_status 1
+    assert_notified 'Config error'
+}
+
+@test ".env with mode 644: refuses to run" {
+    chmod 644 "$ENV_FILE"
+    run_intake --once
+    assert_status 1
+}
+
+@test ".env with mode 644: notification says how to fix it (chmod 600)" {
+    chmod 644 "$ENV_FILE"
+    run_intake --once
+    assert_notified 'chmod 600'
+}
+
+@test ".env with mode 644: nothing is uploaded and the scan stays in outbox" {
+    make_scan "20261021091350.pdf"
+    chmod 644 "$ENV_FILE"
+    run_intake --once
+    assert_status 1
+    [[ "$(curl_calls post_document)" -eq 0 ]]
+    assert_in outbox "20261021091350.pdf"
+}
+
+@test ".env is parsed, not sourced: command substitution is not executed" {
+    write_env 'NOTIFY_SUCCESS=$(touch "$HOME/pwned-subst")' 'LAN_FALLBACK_URL=`touch "$HOME/pwned-backtick"`'
+    run_intake --once
+    assert_log 'run_start'
+    [[ ! -e "$HOME/pwned-subst" ]]
+    [[ ! -e "$HOME/pwned-backtick" ]]
+}
+
+@test ".env is parsed, not sourced: a bare command line is not executed" {
+    write_env "touch $HOME/pwned-bare"
+    run_intake --once
+    assert_log 'run_start'
+    [[ ! -e "$HOME/pwned-bare" ]]
+}
+
+@test ".env keys outside the whitelist are ignored (PATH cannot be overridden)" {
+    write_env "PATH=/nonexistent"
+    run_intake --selftest
+    assert_status 0
+}
+
+@test ".env comments and blank lines are accepted" {
+    write_env "# a comment" "" "   # indented comment"
+    run_intake --once
+    assert_status 0
+}
+
+@test ".env SCAN_ROOT overrides the default ~/Scans" {
+    write_env "SCAN_ROOT=$HOME/OtherScans"
+    run_intake --once
+    [[ -d "$HOME/OtherScans/outbox" ]]
+    [[ ! -e "$SCANS" ]]
+}
+
+@test "first run creates outbox, pending, done, duplicates and failed" {
+    run_intake --once
+    for d in outbox pending done duplicates failed; do
+        [[ -d "$SCANS/$d" ]] || { echo "missing $d/"; return 1; }
+    done
+}
+
+@test "no flag behaves like --once" {
+    run_intake
+    assert_status 0
+    assert_log 'run_start'
+}

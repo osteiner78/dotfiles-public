@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Fake osascript: records each call (one line, args joined by a space) instead
+# of showing a notification.
+printf '%s\n' "$*" >>"$STUB_LOG/osascript.log"

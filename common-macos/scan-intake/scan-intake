@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+# Uploads scans from ~/Scans/outbox to paperless-ngx. See README.md.
+# Targets macOS: BSD tools, and /usr/bin/env bash is bash 3.2 under launchd.
+
+# shellcheck disable=SC2034  # config keys and flags are consumed by later phases
+set -euo pipefail
+
+PAPERLESS_TOKEN=
+PAPERLESS_URL=https://paperless.osteiner.xyz
+SCAN_ROOT=$HOME/Scans
+API_VERSION=9
+POLL_TIMEOUT=300
+POLL_INTERVAL=5
+STABLE_SECS=5
+DONE_RETENTION_DAYS=180
+NOTIFY_SUCCESS=true
+LAN_FALLBACK_URL=
+
+ENV_FILE=$HOME/.config/scan-intake/.env
+LOG=$HOME/Library/Logs/scan-intake.log
+FOLDERS="outbox pending done duplicates failed"
+
+MODE=once
+DRY_RUN=false
+VERBOSE=false
+CONFIG_ERR=
+TMP_BODY=
+
+log() { # LEVEL event [key=value...]
+    local level=$1 event=$2
+    shift 2
+    mkdir -p "${LOG%/*}"
+    printf '%s %-5s %s%s\n' "$(date +%Y-%m-%dT%H:%M:%S%z)" "$level" "$event" "${*:+ $*}" >>"$LOG"
+}
+
+debug() {
+    [[ $VERBOSE == true ]] || return 0
+    log DEBUG "$@"
+}
+
+notify() { # subtitle body [error]
+    local sub=$1 body=$2 sound=
+    local bs=$'\\' q='"'
+    sub=${sub//$bs/$bs$bs}
+    sub=${sub//$q/$bs$q}
+    body=${body//$bs/$bs$bs}
+    body=${body//$q/$bs$q}
+    [[ ${3:-} == error ]] && sound=' sound name "Basso"'
+    osascript -e "display notification \"$body\" with title \"Scan intake\" subtitle \"$sub\"$sound" >/dev/null 2>&1 || true
+}
+
+load_env() {
+    local line key val mode
+    if [[ ! -f $ENV_FILE ]]; then
+        CONFIG_ERR="$ENV_FILE is missing; run install.sh"
+        return 1
+    fi
+    mode=$(stat -f %Lp "$ENV_FILE")
+    if (((8#$mode & 8#077) != 0)); then
+        CONFIG_ERR="$ENV_FILE is mode $mode; fix with: chmod 600 ~/.config/scan-intake/.env"
+        return 1
+    fi
+    while IFS= read -r line || [[ -n $line ]]; do
+        line=${line%$'\r'}
+        line=${line#"${line%%[![:space:]]*}"}
+        case $line in '' | '#'*) continue ;; esac
+        [[ $line == *=* ]] || continue
+        key=${line%%=*}
+        val=${line#*=}
+        case $key in
+            PAPERLESS_TOKEN | PAPERLESS_URL | SCAN_ROOT | API_VERSION | POLL_TIMEOUT | POLL_INTERVAL | \
+                STABLE_SECS | DONE_RETENTION_DAYS | NOTIFY_SUCCESS | LAN_FALLBACK_URL)
+                printf -v "$key" '%s' "$val"
+                ;;
+        esac
+    done <"$ENV_FILE"
+    PAPERLESS_URL=${PAPERLESS_URL%/}
+    if [[ -z $PAPERLESS_TOKEN ]]; then
+        CONFIG_ERR="PAPERLESS_TOKEN is empty in $ENV_FILE"
+        return 1
+    fi
+}
+
+config_error() {
+    log ERROR config_error "reason=\"$CONFIG_ERR\""
+    notify "Config error" "$CONFIG_ERR" error
+}
+
+ensure_dirs() {
+    local d
+    for d in $FOLDERS; do
+        mkdir -p "$SCAN_ROOT/$d"
+    done
+}
+
+is_scan_file() { # path
+    local path=$1 name ext
+    [[ -f $path ]] || return 1
+    name=${path##*/}
+    [[ $name != .* && $name == *.* ]] || return 1
+    ext=$(printf '%s' "${name##*.}" | tr '[:upper:]' '[:lower:]')
+    case $ext in pdf | jpg | jpeg | png | tif | tiff) return 0 ;; esac
+    return 1
+}
+
+count_outbox() {
+    local f n=0
+    for f in "$SCAN_ROOT"/outbox/*; do
+        if is_scan_file "$f"; then n=$((n + 1)); fi
+    done
+    echo "$n"
+}
+
+count_pending() {
+    local f n=0
+    for f in "$SCAN_ROOT"/pending/*.task; do
+        if [[ -f $f ]]; then n=$((n + 1)); fi
+    done
+    echo "$n"
+}
+
+api_get() { # base-url path -> HTTP_CODE, TMP_BODY; returns curl's exit code
+    local rc=0
+    HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
+        curl -sS --connect-timeout 10 --max-time 30 -o "$TMP_BODY" -w '%{http_code}' -H @- "$1$2") || rc=$?
+    return "$rc"
+}
+
+selftest() {
+    local fails=0 d dir rc=0
+
+    pass() { printf 'ok    %s\n' "$1"; }
+    fail() {
+        printf 'FAIL  %s\n' "$1"
+        fails=$((fails + 1))
+    }
+
+    for cmd in curl jq; do
+        if command -v "$cmd" >/dev/null 2>&1; then pass "$cmd on PATH"; else fail "$cmd not on PATH"; fi
+    done
+
+    if load_env; then
+        pass ".env valid, mode 600"
+        dir=${ENV_FILE%/*}
+        if command -v git >/dev/null 2>&1 && git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+            fail ".env is inside a git working tree ($dir)"
+        else
+            pass ".env is outside any git working tree"
+        fi
+
+        ensure_dirs
+        for d in $FOLDERS; do
+            if [[ -w $SCAN_ROOT/$d ]]; then pass "$d/ writable"; else fail "$d/ not writable"; fi
+        done
+
+        api_get "$PAPERLESS_URL" "/api/tags/?page_size=1" || rc=$?
+        if ((rc != 0)); then
+            fail "server unreachable (curl exit $rc)"
+        elif [[ $HTTP_CODE == 200 ]]; then
+            pass "API reachable, token accepted"
+        else
+            fail "API answered HTTP $HTTP_CODE"
+        fi
+    else
+        fail "$CONFIG_ERR"
+    fi
+
+    if ((fails == 0)); then
+        echo "selftest passed"
+    else
+        echo "selftest failed: $fails problem(s)"
+        return 1
+    fi
+}
+
+run_once() {
+    if ! load_env; then
+        config_error
+        return 1
+    fi
+    ensure_dirs
+    log INFO run_start "outbox=$(count_outbox) pending=$(count_pending)"
+}
+
+main() {
+    local arg
+    for arg in "$@"; do
+        case $arg in
+            --once) MODE=once ;;
+            --selftest) MODE=selftest ;;
+            --dry-run) DRY_RUN=true ;;
+            --verbose) VERBOSE=true ;;
+            *)
+                echo "usage: scan-intake [--once] [--selftest] [--dry-run] [--verbose]" >&2
+                return 2
+                ;;
+        esac
+    done
+
+    TMP_BODY=$(mktemp "${TMPDIR:-/tmp}/scan-intake.XXXXXX")
+    trap 'rm -f "$TMP_BODY"' EXIT
+
+    case $MODE in
+        selftest) selftest ;;
+        once) run_once ;;
+    esac
+}
+
+main "$@"
