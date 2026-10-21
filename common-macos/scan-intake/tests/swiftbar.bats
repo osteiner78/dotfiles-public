@@ -20,6 +20,15 @@ bar_line() { head -n 1 <<<"$output"; }
 bar_title() { bar_line | sed 's/|.*//'; }      # the text shown in the menu bar
 dropdown() { sed '1,/^---$/d' <<<"$output"; }  # everything below the first ---
 
+# SwiftBar 2.1.1 ignores sfcolor on the menu-bar icon; only an sfconfig with
+# Palette rendering colours it (checked live, 2026-10-22). base64 -D is BSD.
+bar_is_red() {
+    local cfg
+    cfg="$(bar_line | tr ' ' '\n' | sed -n 's/^sfconfig=//p')"
+    [[ -n "$cfg" ]] || return 1
+    base64 -D <<<"$cfg" | jq -e '.renderingMode == "Palette" and ((.colors // []) | index("red") != null)' >/dev/null
+}
+
 put() { # subdir name [content]
     mkdir -p "$SCANS/$1"
     printf '%s\n' "${3:-%PDF-1.4}" >"$SCANS/$1/$2"
@@ -36,7 +45,7 @@ put() { # subdir name [content]
     assert_status 0
     [[ "$(bar_line)" == *"sfimage=doc.viewfinder"* ]]
     [[ ! "$(bar_title)" =~ [0-9] ]]
-    [[ "$(bar_line)" != *"sfcolor=red"* ]]
+    ! bar_is_red
 }
 
 @test "outbox + pending count is shown in the menu bar" {
@@ -54,7 +63,7 @@ put() { # subdir name [content]
     put failed x.pdf
     put failed x.pdf.error "HTTP 500"
     render
-    [[ "$(bar_line)" == *"sfcolor=red"* ]]
+    bar_is_red
 }
 
 @test "config error: red, and the reason is the first dropdown line" {
@@ -62,7 +71,7 @@ put() { # subdir name [content]
     chmod 644 "$ENV_FILE"
     render
     assert_status 0
-    [[ "$(bar_line)" == *"sfcolor=red"* ]]
+    bar_is_red
     [[ "$(dropdown | head -n 1)" == *"chmod 600"* ]]
 }
 
@@ -70,7 +79,7 @@ put() { # subdir name [content]
     install_link
     touch "$FIXTURES/launchctl.fail"
     render
-    [[ "$(bar_line)" == *"sfcolor=red"* ]]
+    bar_is_red
     dropdown | grep -qi 'not loaded'
 }
 
@@ -172,4 +181,14 @@ put() { # subdir name [content]
     [[ ! -s "$STUB_LOG/curl.log" ]]
     assert_in outbox a.pdf
     assert_in failed x.pdf
+}
+
+@test "status --json failing: red icon and a 'status failed' line" {
+    mkdir -p "$HOME/.local/bin"
+    printf '#!/usr/bin/env bash\nexit 1\n' >"$HOME/.local/bin/scan-intake"
+    chmod +x "$HOME/.local/bin/scan-intake"
+    render
+    assert_status 0
+    bar_is_red
+    dropdown | grep -q 'status failed'
 }

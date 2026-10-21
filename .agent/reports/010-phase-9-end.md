@@ -55,3 +55,19 @@ rejects; the orchestrator replaced it with three tests: inner quotes and backsla
 the five leading characters get a backslash (no osascript fallback); `'` is not escaped. The new
 escape test failed before the fix (fallback to osascript), and the suite is green after it:
 252 tests, shellcheck clean.
+
+## Addendum 2: menu-bar colour, fixed in [phase-9.6] (2026-10-22)
+
+The plugin printed `sfcolor=red`, but SwiftBar 2.1.1 ignores it on the menu-bar icon (the README
+doesn't say either way). A temporary test plugin compared `sfcolor=red`, `sfconfig` (Palette,
+red) and `color=red`; only `sfconfig` turned the icon red. The plugin now emits that. Tests: the
+four red checks in `swiftbar.bats` now decode `sfconfig` and require Palette + red (they failed
+before the fix); one new test covers a failing `status --json`. 253 tests green, shellcheck
+clean. Confirmed live by the user.
+
+## Live check result (2026-10-22)
+
+All steps passed: both agents loaded; error notification and failed/; plugin red with Failed 1;
+Retry → `requeued`, re-uploaded 7 s later, rejected again; `scan-intake health` → exit 1, one
+notification, `problems=1`; clicking "Uploaded" opened document 6913. Test leftovers:
+`test-garbage.pdf` removed locally; document 6913 to be deleted in paperless by the user.
