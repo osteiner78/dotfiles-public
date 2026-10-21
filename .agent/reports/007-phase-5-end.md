@@ -76,7 +76,7 @@ Send to: none.
 
 Test documents to delete in paperless (then empty the trash): **6896, 6897, 6898, 6899–6905,
 6906**. Real documents scanned during the test, kept unless the user says otherwise: 6895 (KVG
-letter), 6908 (TAP Air Portugal letter). Local test files remain in `~/Scans/done/` and
+letter), 6908 (a real letter). Local test files remain in `~/Scans/done/` and
 `~/Scans/duplicates/` (deleted with the user's OK only).
 
 ## Follow-ups (not done)
