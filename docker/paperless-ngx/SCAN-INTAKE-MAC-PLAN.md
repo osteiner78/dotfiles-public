@@ -116,6 +116,9 @@ empty token, permissions looser than 600, or HTTP 401/403. `--selftest` returns 
 | `pending` | WARN | `file="…" task=<uuid>` |
 | `network_error` | WARN | `file="…" curl=<exit code>` |
 | `deleted` | INFO | `file="…"` (done/ retention) |
+| `skipped` | INFO | `reason="another run in progress"` (run lock held by a live pid) |
+| `stale_lock` | WARN | `pid=<n\|none>` (lock owner gone; the lock was taken over) |
+| `requeued` | INFO | `file="…"` (`retry` moved it from failed/ to outbox) |
 
 **API fields**: success doc id = `.[0].related_document`. Duplicate id =
 `.[0].duplicate_documents[0].id`. That field's shape (`[{id, title, ...}]`) is assumed; confirm it
