@@ -100,3 +100,34 @@ load helpers
     assert_log 'ERROR +rejected file="a.pdf" http=403'
     refute_log 'failed file="a.pdf"'
 }
+
+# ── phase 10.2: no final answer → WARN upload_error, file stays in outbox ──
+
+@test "curl error without an HTTP answer (35): stays in outbox, WARN upload_error, no notification" {
+    stub_transport_error "$PUBLIC_HOST" post_document 35
+    make_scan "a.pdf"
+    run_intake --once
+    assert_status 0
+    assert_in outbox "a.pdf"
+    assert_log 'WARN +upload_error file="a.pdf" reason="curl exit 35'
+    refute_log 'failed file="a.pdf"'
+    [[ "$(notification_count)" -eq 0 ]]
+}
+
+@test "no task id in the response: stays in outbox, WARN upload_error" {
+    stub_http "$PUBLIC_HOST" post_document 200 '{}'
+    make_scan "a.pdf"
+    run_intake --once
+    assert_status 0
+    assert_in outbox "a.pdf"
+    assert_log 'WARN +upload_error file="a.pdf" reason="no task id in response"'
+    refute_log 'failed file="a.pdf"'
+}
+
+@test "NON-REGRESSION: 500 still logs ERROR failed and moves to failed/" {
+    stub_http "$PUBLIC_HOST" post_document 500 'boom'
+    make_scan "a.pdf"
+    run_intake --once
+    assert_in failed "a.pdf"
+    assert_log 'ERROR +failed file="a.pdf" http=500'
+}

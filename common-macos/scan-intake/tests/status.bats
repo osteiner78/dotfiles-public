@@ -3,6 +3,7 @@
 # the network, never notifies, never writes the log.
 
 load helpers
+bats_require_minimum_version 1.5.0
 
 UUID="b1ad602d-0000-4000-8000-000000000001"
 
@@ -119,12 +120,14 @@ EOF
     [[ "$(j '.paths.log')" == "$LOG" ]]
 }
 
-@test "SCAN_ROOT from .env is honoured" {
+# Phase 10.5 changed this contract: SCAN_ROOT is no longer a .env key.
+@test "SCAN_ROOT in .env is ignored" {
     write_env "SCAN_ROOT=$BATS_TEST_TMPDIR/alt"
     mkdir -p "$BATS_TEST_TMPDIR/alt/outbox"
     printf '%%PDF-1.4\n' >"$BATS_TEST_TMPDIR/alt/outbox/a.pdf"
+    put outbox b.pdf
     status_json
-    [[ "$(j '.paths.root')" == "$BATS_TEST_TMPDIR/alt" ]]
+    [[ "$(j '.paths.root')" == "$SCANS" ]]
     [[ "$(j '.counts.outbox')" == 1 ]]
 }
 
@@ -194,4 +197,19 @@ EOF
     run "$SCRIPT"
     assert_status 0
     assert_in done "a.pdf"
+}
+
+# ── phase 10.3 ──────────────────────────────────────────────────────────────
+
+@test "a .task file that vanishes mid-listing doesn't crash status --json" {
+    put pending vanish.pdf
+    put pending vanish.pdf.task "$UUID"
+    put pending slow.pdf
+    put pending slow.pdf.task "$UUID"
+    vanishing_stat
+    run --separate-stderr "$SCRIPT" status --json
+    assert_status 0
+    jq -e . <<<"$output" >/dev/null
+    [[ "$stderr" != *"syntax error"* ]]
+    [[ "$(j '.pending[] | select(.file == "slow.pdf") | .task')" == "$UUID" ]]
 }
