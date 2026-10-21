@@ -78,6 +78,18 @@ backdate() { # path BSD-date-offset
     touch -t "$(date -v"$2" +%Y%m%d%H%M.%S)" "$1"
 }
 
+# on_upload SCRIPT — bash code the curl stub runs once, during the next
+# post_document call (after its response is decided). It sees $HOME, $FIXTURES
+# and $STUB_LOG.
+on_upload() {
+    printf '%s\n' "$1" >"$FIXTURES/on_post_document"
+}
+
+# drop_during_upload NAME — a scan lands in outbox while the first upload runs.
+drop_during_upload() {
+    on_upload "printf '%%PDF-1.4\\n' >\"\$HOME/Scans/outbox/$1\""
+}
+
 run_intake() {
     run "$SCRIPT" "$@"
 }

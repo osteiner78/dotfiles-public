@@ -140,3 +140,10 @@ plist_get() { plutil -extract "$1" raw -o - "$HOME/$PLIST_REL"; }
     assert_in outbox "keep.pdf"
     [[ -f "$ENV_FILE" ]]
 }
+
+# ── phase 7.3 ───────────────────────────────────────────────────────────────
+
+@test ".env.example warns that API_VERSION must stay 9" {
+    grep -Eq '^#.*API_VERSION.*9' "$ROOT/.env.example"
+    grep -qx 'API_VERSION=9' "$ROOT/.env.example"
+}

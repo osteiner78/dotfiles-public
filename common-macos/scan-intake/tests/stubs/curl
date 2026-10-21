@@ -9,6 +9,10 @@
 # Every call appends one line to $STUB_LOG/curl.log (URL + argv) and whatever
 # arrived on stdin to $STUB_LOG/curl.stdin, so tests can check that the token
 # travels on stdin and never in argv.
+#
+# If $FIXTURES/on_post_document exists, a post_document call runs it once with
+# bash after producing its response (it is removed first, so a hook can re-arm
+# itself). Tests use it to change outbox or fixtures while a run is in flight.
 
 set -u
 
@@ -49,10 +53,19 @@ case "$url" in
 esac
 
 base="$FIXTURES/$host/$ep"
+
+run_hook() {
+    local hook="$FIXTURES/on_post_document"
+    [[ "$ep" == post_document && -f "$hook" ]] || return 0
+    mv "$hook" "$hook.running"
+    bash "$hook.running" >/dev/null 2>&1 </dev/null || true
+    rm -f "$hook.running"
+}
 exit_code=0
 [[ -f "$base.exit" ]] && exit_code="$(cat "$base.exit")"
 if ((exit_code != 0)); then
     echo "curl: ($exit_code) simulated transport error" >&2
+    run_hook
     exit "$exit_code"
 fi
 
@@ -67,6 +80,7 @@ else
     printf '%s' "$body"
 fi
 [[ -n "$fmt" ]] && printf '%s' "${fmt//%\{http_code\}/$code}"
+run_hook
 
 if ((fail_with_body)) && ((code >= 400)); then
     echo "curl: (22) The requested URL returned error: $code" >&2

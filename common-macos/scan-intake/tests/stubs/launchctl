@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 # Fake launchctl: records each call so install/uninstall never touch the real
-# launchd domain.
+# launchd domain. Exits 1 when $FIXTURES/launchctl.fail exists (agent not loaded).
 printf '%s\n' "$*" >>"$STUB_LOG/launchctl.log"
+[[ ! -e "$FIXTURES/launchctl.fail" ]]

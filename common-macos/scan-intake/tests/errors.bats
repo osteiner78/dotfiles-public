@@ -82,3 +82,21 @@ load helpers
     assert_status 0
     [[ "$(curl_calls post_document)" -eq 2 ]]
 }
+
+# ── phase 7.3: a rejected token is logged as "rejected", not "failed" ──────
+
+@test "401: logged as ERROR rejected with http=401, not as failed" {
+    stub_http "$PUBLIC_HOST" post_document 401 '{"detail": "Invalid token."}'
+    make_scan "a.pdf"
+    run_intake --once
+    assert_log 'ERROR +rejected file="a.pdf" http=401'
+    refute_log 'failed file="a.pdf"'
+}
+
+@test "403: logged as ERROR rejected with http=403" {
+    stub_http "$PUBLIC_HOST" post_document 403 '{"detail": "Forbidden."}'
+    make_scan "a.pdf"
+    run_intake --once
+    assert_log 'ERROR +rejected file="a.pdf" http=403'
+    refute_log 'failed file="a.pdf"'
+}
