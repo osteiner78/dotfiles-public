@@ -507,6 +507,11 @@ the single source of truth: every UI below should call `scan-intake` subcommands
 reimplementing the logic. That means first adding machine-readable subcommands (`status --json`,
 `retry <file|all>`, `open-failed`).
 
+**Status (2026-10-22):** chosen and done via `~/dotfiles/.agent/plans/001-scan-intake-followups.md`
+(phases 7–9): #1, #3, #10, #11, #13, plus `status --json` and `retry` (`open-failed` was
+dropped). #8 dropped (drop a file into `~/Scans/outbox` instead). #12 is being done server-side.
+#2, #4, #5, #6, #7, #9 remain future ideas.
+
 | # | Feature | What it gives | Effort |
 |---|---|---|---|
 | 1 | **SwiftBar plugin** (already installed; plugins live in `common-macos/swiftbar/`) | Menu-bar icon with outbox/pending/failed counts, last upload, actions: retry failed, open folders, open log, run selftest | S |

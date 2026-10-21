@@ -32,21 +32,21 @@ assert_title() { # expected
 FALLBACK_RE='^Scan [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}\.[0-9]{2}$'
 
 @test "ScanSnap prefix is dropped and a long name is cut at a word, max 80 characters" {
-    make_scan "01011996_Obligatorische Krankenversicherung (KVG) - ZusteHung einer Kopie der aktuellen Krankenkassenpolice.pdf"
+    make_scan "01011996_Allgemeine Mitteilung (ABC) - Zustellung einer Kopie der aktuellen Vereinbarung zum Beispielvertrag.pdf"
     run_intake --once
-    assert_title "Obligatorische Krankenversicherung (KVG) - ZusteHung einer Kopie der aktuellen"
+    assert_title "Allgemeine Mitteilung (ABC) - Zustellung einer Kopie der aktuellen Vereinbarung"
 }
 
 @test "leading '- ' after the prefix is trimmed" {
-    make_scan "20102026_- Why was my application rejected? . Depending on the pre-existing condition, we are not always able to make an offer and have to reject the application for supplementary insurance. We regret that no.pdf"
+    make_scan "20102026_- Why was my request delayed? . Depending on the volume of requests, we are not always able to answer within a week and have to ask for patience. We regret that no.pdf"
     run_intake --once
-    assert_title "Why was my application rejected? . Depending on the pre-existing condition, we"
+    assert_title "Why was my request delayed? . Depending on the volume of requests, we are not"
 }
 
 @test "accents and apostrophes survive" {
-    make_scan "20102026_Portail clients KPTnet vos données d'accès.pdf"
+    make_scan "20102026_Portail clients Exemple vos données d'accès.pdf"
     run_intake --once
-    assert_title "Portail clients KPTnet vos données d'accès"
+    assert_title "Portail clients Exemple vos données d'accès"
 }
 
 @test "runs of whitespace collapse and trailing spaces are trimmed" {
@@ -74,10 +74,10 @@ FALLBACK_RE='^Scan [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}\.[0-9]{2}$'
 }
 
 @test "a date in the title doesn't reach the filename: still filename=scan.pdf" {
-    make_scan "30092026_SERAFE AG Case postale T 058 201 31 67 www.serafe.ch t i0 801 0 Zurich __ I '... MontantdU CHF 319.65 Date 30.09.2026 Facture n° RF-0026-0946-008 801 0 Poste CR SA EGIDEW1D 210221593014 . . Zurich .pdf"
+    make_scan "30092026_Musterfirma AG Case postale T 000 000 00 00 www.example.ch t i0 8000 Zurich __ I '... Montant CHF 123.45 Date 30.09.2026 Facture n° XX-0000-0000-000 8000 Poste CR SA 000000000000 . . Zurich .pdf"
     run_intake --once
     post_argv | grep -q ';filename=scan\.pdf$'
-    [[ "$(sent_title)" == "SERAFE AG Case postale"* ]]
+    [[ "$(sent_title)" == "Musterfirma AG Case postale"* ]]
     ! post_argv | grep -q 'filename=.*30\.09\.2026'
 }
 

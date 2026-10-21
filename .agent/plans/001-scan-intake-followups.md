@@ -11,9 +11,10 @@ apply unless this plan overrides them. Phase numbers continue from it (7, 8, 9).
 | Tests | `common-macos/scan-intake/tests/*.bats` |
 | Phase reports | `~/dotfiles/.agent/reports/NNN-phase-N-end.md` (next free number: 008) |
 
-**Test status (2026-10-22):** phases 7 and 8 are done (195 tests green). Phase 9 tests are
-written and fail for the right reason: 54 fail, 1 new NON-REGRESSION guard passes (250 total). Existing tests must keep passing unchanged; the constraints below say
-where new behaviour could collide with them.
+**Status (2026-10-22): done.** Phases 7–9 are implemented and live-checked (reports 008–010),
+including two fixes found live: `[phase-9.5]` (terminal-notifier message escaping) and
+`[phase-9.6]` (menu-bar icon colour). 253 tests green. What's left is in "Open items" below and
+the future ideas in "Selected scope".
 
 Test infrastructure added for these phases:
 - `tests/stubs/curl`: if `$FIXTURES/on_post_document` exists, a `post_document` call runs it once
@@ -105,16 +106,16 @@ The title goes in `-F "title=…"`. When it contains `;`, `,`, `"` or a backslas
 `upload.bats` pins `title=Scan YYYY-MM-DD HH.MM`.
 
 Tests (`tests/titles.bats`, NEW-BEHAVIOR / FAILURE-MODE), names taken from real scans:
-- `01011996_Obligatorische Krankenversicherung (KVG) - ZusteHung einer Kopie der aktuellen Krankenkassenpolice.pdf`
-  → title starts with `Obligatorische Krankenversicherung`, is ≤ 80 characters, ends on a word.
-- `20102026_- Why was my application rejected? …` → leading `- ` trimmed.
-- `20102026_Portail clients KPTnet vos données d'accès.pdf` → title is exactly
-  `Portail clients KPTnet vos données d'accès` (the apostrophe and `é` survive).
+- `01011996_Allgemeine Mitteilung (ABC) - Zustellung einer Kopie der aktuellen Vereinbarung zum Beispielvertrag.pdf`
+  → title starts with `Allgemeine Mitteilung`, is ≤ 80 characters, ends on a word.
+- `20102026_- Why was my request delayed? …` → leading `- ` trimmed.
+- `20102026_Portail clients Exemple vos données d'accès.pdf` → title is exactly
+  `Portail clients Exemple vos données d'accès` (the apostrophe and `é` survive).
 - `20261021091350.pdf` → fallback `Scan YYYY-MM-DD HH.MM`.
 - `12345678_.pdf` → fallback.
 - A long name with a multi-byte character near position 80, under `env -u LANG -u LC_ALL` →
   the title is valid UTF-8 (`iconv -f UTF-8 -t UTF-8` succeeds) and ≤ 80 characters.
-- `30092026_SERAFE AG … Date 30.09.2026 …pdf` → still `filename=scan.pdf`.
+- `30092026_Musterfirma AG … Date 30.09.2026 …pdf` → still `filename=scan.pdf`.
 - `Brief; Mai.pdf` → the argument is exactly `title="Brief; Mai"`.
 - `20102026_Rechnung "Mai".pdf` → title `Rechnung "Mai"` after unquoting.
 - `20102026_Foo   Bar .pdf` → `Foo Bar`.
