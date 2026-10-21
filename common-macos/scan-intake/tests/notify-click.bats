@@ -120,11 +120,40 @@ six_scans() {
     [[ -n "$g1" && -n "$g2" && "$g1" != "$g2" ]]
 }
 
-@test "message arrives verbatim: quotes, a leading dash, no AppleScript escaping" {
+@test "no AppleScript escaping: inner quotes and backslashes arrive unchanged" {
     use_terminal_notifier
-    make_scan '-x "q".pdf'
+    make_scan 'Rechnung "Mai" a\b.pdf'
     run_intake --once
-    [[ "$(tn_arg -message)" == '-x "q".pdf → document #6342' ]]
+    [[ "$(tn_calls)" -eq 1 ]]
+    [[ "$(notification_count)" -eq 0 ]]
+    [[ "$(tn_arg -message)" == 'Rechnung "Mai" a\b.pdf → document #6342' ]]
+}
+
+# The real terminal-notifier refuses a message starting with - " ( [ {; a
+# leading backslash escapes it and doesn't show (checked live, 2026-10-22).
+@test "a message starting with - \" ( [ or { is sent with a leading backslash" {
+    use_terminal_notifier
+    local name
+    for name in '-x.pdf' '"q".pdf' '(Kopie) Brief.pdf' '[Scan].pdf' '{x}.pdf'; do
+        make_scan "$name"
+    done
+    run_intake --once
+    [[ "$(tn_calls)" -eq 5 ]]
+    [[ "$(notification_count)" -eq 0 ]]
+    for name in '-x.pdf' '"q".pdf' '(Kopie) Brief.pdf' '[Scan].pdf' '{x}.pdf'; do
+        grep -qF -- "-message"$'\x1f'"\\$name → document #6342" "$STUB_LOG/terminal-notifier.log" || {
+            echo "no escaped message for $name"
+            cat "$STUB_LOG/terminal-notifier.log"
+            return 1
+        }
+    done
+}
+
+@test "a message starting with an ordinary character or ' is not escaped" {
+    use_terminal_notifier
+    make_scan "'x'.pdf"
+    run_intake --once
+    [[ "$(tn_arg -message)" == "'x'.pdf → document #6342" ]]
 }
 
 @test "terminal-notifier failing: that notification falls back to osascript" {

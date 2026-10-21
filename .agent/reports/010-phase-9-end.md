@@ -36,3 +36,22 @@ None added, none weakened.
 
 ## Confidence
 likely-good (stubbed tests green; live behaviour of SwiftBar/terminal-notifier unverified)
+
+## Addendum: live check findings, fixed in [phase-9.5] (2026-10-22)
+
+1. **terminal-notifier had no permission.** Every call exited 3 ("Notifications are not
+   allowed for this application"), from this shell and from the user's Ghostty alike. The app
+   is ad-hoc signed; on macOS 27 the permission prompt only appears when it is launched through
+   LaunchServices (`open -W -n …/terminal-notifier.app --args …`). After that, `-diagnose` says
+   `authorized`, banners. The osascript fallback covered every notification until then. README
+   now documents the one-time step.
+2. **Messages starting with `-` `"` `(` `[` `{` are refused** (exit 2, "Could not read the
+   -message value"); `'` and ordinary characters are fine. A leading backslash escapes it, and
+   the user confirmed the backslash is not shown. `notify()` now adds it for those characters.
+
+Tests: the fake `terminal-notifier` now refuses the same characters. The phase 9 test "message
+arrives verbatim: quotes, a leading dash, …" expected the unescaped leading dash the real tool
+rejects; the orchestrator replaced it with three tests: inner quotes and backslashes unchanged;
+the five leading characters get a backslash (no osascript fallback); `'` is not escaped. The new
+escape test failed before the fix (fallback to osascript), and the suite is green after it:
+252 tests, shellcheck clean.

@@ -68,8 +68,16 @@ brew install terminal-notifier
 
 With `terminal-notifier` on `PATH`, notifications open something on click: the document
 (Uploaded, Duplicate), `failed/` (errors), the log (config error, most health problems) or
-paperless (summary without errors). Without it, plain `osascript` notifications are used. The
-first notification asks for permission: allow it in System Settings -> Notifications.
+paperless (summary without errors). Without it, or when it fails, plain `osascript`
+notifications are used.
+
+Once after installing, grant it notification permission. Run from a shell it can't ask
+("Notifications are not allowed for this application"); launched through LaunchServices it can:
+
+```bash
+open -W -n "$(brew --prefix terminal-notifier)"/terminal-notifier.app --args -title "Scan intake" -message test
+terminal-notifier -diagnose     # should say: authorization authorized
+```
 
 ## Health check
 

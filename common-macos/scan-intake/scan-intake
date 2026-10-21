@@ -53,7 +53,10 @@ notify() { # subtitle body [error] [click-url]
     local bs=$'\\' q='"'
     NOTIFY_SEQ=$((NOTIFY_SEQ + 1))
     if command -v terminal-notifier >/dev/null 2>&1; then
-        tn=(-title "Scan intake" -subtitle "$sub" -message "$body")
+        local msg=$body
+        # terminal-notifier refuses a -message starting with these; the backslash isn't shown.
+        case $msg in [-\"\(\[\{]*) msg=$bs$msg ;; esac
+        tn=(-title "Scan intake" -subtitle "$sub" -message "$msg")
         [[ ${3:-} == error ]] && tn+=(-sound Basso)
         [[ -n $url ]] && tn+=(-open "$url")
         tn+=(-group "scan-intake-$$-$NOTIFY_SEQ")
