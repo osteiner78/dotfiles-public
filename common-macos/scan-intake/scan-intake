@@ -197,7 +197,7 @@ upload() { # path base-url -> HTTP_CODE, TMP_BODY; returns curl's exit code
     # Unquoted, curl splits -F values on ';' and ',' and fails with exit 26.
     doc="document=@\"$(form_quote "$path")\""
     if [[ $name =~ $dated_re ]]; then
-        form=(-F "$doc;filename=\"$(form_quote "$name")\"")
+        form=(-F "$doc;filename=\"$(form_quote "$name")\"" -F "created=${name:0:10}")
     else
         form=(-F "$doc;filename=scan.$(lower_ext "$name")" -F "title=Scan $(date '+%Y-%m-%d %H.%M')")
     fi
