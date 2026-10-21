@@ -3,9 +3,26 @@
 # call) in $STUB_LOG/terminal-notifier.log. Exits with the code in
 # $FIXTURES/terminal-notifier.exit when that file exists. Lives outside
 # tests/stubs/ so only tests that opt in (use_terminal_notifier) see it.
+#
+# Like the real tool (3.1.0, checked 2026-10-22), it refuses a -message value
+# that starts with - " ( [ { and exits 2; a leading backslash escapes it and is
+# not shown in the notification.
 {
     printf '%s\x1f' "$@"
     printf '\n'
 } >>"$STUB_LOG/terminal-notifier.log"
+
+args=("$@")
+for ((i = 0; i < ${#args[@]} - 1; i++)); do
+    if [[ "${args[$i]}" == -message ]]; then
+        case "${args[$((i + 1))]}" in
+            [-\"\(\[\{]*)
+                echo "Could not read the -message value." >&2
+                exit 2
+                ;;
+        esac
+    fi
+done
+
 [[ -f "$FIXTURES/terminal-notifier.exit" ]] && exit "$(cat "$FIXTURES/terminal-notifier.exit")"
 exit 0
