@@ -12,6 +12,8 @@ PATH="$PATH:/usr/bin:/bin:/opt/homebrew/bin"
 SI=$HOME/.local/bin/scan-intake
 LABEL=xyz.osteiner.scan-intake
 ICON="sfimage=doc.viewfinder"
+# SwiftBar ignores sfcolor on the menu-bar icon; Palette rendering via sfconfig colours it.
+RED="sfconfig=$(printf '%s' '{"renderingMode":"Palette","colors":["red"],"scale":"medium","weight":"regular"}' | base64)"
 
 if [[ ! -x $SI ]]; then
     echo "scan-intake not installed | $ICON"
@@ -19,7 +21,7 @@ if [[ ! -x $SI ]]; then
 fi
 
 json=$("$SI" status --json 2>/dev/null) || {
-    echo "| $ICON sfcolor=red"
+    echo "| $ICON $RED"
     echo "---"
     echo "scan-intake status failed | color=red"
     exit 0
@@ -76,7 +78,7 @@ queued=$((outbox + pending))
 title=""
 if ((queued > 0)); then title=$queued; fi
 bar="$title | $ICON"
-if ((failed > 0)) || [[ $config_ok == false || $loaded == false ]]; then bar+=" sfcolor=red"; fi
+if ((failed > 0)) || [[ $config_ok == false || $loaded == false ]]; then bar+=" $RED"; fi
 echo "$bar"
 echo "---"
 
