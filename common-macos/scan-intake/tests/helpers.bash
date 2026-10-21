@@ -129,6 +129,20 @@ write_success_log() {
 LOG
 }
 
+# vanishing_stat — a stat that fails for any path containing "vanish", as if
+# the file had just been moved away by a concurrent run (that race can't be
+# timed in a test). Other paths go to /usr/bin/stat.
+vanishing_stat() {
+    mkdir -p "$BATS_TEST_TMPDIR/bin"
+    cat >"$BATS_TEST_TMPDIR/bin/stat" <<'STAT'
+#!/usr/bin/env bash
+for a in "$@"; do [[ "$a" == *vanish* ]] && { echo "stat: $a: No such file or directory" >&2; exit 1; }; done
+exec /usr/bin/stat "$@"
+STAT
+    chmod +x "$BATS_TEST_TMPDIR/bin/stat"
+    export PATH="$BATS_TEST_TMPDIR/bin:$PATH"
+}
+
 # ── assertions ──────────────────────────────────────────────────────────────
 
 assert_in() { # subdir name

@@ -233,3 +233,13 @@ health_get() { plutil -extract "$1" raw -o - "$HOME/$HEALTH_PLIST_REL"; }
         grep -q "$e" "$ROOT/README.md" || { echo "README misses $e"; return 1; }
     done
 }
+
+# ── phase 10 ────────────────────────────────────────────────────────────────
+
+@test ".env.example no longer offers SCAN_ROOT" {
+    ! grep -q 'SCAN_ROOT' "$ROOT/.env.example"
+}
+
+@test "README lists the upload_error event" {
+    grep -q 'upload_error' "$ROOT/README.md"
+}

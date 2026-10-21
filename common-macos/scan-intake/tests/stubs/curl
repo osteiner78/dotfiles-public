@@ -13,10 +13,14 @@
 # If $FIXTURES/on_post_document exists, a post_document call runs it once with
 # bash after producing its response (it is removed first, so a hook can re-arm
 # itself). Tests use it to change outbox or fixtures while a run is in flight.
+#
+# Like real curl (8.7.1, checked 2026-10-22), an unquoted -F value starting
+# with < or @ means "read that file"; this fake refuses it with exit 26 (other
+# than document=@..., the intended upload). A quoted value is literal text.
 
 set -u
 
-url="" out="" fmt="" fail_with_body=0 read_stdin=0
+url="" out="" fmt="" fail_with_body=0 read_stdin=0 form_read=""
 args=("$@")
 for ((i = 0; i < ${#args[@]}; i++)); do
     a="${args[$i]}"
@@ -27,6 +31,14 @@ for ((i = 0; i < ${#args[@]}; i++)); do
         -H | --header)
             [[ "${args[$((i + 1))]}" == "@-" ]] && read_stdin=1
             i=$((i + 1))
+            ;;
+        -F | --form)
+            f="${args[$((i + 1))]}"
+            i=$((i + 1))
+            case "$f" in
+                document=*) ;;
+                *=\<* | *=@*) form_read="$f" ;;
+            esac
             ;;
         http://* | https://*) url="$a" ;;
     esac
@@ -40,6 +52,11 @@ done
 
 if ((read_stdin)); then
     cat >>"$STUB_LOG/curl.stdin" || true
+fi
+
+if [[ -n "$form_read" ]]; then
+    echo "curl: (26) Failed to open/read local data from file/application: $form_read" >&2
+    exit 26
 fi
 
 host="${url#*://}"

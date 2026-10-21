@@ -11,7 +11,14 @@ teardown() {
     return 0
 }
 
-hold_lock() { # a live process owns the lock
+hold_lock() { # a live scan-intake run owns the lock (its command line says so)
+    bash -c 'exec -a scan-intake-holder sleep 30' >/dev/null 2>&1 3>&- &
+    LOCK_HOLDER=$!
+    mkdir -p "$SCANS/.lock"
+    echo "$LOCK_HOLDER" >"$SCANS/.lock/pid"
+}
+
+foreign_lock() { # the lock's pid is alive but reused by an unrelated process
     sleep 30 >/dev/null 2>&1 3>&- &
     LOCK_HOLDER=$!
     mkdir -p "$SCANS/.lock"
@@ -101,4 +108,22 @@ record_lock_during_upload() {
     run_intake --dry-run
     assert_status 0
     [[ "$output" == "would upload a.pdf" ]]
+}
+
+# ── phase 10.4: the lock survives a reboot, and pids are reused after one ───
+
+@test "lock pid alive but not scan-intake (reused after a crash): stale, taken over" {
+    foreign_lock
+    make_scan "a.pdf"
+    run_intake --once
+    assert_status 0
+    assert_in done "a.pdf"
+    assert_log 'WARN +stale_lock'
+    refute_log 'skipped'
+}
+
+@test "NON-REGRESSION: the test holder really looks like scan-intake to ps" {
+    hold_lock
+    sleep 0.2
+    [[ "$(ps -p "$LOCK_HOLDER" -o command=)" == *scan-intake* ]]
 }

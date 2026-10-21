@@ -109,3 +109,27 @@ FALLBACK_RE='^Scan [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}\.[0-9]{2}$'
     run_intake --once
     ! post_argv | grep -q '^title='
 }
+
+# ── phase 10.1: curl -F reads a file for a value starting with < or @ ───────
+
+@test "a title starting with '<' is sent quoted, so curl doesn't read a file" {
+    make_scan "<Kopie> Brief.pdf"
+    run_intake --once
+    assert_status 0
+    post_argv | grep -qxF 'title="<Kopie> Brief"'
+    assert_in done "<Kopie> Brief.pdf"
+}
+
+@test "a title starting with '@' is sent quoted, so curl doesn't upload a file" {
+    make_scan "@home.pdf"
+    run_intake --once
+    assert_status 0
+    post_argv | grep -qxF 'title="@home"'
+    assert_in done "@home.pdf"
+}
+
+@test "NON-REGRESSION: a '<' that isn't leading doesn't force quoting" {
+    make_scan "a <b> c.pdf"
+    run_intake --once
+    post_argv | grep -qxF 'title=a <b> c'
+}

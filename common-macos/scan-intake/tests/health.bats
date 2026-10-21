@@ -3,6 +3,7 @@
 # Silent when everything is fine; one notification when something is wrong.
 
 load helpers
+bats_require_minimum_version 1.5.0
 
 put_failed() { # name
     mkdir -p "$SCANS/failed"
@@ -110,4 +111,26 @@ run_health() { run "$SCRIPT" health; }
     touch "$FIXTURES/launchctl.fail"
     run_health
     [[ "$(tn_arg -open)" == "file://$LOG" ]]
+}
+
+# ── phase 10.3 ──────────────────────────────────────────────────────────────
+
+@test "an outbox file that vanishes mid-check doesn't crash health" {
+    make_scan "vanish.pdf"
+    vanishing_stat
+    run --separate-stderr "$SCRIPT" health
+    [[ "$status" -eq 0 ]]
+    [[ "$stderr" != *"syntax error"* ]]
+    assert_log 'INFO +health ok'
+}
+
+# ── phase 10.5: health looks where everything else looks ────────────────────
+
+@test "NON-REGRESSION: SCAN_ROOT in .env is ignored: a file in ~/Scans/failed is still found" {
+    write_env "SCAN_ROOT=$HOME/Other"
+    mkdir -p "$HOME/Other/failed"
+    put_failed "x.pdf"
+    run_health
+    assert_status 1
+    assert_log 'WARN +health problems=1'
 }

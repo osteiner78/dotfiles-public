@@ -71,11 +71,15 @@ load helpers
     assert_status 0
 }
 
-@test ".env SCAN_ROOT overrides the default ~/Scans" {
+# Phase 10.5 changed this contract: SCAN_ROOT is no longer a .env key, because
+# install.sh and the LaunchAgent always use ~/Scans.
+@test ".env SCAN_ROOT is ignored: ~/Scans is always used" {
     write_env "SCAN_ROOT=$HOME/OtherScans"
+    make_scan "a.pdf"
     run_intake --once
-    [[ -d "$HOME/OtherScans/outbox" ]]
-    [[ ! -e "$SCANS" ]]
+    assert_status 0
+    assert_in done "a.pdf"
+    [[ ! -e "$HOME/OtherScans" ]]
 }
 
 @test "first run creates outbox, pending, done, duplicates and failed" {

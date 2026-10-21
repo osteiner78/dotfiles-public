@@ -121,3 +121,21 @@ put_failed() { # name [error]
     [[ "$(find "$SCANS/outbox" -name '*-x.pdf' | wc -l)" -eq 1 ]]
     refute_in failed "x.pdf"
 }
+
+# ── phase 10.5: ~/Scans is the only root, even with a broken .env ──────────
+
+@test "NON-REGRESSION: retry works with an invalid .env (mode 644): uses ~/Scans" {
+    put_failed "x.pdf"
+    chmod 644 "$ENV_FILE"
+    run "$SCRIPT" retry x.pdf
+    assert_status 0
+    assert_in outbox "x.pdf"
+}
+
+@test "retry ignores SCAN_ROOT in .env" {
+    write_env "SCAN_ROOT=$HOME/Other"
+    put_failed "x.pdf"
+    run "$SCRIPT" retry x.pdf
+    assert_status 0
+    assert_in outbox "x.pdf"
+}
