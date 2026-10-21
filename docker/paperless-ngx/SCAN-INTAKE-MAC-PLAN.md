@@ -510,11 +510,13 @@ reimplementing the logic. That means first adding machine-readable subcommands (
 | 3 | **Clickable notifications** via `terminal-notifier` (Homebrew) | Clicking "Uploaded" opens the document in paperless (`/documents/<id>/details`); clicking an error opens failed/ | S |
 | 4 | **Title/date prompt before upload** (optional mode) | A small `osascript` dialog lets the user type a title or document date before upload; skipped after a timeout so the pipeline is never blocked | S–M |
 | 5 | **AI suggestions in the notification** | After success, call `GET /api/documents/<id>/ai_suggestions/` and show the suggested title and correspondent; optionally apply on one click | M |
-| 6 | **Native menu-bar app** (SwiftUI `MenuBarExtra`) | Same as #1 but self-contained: queue view, drag-and-drop a PDF onto the icon to upload, per-file status and retry | L |
+| 6 | **Native menu-bar app** (SwiftUI `MenuBarExtra`) | Same as #1 but self-contained: queue view, drag-and-drop a PDF onto the icon to upload, per-file status and retry. Wraps the bundled script (in `Contents/Resources`) instead of rewriting it; registers its own agent via `SMAppService`, replacing `install.sh`; settings window for token (Keychain) and folder. As a signed app with its own identity it can be granted `~/Documents` access. Local ad-hoc signing is enough for this Mac; other Macs need notarisation (paid developer account). Do #1 first. | L |
 | 7 | **Small GUI / dashboard** | A window or local web page with the upload history parsed from the log (searchable, links to documents), weekly counts | M–L |
 | 8 | **Drop-anywhere upload** | Finder Quick Action / Services menu "Send to paperless" for any PDF, using the same script | S |
 | 9 | **iPhone path** | An iOS Shortcut that uploads a ScanSnap Connect scan (or any PDF) via the same API, for scans made away from the Mac | S–M |
 | 10 | **Health check** | A weekly launchd job: selftest + "nothing stuck in failed/pending"; notifies only if something is wrong | S |
+| 11 | **Better titles from ScanSnap** (found in phase 5) | Strip ScanSnap's `ddMMyyyy_` prefix and send the rest as `title`. Keep dates out of any filename sent: since the server fix, paperless parses separated dates in filenames (YMD). Titles carry ScanSnap OCR typos; #5 is the follow-on | S |
+| 12 | **German documents: summary + translation as a Note** (server-side, not in this script) | A server job (workflow webhook or cron, not a post-consume script) finds new German documents, asks the existing hosted LLM for a short summary (sender, what, action, deadline, amount) plus a full translation, saves it as a Note and tags the document; optional backfill of the archive. Try document chat on demand first. Belongs in a separate server plan | M (server) |
 
 ## Out of scope for this plan
 
