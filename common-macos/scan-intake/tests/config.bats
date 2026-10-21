@@ -90,3 +90,30 @@ load helpers
     assert_status 0
     assert_log 'run_start'
 }
+
+# ── phase 7.3: only API version 9 works with the task API used here ─────────
+
+@test "API_VERSION=10: exits 1 with a config_error naming API_VERSION" {
+    write_env "API_VERSION=10"
+    make_scan "a.pdf"
+    run_intake --once
+    assert_status 1
+    assert_log 'ERROR +config_error reason=".*API_VERSION must be 9'
+}
+
+@test "API_VERSION=10: Config error notification, nothing uploaded, scan stays in outbox" {
+    write_env "API_VERSION=10"
+    make_scan "a.pdf"
+    run_intake --once
+    assert_notified 'Config error'
+    [[ "$(curl_calls post_document)" -eq 0 ]]
+    assert_in outbox "a.pdf"
+}
+
+@test "NON-REGRESSION: API_VERSION=9 set explicitly is accepted" {
+    write_env "API_VERSION=9"
+    make_scan "a.pdf"
+    run_intake --once
+    assert_status 0
+    assert_in done "a.pdf"
+}

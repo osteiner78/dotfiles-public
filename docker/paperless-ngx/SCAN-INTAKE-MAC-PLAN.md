@@ -111,7 +111,8 @@ empty token, permissions looser than 600, or HTTP 401/403. `--selftest` returns 
 | `uploaded` | INFO | `file="…" task=<uuid> via=public\|lan` |
 | `success` | INFO | `file="…" doc=<id> secs=N` |
 | `duplicate` | WARN | `file="…" existing=<id>` |
-| `failed` | ERROR | `file="…" http=<code>` or `file="…" reason="…"` |
+| `rejected` | ERROR | `file="…" http=401\|403` (token rejected; the file stays in outbox) |
+| `failed` | ERROR | `file="…" http=<code>` (4xx/5xx other than 401/403) or `file="…" reason="…"` |
 | `pending` | WARN | `file="…" task=<uuid>` |
 | `network_error` | WARN | `file="…" curl=<exit code>` |
 | `deleted` | INFO | `file="…"` (done/ retention) |

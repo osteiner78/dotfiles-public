@@ -64,3 +64,12 @@ load helpers
     assert_status 0
     [[ -n "$output" ]]
 }
+
+# ── phase 7.3 ───────────────────────────────────────────────────────────────
+
+@test "selftest: API_VERSION=10 fails and names the problem" {
+    write_env "API_VERSION=10"
+    run_intake --selftest
+    assert_status 1
+    [[ "$output" == *"API_VERSION must be 9"* ]]
+}

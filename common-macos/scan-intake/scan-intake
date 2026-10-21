@@ -117,6 +117,12 @@ load_env() {
     fi
 }
 
+check_api_version() {
+    [[ $API_VERSION == 9 ]] && return 0
+    CONFIG_ERR="API_VERSION must be 9 (is $API_VERSION); the task API changed in version 10"
+    return 1
+}
+
 config_error() {
     log ERROR config_error "reason=\"$CONFIG_ERR\""
     notify "Config error" "$CONFIG_ERR" error
@@ -190,16 +196,53 @@ form_quote() { # value -> value with \ and " escaped, for a quoted curl -F field
     printf '%s' "${s//$q/$bs$q}"
 }
 
+trim_title_punct() { # string -> string without leading/trailing space and -_.,;:
+    local s=$1
+    while [[ $s == [\ _.,\;:-]* ]]; do s=${s#?}; done
+    while [[ $s == *[\ _.,\;:-] ]]; do s=${s%?}; done
+    printf '%s' "$s"
+}
+
+# launchd runs without LANG, so ${#s} would count bytes and the cut could split a
+# multi-byte character; the subshell keeps the locale change local.
+scan_title() { # file-name -> title
+    (
+        LC_ALL=en_US.UTF-8
+        local s=${1%.*} head
+        local prefix_re='^[0-9]{8}_(.*)$'
+        if [[ $s =~ $prefix_re ]]; then s=${BASH_REMATCH[1]}; fi
+        set -f
+        IFS=$' \t\n'
+        # shellcheck disable=SC2086 # word splitting collapses runs of whitespace
+        set -- $s
+        s=$*
+        s=$(trim_title_punct "$s")
+        if [[ $s =~ ^[0-9]*$ ]]; then
+            date '+Scan %Y-%m-%d %H.%M'
+            exit 0
+        fi
+        if ((${#s} > 80)); then
+            head=${s:0:80}
+            if [[ ${s:80:1} != ' ' && $head == *' '* ]]; then head=${head% *}; fi
+            s=$(trim_title_punct "$head")
+        fi
+        printf '%s' "$s"
+    )
+}
+
 upload() { # path base-url -> HTTP_CODE, TMP_BODY; returns curl's exit code
     local path=$1 name=${1##*/} rc=0
     local dated_re='^[0-9]{4}-[0-9]{2}-[0-9]{2} - .+'
-    local doc form=()
+    local doc title form=()
     # Unquoted, curl splits -F values on ';' and ',' and fails with exit 26.
     doc="document=@\"$(form_quote "$path")\""
     if [[ $name =~ $dated_re ]]; then
         form=(-F "$doc;filename=\"$(form_quote "$name")\"" -F "created=${name:0:10}")
     else
-        form=(-F "$doc;filename=scan.$(lower_ext "$name")" -F "title=Scan $(date '+%Y-%m-%d %H.%M')")
+        title=$(scan_title "$name")
+        # Same rule as the document path: curl splits an unquoted value on ';' and ','.
+        if [[ $title == *[\\\"\;,]* ]]; then title="\"$(form_quote "$title")\""; fi
+        form=(-F "$doc;filename=scan.$(lower_ext "$name")" -F "title=$title")
     fi
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
         curl -sS --fail-with-body --connect-timeout 10 --max-time 600 -o "$TMP_BODY" -w '%{http_code}' -H @- \
@@ -290,7 +333,7 @@ process_file() { # path
         body=$(cat "$TMP_BODY")
         case $HTTP_CODE in
             401 | 403)
-                log ERROR failed "file=\"$name\" http=$HTTP_CODE"
+                log ERROR rejected "file=\"$name\" http=$HTTP_CODE"
                 CONFIG_ERR="paperless rejected the API token (HTTP $HTTP_CODE); update PAPERLESS_TOKEN in $ENV_FILE"
                 return 1
                 ;;
@@ -393,6 +436,7 @@ selftest() {
 
     if load_env; then
         pass ".env valid, mode 600"
+        if check_api_version; then pass "API_VERSION is 9"; else fail "$CONFIG_ERR"; fi
         dir=${ENV_FILE%/*}
         if command -v git >/dev/null 2>&1 && git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
             fail ".env is inside a git working tree ($dir)"
@@ -425,12 +469,35 @@ selftest() {
     fi
 }
 
+# Scans saved during a run are missed by launchd's WatchPaths, so list outbox again
+# (max 3 passes). A file is attempted once per run, which keeps an outage from
+# multiplying upload attempts. Returns 1 when the run must stop (token rejected).
+process_outbox() {
+    local pass f name found attempted=$'\n'
+    for ((pass = 0; pass < 3; pass++)); do
+        found=false
+        for f in "$SCAN_ROOT"/outbox/*; do
+            is_scan_file "$f" || continue
+            name=${f##*/}
+            case $attempted in *$'\n'"$name"$'\n'*) continue ;; esac
+            attempted+="$name"$'\n'
+            found=true
+            process_file "$f" || return 1
+        done
+        [[ $found == true ]] || break
+    done
+}
+
 run_once() {
     local f rc=0
     if ! load_env; then
         config_error
         return 1
     fi
+    check_api_version || {
+        config_error
+        return 1
+    }
     ensure_dirs
     log INFO run_start "outbox=$(count_outbox) pending=$(count_pending)"
 
@@ -442,13 +509,7 @@ run_once() {
     fi
 
     recheck_pending
-    for f in "$SCAN_ROOT"/outbox/*; do
-        is_scan_file "$f" || continue
-        process_file "$f" || {
-            rc=1
-            break
-        }
-    done
+    process_outbox || rc=1
     flush_notifications
     if ((rc != 0)); then
         config_error
