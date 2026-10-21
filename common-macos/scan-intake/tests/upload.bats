@@ -55,6 +55,19 @@ post_args() { grep 'post_document' "$STUB_LOG/curl.log"; }
     post_args | grep -qF 'filename="2026-01-15 - \"Q\".pdf"'
 }
 
+# Live test (phase 5): paperless 3.3.1 ignores FILENAME_DATE_ORDER for API uploads.
+@test "dated name also sends its date as the created field" {
+    make_scan "2026-01-15 - Test.pdf"
+    run_intake --once
+    post_args | grep -q 'created=2026-01-15'
+}
+
+@test "neutral upload sends no created field" {
+    make_scan "20261021091350.pdf"
+    run_intake --once
+    ! post_args | grep -q 'created='
+}
+
 @test "date without ' - ' separator is not treated as deliberate (neutral filename)" {
     make_scan "2026-01-15Test.pdf"
     run_intake --once
