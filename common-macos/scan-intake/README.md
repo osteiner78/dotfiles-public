@@ -41,7 +41,42 @@ scan-intake --dry-run     # print what would be uploaded
 scan-intake --verbose     # add DEBUG lines to the log
 scan-intake status [--json]   # local state (counts, failed files, last success); no network
 scan-intake retry <file|all>  # move failed/ files back to outbox; the agent uploads them
+scan-intake health            # selftest + failed/ + stuck outbox + agent loaded; notifies only on problems
 ```
+
+## Log events
+
+One line per event in the log: `run_start`, `uploaded`, `success`, `duplicate`, `pending`,
+`failed`, `rejected` (401/403, the file stays in outbox and the run stops), `network_error`,
+`requeued` (by `retry`), `skipped` (another run holds `~/Scans/.lock`), `stale_lock` (a dead
+run's lock was taken over), `health` (`health ok` or `health problems=N`), `config_error`, `deleted`.
+
+## SwiftBar plugin
+
+`common-macos/swiftbar/.config/swiftbar/scan-intake.1m.sh` (stowed with the swiftbar package)
+shows a menu-bar icon with the outbox + pending count, red when something needs attention
+(failed files, config error, agent not loaded). The dropdown has the last upload (links to the
+document), a Retry action per failed file, Retry all, Run now (`launchctl kickstart`), Run
+selftest, and shortcuts to the Scans folder, `failed/`, the log and paperless. It reads
+`scan-intake status --json`, so it needs `./install.sh` to have created `~/.local/bin/scan-intake`.
+
+## Clickable notifications
+
+```bash
+brew install terminal-notifier
+```
+
+With `terminal-notifier` on `PATH`, notifications open something on click: the document
+(Uploaded, Duplicate), `failed/` (errors), the log (config error, most health problems) or
+paperless (summary without errors). Without it, plain `osascript` notifications are used. The
+first notification asks for permission: allow it in System Settings -> Notifications.
+
+## Health check
+
+A second LaunchAgent, `xyz.osteiner.scan-intake.health`, runs `scan-intake health` every Monday
+at 09:00 (a run missed while asleep fires on wake). It stays silent when everything is fine
+(`INFO health ok`). Otherwise it sends one "Health check" notification listing the problems
+and logs `WARN health problems=N`. Run it by hand any time: `scan-intake health`.
 
 ## ScanSnap Home profile
 
