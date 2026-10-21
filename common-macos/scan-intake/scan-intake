@@ -31,6 +31,8 @@ N_OK=0
 N_DUP=0
 N_FAIL=0
 N_WAITING=0
+LOCK_HELD=false
+AGENT_LABEL=xyz.osteiner.scan-intake
 
 log() { # LEVEL event [key=value...]
     local level=$1 event=$2
@@ -469,6 +471,160 @@ selftest() {
     fi
 }
 
+acquire_lock() { # returns 1 when another run holds the lock
+    local lock=$SCAN_ROOT/.lock pid=
+    if ! mkdir "$lock" 2>/dev/null; then
+        pid=$(cat "$lock/pid" 2>/dev/null || true)
+        if [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null; then
+            log INFO skipped 'reason="another run in progress"'
+            return 1
+        fi
+        log WARN stale_lock "pid=${pid:-none}"
+        rm -rf "$lock"
+        if ! mkdir "$lock" 2>/dev/null; then
+            log INFO skipped 'reason="another run in progress"'
+            return 1
+        fi
+    fi
+    echo "$$" >"$lock/pid"
+    LOCK_HELD=true
+}
+
+cleanup() {
+    rm -f "$TMP_BODY"
+    if [[ $LOCK_HELD == true ]]; then rm -rf "$SCAN_ROOT/.lock"; fi
+}
+
+agent_loaded() {
+    launchctl print "gui/$(id -u)/$AGENT_LABEL" >/dev/null 2>&1
+}
+
+# Status reports problems instead of raising them: a bad .env is data, not an exit code.
+load_config_quietly() { # sets CONFIG_ERR
+    if load_env; then check_api_version || true; fi
+}
+
+count_scans() { # subdir
+    local f n=0
+    for f in "$SCAN_ROOT/$1"/*; do
+        if is_scan_file "$f"; then n=$((n + 1)); fi
+    done
+    echo "$n"
+}
+
+failed_entries() { # one JSON object per line
+    local f
+    for f in "$SCAN_ROOT"/failed/*; do
+        is_scan_file "$f" || continue
+        jq -nc --arg file "${f##*/}" --arg error "$(head -n 1 "$f.error" 2>/dev/null || true)" \
+            '{file: $file, error: $error}'
+    done
+}
+
+pending_entries() { # one JSON object per line
+    local t now
+    now=$(date +%s)
+    for t in "$SCAN_ROOT"/pending/*.task; do
+        [[ -f $t ]] || continue
+        jq -nc --arg file "$(basename "$t" .task)" --arg task "$(head -n 1 "$t")" \
+            --argjson age "$((now - $(stat -f %m "$t")))" '{file: $file, task: $task, age_secs: $age}'
+    done
+}
+
+status_cmd() { # [--json]
+    local json=false loaded=false last_run="" last_success="" line at file doc
+    local success_re='^([^ ]+) +INFO +success file="(.*)" doc=([0-9]+)'
+    case ${1:-} in
+        '') ;;
+        --json) json=true ;;
+        *)
+            echo "usage: scan-intake status [--json]" >&2
+            return 2
+            ;;
+    esac
+    load_config_quietly
+    if agent_loaded; then loaded=true; fi
+    if [[ -f $LOG ]]; then
+        line=$(grep ' run_start ' "$LOG" | tail -n 1 || true)
+        last_run=${line%% *}
+        line=$(grep -E ' INFO +success file=".*" doc=[0-9]+' "$LOG" | tail -n 1 || true)
+        if [[ $line =~ $success_re ]]; then
+            at=${BASH_REMATCH[1]} file=${BASH_REMATCH[2]} doc=${BASH_REMATCH[3]}
+            last_success=$(jq -nc --arg file "$file" --argjson doc "$doc" --arg at "$at" \
+                '{file: $file, doc: $doc, at: $at}')
+        fi
+    fi
+
+    if [[ $json == true ]]; then
+        jq -n \
+            --arg err "$CONFIG_ERR" --argjson loaded "$loaded" --arg url "$PAPERLESS_URL" \
+            --arg root "$SCAN_ROOT" --arg log "$LOG" \
+            --argjson c_outbox "$(count_scans outbox)" --argjson c_pending "$(count_pending)" \
+            --argjson c_failed "$(count_scans failed)" --argjson c_dups "$(count_scans duplicates)" \
+            --argjson c_done "$(count_scans "done")" \
+            --argjson failed "$(failed_entries | jq -s .)" --argjson pending "$(pending_entries | jq -s .)" \
+            --arg last_run "$last_run" --argjson last_success "${last_success:-null}" '{
+                config_ok: ($err == ""),
+                config_error: (if $err == "" then null else $err end),
+                agent_loaded: $loaded,
+                paperless_url: $url,
+                paths: {root: $root, outbox: "\($root)/outbox", pending: "\($root)/pending",
+                        done: "\($root)/done", duplicates: "\($root)/duplicates",
+                        failed: "\($root)/failed", log: $log},
+                counts: {outbox: $c_outbox, pending: $c_pending, failed: $c_failed,
+                         duplicates: $c_dups, done: $c_done},
+                failed: $failed,
+                pending: $pending,
+                last_run: (if $last_run == "" then null else $last_run end),
+                last_success: $last_success
+            }'
+        return 0
+    fi
+
+    if [[ -n $CONFIG_ERR ]]; then echo "config error: $CONFIG_ERR"; fi
+    if [[ $loaded == false ]]; then echo "agent not loaded"; fi
+    echo "outbox $(count_scans outbox), pending $(count_pending), failed $(count_scans failed)," \
+        "duplicates $(count_scans duplicates), done $(count_scans "done")"
+    if [[ -n $last_success ]]; then
+        jq -r '"last success: \(.file) -> #\(.doc) at \(.at)"' <<<"$last_success"
+    else
+        echo "last success: none"
+    fi
+    failed_entries | jq -r '"failed: \(.file): \(.error)"'
+}
+
+retry_one() { # name -> 0, or 2 for an unusable name
+    local name=$1
+    if [[ -z $name || $name == */* || $name == *.error || ! -f $SCAN_ROOT/failed/$name ]]; then
+        echo "scan-intake: not in failed/: $name" >&2
+        return 2
+    fi
+    mkdir -p "$SCAN_ROOT/outbox"
+    file_into "$SCAN_ROOT/failed/$name" outbox
+    rm -f "$SCAN_ROOT/failed/$name.error"
+    log INFO requeued "file=\"$name\""
+    echo "requeued $name"
+}
+
+retry_cmd() { # file|all
+    local f n=0
+    if (($# != 1)); then
+        echo "usage: scan-intake retry <file|all>" >&2
+        return 2
+    fi
+    load_env || true
+    if [[ $1 != all ]]; then
+        retry_one "$1"
+        return
+    fi
+    for f in "$SCAN_ROOT"/failed/*; do
+        is_scan_file "$f" || continue
+        retry_one "${f##*/}"
+        n=$((n + 1))
+    done
+    if ((n == 0)); then echo "nothing to retry"; fi
+}
+
 # Scans saved during a run are missed by launchd's WatchPaths, so list outbox again
 # (max 3 passes). A file is attempted once per run, which keeps an outage from
 # multiplying upload attempts. Returns 1 when the run must stop (token rejected).
@@ -499,6 +655,7 @@ run_once() {
         return 1
     }
     ensure_dirs
+    if [[ $DRY_RUN == false ]]; then acquire_lock || return 0; fi
     log INFO run_start "outbox=$(count_outbox) pending=$(count_pending)"
 
     if [[ $DRY_RUN == true ]]; then
@@ -524,6 +681,18 @@ run_once() {
 
 main() {
     local arg
+    case ${1:-} in
+        status)
+            shift
+            status_cmd "$@"
+            return
+            ;;
+        retry)
+            shift
+            retry_cmd "$@"
+            return
+            ;;
+    esac
     for arg in "$@"; do
         case $arg in
             --once) MODE=once ;;
@@ -531,14 +700,14 @@ main() {
             --dry-run) DRY_RUN=true ;;
             --verbose) VERBOSE=true ;;
             *)
-                echo "usage: scan-intake [--once] [--selftest] [--dry-run] [--verbose]" >&2
+                echo "usage: scan-intake [--once] [--selftest] [--dry-run] [--verbose] | status [--json] | retry <file|all>" >&2
                 return 2
                 ;;
         esac
     done
 
     TMP_BODY=$(mktemp "${TMPDIR:-/tmp}/scan-intake.XXXXXX")
-    trap 'rm -f "$TMP_BODY"' EXIT
+    trap cleanup EXIT
 
     case $MODE in
         selftest) selftest ;;

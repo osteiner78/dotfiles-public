@@ -39,6 +39,8 @@ Log: `~/Library/Logs/scan-intake.log` (one line per event, rotated at 5 MB, 3 ke
 scan-intake --selftest    # check config, server, folders; uploads nothing
 scan-intake --dry-run     # print what would be uploaded
 scan-intake --verbose     # add DEBUG lines to the log
+scan-intake status [--json]   # local state (counts, failed files, last success); no network
+scan-intake retry <file|all>  # move failed/ files back to outbox; the agent uploads them
 ```
 
 ## ScanSnap Home profile
