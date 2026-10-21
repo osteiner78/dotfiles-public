@@ -8,6 +8,8 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LABEL=xyz.osteiner.scan-intake
 ENV_FILE=$HOME/.config/scan-intake/.env
 PLIST=$HOME/Library/LaunchAgents/$LABEL.plist
+HEALTH_LABEL=$LABEL.health
+HEALTH_PLIST=$HOME/Library/LaunchAgents/$HEALTH_LABEL.plist
 LINK=$HOME/.local/bin/scan-intake
 LOG=$HOME/Library/Logs/scan-intake.log
 
@@ -34,6 +36,12 @@ ln -sfn "$DIR/scan-intake" "$LINK"
 
 sed -e "s|@SCRIPT@|$DIR/scan-intake|" -e "s|@HOME@|$HOME|" -e "s|@LOG@|$LOG|" \
     "$DIR/scan-intake.plist.in" >"$PLIST"
+
+sed -e "s|@SCRIPT@|$DIR/scan-intake|" -e "s|@LOG@|$LOG|" \
+    "$DIR/scan-intake-health.plist.in" >"$HEALTH_PLIST"
+
+launchctl bootout "gui/$(id -u)/$HEALTH_LABEL" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$HEALTH_PLIST"
 
 launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$PLIST"
