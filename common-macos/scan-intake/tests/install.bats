@@ -147,3 +147,89 @@ plist_get() { plutil -extract "$1" raw -o - "$HOME/$PLIST_REL"; }
     grep -Eq '^#.*API_VERSION.*9' "$ROOT/.env.example"
     grep -qx 'API_VERSION=9' "$ROOT/.env.example"
 }
+
+# ── phase 9.3: the weekly health-check agent ────────────────────────────────
+
+HEALTH_LABEL="xyz.osteiner.scan-intake.health"
+HEALTH_PLIST_REL="Library/LaunchAgents/$HEALTH_LABEL.plist"
+
+health_get() { plutil -extract "$1" raw -o - "$HOME/$HEALTH_PLIST_REL"; }
+
+@test "the health plist template ships in the repo" {
+    [[ -f "$ROOT/scan-intake-health.plist.in" ]]
+}
+
+@test "install: renders a valid health plist" {
+    run "$ROOT/install.sh"
+    assert_status 0
+    plutil -lint "$HOME/$HEALTH_PLIST_REL"
+}
+
+@test "install: health plist runs '<script> health' with absolute paths (no ~)" {
+    run "$ROOT/install.sh"
+    [[ "$(health_get Label)" == "$HEALTH_LABEL" ]]
+    [[ "$(health_get ProgramArguments.0)" == "$(plist_get ProgramArguments.0)" ]]
+    [[ "$(health_get ProgramArguments.1)" == "health" ]]
+    ! grep -q '~' "$HOME/$HEALTH_PLIST_REL"
+}
+
+@test "install: health plist fires Mondays at 09:00 and not at load" {
+    run "$ROOT/install.sh"
+    [[ "$(health_get StartCalendarInterval.Weekday)" == 1 ]]
+    [[ "$(health_get StartCalendarInterval.Hour)" == 9 ]]
+    [[ "$(health_get StartCalendarInterval.Minute)" == 0 ]]
+    local ral
+    ral="$(health_get RunAtLoad 2>/dev/null || echo absent)"
+    [[ "$ral" == absent || "$ral" == false ]]
+}
+
+@test "install: health plist logs like the main agent and sets the same PATH" {
+    run "$ROOT/install.sh"
+    [[ "$(health_get StandardOutPath)" == "$LOG" ]]
+    [[ "$(health_get StandardErrorPath)" == "$LOG" ]]
+    [[ "$(health_get EnvironmentVariables.PATH)" == "/usr/bin:/bin:/usr/sbin:/opt/homebrew/bin" ]]
+}
+
+@test "install: bootstraps the health agent before the main agent" {
+    run "$ROOT/install.sh"
+    local h m
+    h="$(grep -n "bootstrap gui/$(id -u) $HOME/$HEALTH_PLIST_REL" "$STUB_LOG/launchctl.log" | head -n 1 | cut -d: -f1)"
+    m="$(grep -n "bootstrap gui/$(id -u) $HOME/$PLIST_REL" "$STUB_LOG/launchctl.log" | head -n 1 | cut -d: -f1)"
+    [[ -n "$h" && -n "$m" ]]
+    ((h < m))
+}
+
+@test "install twice: the health agent is booted out before it is bootstrapped again" {
+    run "$ROOT/install.sh"
+    : >"$STUB_LOG/launchctl.log"
+    run "$ROOT/install.sh"
+    assert_status 0
+    local out in
+    out="$(grep -n "^bootout gui/$(id -u)/$HEALTH_LABEL\$" "$STUB_LOG/launchctl.log" | head -n 1 | cut -d: -f1)"
+    in="$(grep -n "bootstrap gui/$(id -u) $HOME/$HEALTH_PLIST_REL" "$STUB_LOG/launchctl.log" | head -n 1 | cut -d: -f1)"
+    [[ -n "$out" && -n "$in" ]]
+    ((out < in))
+}
+
+@test "uninstall: boots out the health agent and removes its plist" {
+    run "$ROOT/install.sh"
+    run "$ROOT/uninstall.sh"
+    assert_status 0
+    grep -q "^bootout gui/$(id -u)/$HEALTH_LABEL\$" "$STUB_LOG/launchctl.log"
+    [[ ! -e "$HOME/$HEALTH_PLIST_REL" ]]
+}
+
+# ── phase 9.4: README ───────────────────────────────────────────────────────
+
+@test "README documents the SwiftBar plugin, terminal-notifier and the health check" {
+    grep -qi 'swiftbar' "$ROOT/README.md"
+    grep -q 'terminal-notifier' "$ROOT/README.md"
+    grep -q 'scan-intake health' "$ROOT/README.md"
+}
+
+@test "README lists the new log events" {
+    local e
+    for e in rejected requeued skipped stale_lock health; do
+        grep -q "$e" "$ROOT/README.md" || { echo "README misses $e"; return 1; }
+    done
+}

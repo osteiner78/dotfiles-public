@@ -94,6 +94,41 @@ run_intake() {
     run "$SCRIPT" "$@"
 }
 
+# use_terminal_notifier — put the fake terminal-notifier on PATH, so the
+# script sends clickable notifications instead of using osascript.
+use_terminal_notifier() {
+    export PATH="$ROOT/tests/stubs-tn:$PATH"
+    touch "$STUB_LOG/terminal-notifier.log"
+}
+
+# tn_calls — number of terminal-notifier calls.
+tn_calls() {
+    grep -c . "$STUB_LOG/terminal-notifier.log" 2>/dev/null || true
+}
+
+# tn_arg FLAG [CALL] — the value after FLAG in call number CALL (default: the
+# last call); empty and status 1 when the flag is absent.
+tn_arg() {
+    local line
+    if [[ -n "${2:-}" ]]; then
+        line="$(sed -n "${2}p" "$STUB_LOG/terminal-notifier.log")"
+    else
+        line="$(tail -n 1 "$STUB_LOG/terminal-notifier.log")"
+    fi
+    awk -v RS='\037' -v flag="$1" 'found { print; ok = 1; exit } $0 == flag { found = 1 } END { exit !ok }' <<<"$line"
+}
+
+# write_success_log — a log with two uploads; the latest is doc 6342.
+write_success_log() {
+    mkdir -p "${LOG%/*}"
+    cat >"$LOG" <<'LOG'
+2026-10-20T08:00:00+0200 INFO  run_start outbox=1 pending=0
+2026-10-20T08:00:40+0200 INFO  success file="old.pdf" doc=6000 secs=35
+2026-10-21T09:14:03+0200 INFO  run_start outbox=1 pending=0
+2026-10-21T09:14:41+0200 INFO  success file="Portail clients.pdf" doc=6342 secs=36
+LOG
+}
+
 # ── assertions ──────────────────────────────────────────────────────────────
 
 assert_in() { # subdir name

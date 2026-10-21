@@ -11,9 +11,8 @@ apply unless this plan overrides them. Phase numbers continue from it (7, 8, 9).
 | Tests | `common-macos/scan-intake/tests/*.bats` |
 | Phase reports | `~/dotfiles/.agent/reports/NNN-phase-N-end.md` (next free number: 008) |
 
-**Test status (2026-10-21):** phase 7 and 8 tests are written and fail for the right reason
-(140 pass, 55 fail; the 140 are the 130 existing tests plus new NON-REGRESSION guards). Phase 9
-tests are not written yet. Existing tests must keep passing unchanged; the constraints below say
+**Test status (2026-10-22):** phases 7 and 8 are done (195 tests green). Phase 9 tests are
+written and fail for the right reason: 54 fail, 1 new NON-REGRESSION guard passes (250 total). Existing tests must keep passing unchanged; the constraints below say
 where new behaviour could collide with them.
 
 Test infrastructure added for these phases:
@@ -21,6 +20,9 @@ Test infrastructure added for these phases:
   with bash **after** its response is decided (the file is removed first, so a hook can re-arm).
   Helpers: `on_upload SCRIPT`, `drop_during_upload NAME`.
 - `tests/stubs/launchctl`: exits 1 when `$FIXTURES/launchctl.fail` exists.
+- `tests/stubs-tn/terminal-notifier` (phase 9): logs argv to `terminal-notifier.log`, exits with
+  `$FIXTURES/terminal-notifier.exit` if present. Only on `PATH` after `use_terminal_notifier`.
+  Helpers: `tn_calls`, `tn_arg FLAG [CALL]`, `write_success_log`.
 
 ## Selected scope
 
@@ -269,9 +271,20 @@ header like `tailscale.10s.sh`). It calls `$HOME/.local/bin/scan-intake status -
 - If `scan-intake` isn't installed: one line "scan-intake not installed".
 
 Tests (`tests/swiftbar.bats`; `$HOME/.local/bin/scan-intake` symlinked to the repo script in the
-temp `$HOME`): first line has no count when everything's empty; count and red color with a failed
-file; a Retry line per failed file with the right params (name with spaces); last-upload link
-with the doc id; "not installed" line without the symlink; no curl calls while rendering.
+temp `$HOME`). Output contract they pin:
+- Line 1 is the menu-bar line; the dropdown is everything after the first `---`.
+- Config error text is the **first** dropdown line; "not loaded" appears when the agent isn't.
+- Failed files appear on `--` (submenu) lines with their error text.
+- Retry: `bash=<$HOME/.local/bin/scan-intake> param1=retry param2=<file> terminal=false refresh=true`;
+  names with spaces are quoted as `param2="Rechnung Mai.pdf"`. Retry all: `param2=all`.
+- Run now: `bash=<…launchctl> param1=kickstart param2=gui/<uid>/xyz.osteiner.scan-intake`.
+- Run selftest: `param1=--selftest terminal=true`.
+- Last upload line contains `#<doc>`, the file name and
+  `href=<paperless_url>/documents/<doc>/details`; no such link without a log.
+- The dropdown contains the Scans path, the failed/ path, the log path and `href=<paperless_url>`.
+- Without the symlink: a "not installed" line, exit 0. No curl calls; nothing moved.
+- An agent-not-loaded test only passes if the plugin keeps the stub `launchctl` first on `PATH`,
+  which is how the append-not-prepend `PATH` rule is enforced.
 
 ### [phase-9.2] Clickable notifications
 
@@ -294,9 +307,13 @@ verbatim (quotes, backslashes, a leading `-`).
 Tests (`tests/notify-click.bats`): a `terminal-notifier` stub in a **separate** dir
 (`tests/stubs-tn/`), added to `PATH` only by these tests via a helper. Otherwise every existing
 `notify.bats` test would switch notifier and break; they stay as the osascript-fallback coverage.
-Cases: Uploaded → `-open …/documents/6342/details`; Duplicate → existing id; Error → failed/
-URL with `Basso`; no `-sound` on success; summary target; stub exits 1 → osascript fallback used;
-body with `"` arrives unchanged.
+Cases: Uploaded → `-title "Scan intake" -subtitle Uploaded -message "a.pdf → document #6342"
+-open …/documents/6342/details`, no osascript call, no `-sound`; Duplicate → existing id; Error and
+413 → `-sound Basso`, `-open file://<SCAN_ROOT>/failed` (trailing `/` optional); Config error →
+`-open file://<LOG>`; Summary → `<PAPERLESS_URL>` (failed/ if errors); Waiting → no `-open`; two
+notifications in one run get two different `-group` values; a body like `-x "q".pdf → …`
+arrives verbatim (no AppleScript escaping); stub exits 1 → osascript fallback for that
+notification.
 
 Manual: the first terminal-notifier notification needs permission in System Settings →
 Notifications. Document it in the README.
@@ -321,12 +338,22 @@ same log and `PATH` as the main agent, no `RunAtLoad`.
 "install twice: second run boots out the old agent before bootstrapping" checks that the last
 bootout/bootstrap pair belongs to the main label. `uninstall.sh` boots out and removes both.
 
-Tests (`tests/health.bats`, plus additions to `install.bats`): all OK → silent, exit 0; failed
-file → one notification naming it, exit 1; old outbox file; agent not loaded (launchctl stub
-fail); selftest failure (401 on tags) included; health plist lints, has the calendar keys and
-absolute paths; install bootstraps both; uninstall removes both.
+Tests (`tests/health.bats`, plus additions to `install.bats`): all OK → exit 0, no notification,
+`INFO health ok`, no selftest `ok` lines on stdout; failed/ file → exit 1, exactly one
+notification (subtitle "Health check", Basso, mentions "failed"), `WARN health problems=1`; outbox
+file older than 1 h (mentions "outbox"), a fresh one is fine; health never uploads; agent not
+loaded (mentions "not loaded"); selftest failure (mentions "401"); invalid `.env` → still **one**
+notification, the Health check one, containing the reason; two problems → one notification,
+`problems=2`; with terminal-notifier, failed/ problems open failed/, others open the log.
+`install.bats`: template exists; health plist lints; `ProgramArguments` = main script + `health`;
+`StartCalendarInterval` Weekday 1 / Hour 9 / Minute 0 as a dict; `RunAtLoad` absent or false;
+same log and `PATH`; health bootstrapped before main; on reinstall health is booted out before
+its bootstrap; uninstall boots out and removes it.
 
 ### [phase-9.4] README
+
+Tests (`install.bats`): README mentions SwiftBar, `terminal-notifier`, `scan-intake health`, and
+the events `rejected`, `requeued`, `skipped`, `stale_lock`, `health`.
 
 Plugin (what it shows, that it lives in the swiftbar package), clickable notifications
 (`brew install terminal-notifier`, notification permission), health check (schedule, how to run
@@ -349,3 +376,10 @@ notification opens the document; `scan-intake health` by hand with a file in fai
 - Phase 5 test documents still in paperless: 6896, 6897, 6899–6905, 6907 (delete + empty trash).
 - The server fix commit in the server host's dotfiles clone is not pushed yet.
 - duplicates/ is never cleaned up (done/ has 180-day retention). Not in scope unless you want it.
+- **Pi-hole password committed in the repo** (found 2026-10-22):
+  `common-macos/swiftbar/.config/swiftbar/pihole.30s.sh` has the real password as the
+  `PIHOLE_PASSWORD` default. It is pushed to `origin` (`dotfiles-public`, a **public** GitHub
+  repo, commit c59993e), so treat it as leaked. Fix: change the password on the Pi-hole (the old one stays in git
+  history), have the plugin read it from a mode-600 file kept in `~/dotfiles-secrets` (or the
+  environment) instead of a default, and leave history alone unless you decide to rewrite it.
+  Unrelated to scan-intake; its own small task.

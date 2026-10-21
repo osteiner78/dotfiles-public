@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Fake terminal-notifier: records each call's argv (joined by \x1f, one line per
+# call) in $STUB_LOG/terminal-notifier.log. Exits with the code in
+# $FIXTURES/terminal-notifier.exit when that file exists. Lives outside
+# tests/stubs/ so only tests that opt in (use_terminal_notifier) see it.
+{
+    printf '%s\x1f' "$@"
+    printf '\n'
+} >>"$STUB_LOG/terminal-notifier.log"
+[[ -f "$FIXTURES/terminal-notifier.exit" ]] && exit "$(cat "$FIXTURES/terminal-notifier.exit")"
+exit 0
