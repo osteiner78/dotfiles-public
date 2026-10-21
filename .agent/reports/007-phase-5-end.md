@@ -100,7 +100,24 @@ letter), 6908 (TAP Air Portugal letter). Local test files remain in `~/Scans/don
   with the user's approval.
 - Step 6's retry was started with `launchctl kickstart` instead of waiting for the 900 s interval.
 
+## Addendum: server fix applied (2026-10-21)
+
+The server agent confirmed `Y-M-D` in the container, set `PAPERLESS_FILENAME_DATE_ORDER: 'YMD'`,
+recreated the webserver and updated `SCANNER-INTAKE.md` (YMD; version=9 only). Its test
+(`2026-01-14 - Filename date test.pdf`, content 03.07.2024, via the consume folder) got created
+2026-01-14. "Error while parsing date string" log lines went from 2 to 0. The commit lives in the
+server host's dotfiles clone and is not yet pushed.
+
+Effect on the Mac side: none needed. `created=` stays as an explicit, server-independent date. The
+neutral `scan.pdf` name now matters: filename dates are parsed, and a ScanSnap title containing a
+separated date (e.g. `03.07.2024`) would now be read as YMD. Option B must keep dates out of
+any filename it sends.
+
+Cleanup status: test documents still in paperless are **6896, 6897, 6899–6905, 6907** (6907 is the
+server agent's test). 6898 and 6906 are deleted; the trash is empty. Local test copies were deleted
+from `~/Scans/done/` and `~/Scans/duplicates/`; the real scans (6895, 6908) are kept.
+
 ## Confidence
 
 likely-good. Every plan step passed against the real server after the 5.2 fix. The server-side
-date fix is diagnosed from source but not yet applied or verified on the container.
+date fix was applied and verified on the server afterwards (see Addendum).
