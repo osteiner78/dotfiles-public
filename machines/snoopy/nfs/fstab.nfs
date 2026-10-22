@@ -1,0 +1,12 @@
+# NFS mounts from OpenMediaVault (192.168.1.150). Edit here, then run apply.sh.
+# books is `hard` with locking (Calibre metadata.db is SQLite, also opened from the Mac).
+# The others are still `soft,nolock`; switch the ones that get written to `hard`.
+192.168.1.150:/export/audiobooks        /mnt/nfs/audiobooks     nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/books             /mnt/nfs/books          nfs nfsvers=3,hard,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/comics            /mnt/nfs/comics         nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/comics2           /mnt/nfs/comics2        nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/music             /mnt/nfs/music          nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/photos            /mnt/nfs/photos         nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/roms              /mnt/nfs/roms           nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/torrents          /mnt/nfs/torrents       nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0
+192.168.1.150:/export/videos            /mnt/nfs/videos         nfs nfsvers=3,nolock,soft,retry=0,auto,_netdev,nofail,noatime,tcp,actimeo=30,x-systemd.mount-timeout=60,x-systemd.automount  0  0

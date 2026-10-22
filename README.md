@@ -70,3 +70,10 @@ Never commit secrets to this repo. If a config file needs a secret, it belongs i
 ## Docker
 
 The `docker/` folder contains Docker Compose files for self-hosted services. Each subfolder is a service. These are not Stow-managed — copy or reference them directly on the target host.
+
+## NAS mounts (not stowed)
+
+`/etc` mount files can't be symlinked safely: macOS upgrades replace `/etc/auto_master`, and snoopy's `/etc/fstab` holds its root disk. They are managed by idempotent scripts instead:
+
+- **MacBook:** `common-macos/nfs/install.sh` sets up the autofs `books` share for Calibre. Run `--check` after every macOS upgrade.
+- **snoopy:** `machines/snoopy/nfs/apply.sh` syncs a marked block of `/etc/fstab` with `fstab.nfs`.
