@@ -48,6 +48,7 @@ scan-intake health            # selftest + failed/ + stuck outbox + agent loaded
 
 One line per event in the log: `run_start`, `uploaded`, `success`, `duplicate`, `pending`,
 `failed`, `rejected` (401/403, the file stays in outbox and the run stops), `network_error`,
+`upload_error` (no final answer, e.g. a TLS error: the file stays in outbox),
 `requeued` (by `retry`), `skipped` (another run holds `~/Scans/.lock`), `stale_lock` (a dead
 run's lock was taken over), `health` (`health ok` or `health problems=N`), `config_error`, `deleted`.
 

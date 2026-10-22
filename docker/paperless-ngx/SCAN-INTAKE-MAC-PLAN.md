@@ -115,6 +115,7 @@ empty token, permissions looser than 600, or HTTP 401/403. `--selftest` returns 
 | `failed` | ERROR | `file="…" http=<code>` (4xx/5xx other than 401/403) or `file="…" reason="…"` |
 | `pending` | WARN | `file="…" task=<uuid>` |
 | `network_error` | WARN | `file="…" curl=<exit code>` |
+| `upload_error` | WARN | `file="…" reason="…"` (no final answer, e.g. TLS error or no task id; the file stays in outbox) |
 | `deleted` | INFO | `file="…"` (done/ retention) |
 | `skipped` | INFO | `reason="another run in progress"` (run lock held by a live pid) |
 | `stale_lock` | WARN | `pid=<n\|none>` (lock owner gone; the lock was taken over) |
