@@ -2,8 +2,9 @@
 
 Bash script that uploads ScanSnap scans from `~/Scans/outbox` to paperless-ngx via the REST API,
 run by a LaunchAgent. macOS only. User docs: `README.md`. History and design decisions:
-`~/dotfiles/docker/paperless-ngx/SCAN-INTAKE-MAC-PLAN.md` (phases 0–6) and
-`~/dotfiles/.agent/plans/001-scan-intake-followups.md` (phases 7–9); reports in
+`~/dotfiles/docker/paperless-ngx/SCAN-INTAKE-MAC-PLAN.md` (phases 0–6),
+`~/dotfiles/.agent/plans/001-scan-intake-followups.md` (phases 7–9) and
+`~/dotfiles/.agent/plans/002-scan-intake-review-fixes.md` (phase 10); reports in
 `~/dotfiles/.agent/reports/`.
 
 ## Layout
@@ -37,5 +38,12 @@ run by a LaunchAgent. macOS only. User docs: `README.md`. History and design dec
 - `API_VERSION` must be 9, checked outside `load_env` so `--selftest` still runs its other checks.
 - terminal-notifier refuses messages starting with `- " ( [ {` (escape with a leading `\`), and
   needs a one-time permission grant via `open …/terminal-notifier.app` (README).
+- `curl -F name=<x` / `name=@x` read the file `x`: quote any user-derived `-F` value.
+- `selftest` runs as `$(selftest)` in `health`: its `load_env` doesn't reach the caller.
+- The lock counts as held only for a live process whose command line contains `scan-intake`
+  (pids are reused after a reboot, and the lock survives it).
+- `rotate_log` moves the file launchd holds open for stdout/stderr, so stray output lands in
+  `.log.1` until the agent restarts.
+- `SCAN_ROOT` is always `~/Scans` (not a `.env` key); tests isolate through `$HOME`.
 - SwiftBar 2.1.1 ignores `sfcolor` on the menu-bar icon; use `sfconfig` with Palette rendering.
 - The repo (`dotfiles-public`) is public: test fixtures must use made-up document names.

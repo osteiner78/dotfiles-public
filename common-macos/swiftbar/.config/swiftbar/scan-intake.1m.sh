@@ -13,7 +13,7 @@ SI=$HOME/.local/bin/scan-intake
 LABEL=xyz.osteiner.scan-intake
 ICON="sfimage=doc.viewfinder"
 # SwiftBar ignores sfcolor on the menu-bar icon; Palette rendering via sfconfig colours it.
-RED="sfconfig=$(printf '%s' '{"renderingMode":"Palette","colors":["red"],"scale":"medium","weight":"regular"}' | base64)"
+RED="sfconfig=$(printf '%s' '{"renderingMode":"Palette","colors":["red"],"scale":"medium","weight":"regular"}' | base64 | tr -d '\n')"
 
 if [[ ! -x $SI ]]; then
     echo "scan-intake not installed | $ICON"
