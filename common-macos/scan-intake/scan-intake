@@ -374,14 +374,14 @@ process_file() { # path
                 ;;
             *)
                 # No HTTP answer (e.g. TLS error): not a final answer, retry on the next trigger.
-                log ERROR failed "file=\"$name\" reason=\"curl exit $rc, http=${HTTP_CODE:-none}\""
+                log WARN upload_error "file=\"$name\" reason=\"curl exit $rc, http=${HTTP_CODE:-none}\""
                 ;;
         esac
         return 0
     fi
     task=$(jq -r 'if type == "string" then . else empty end' <"$TMP_BODY" 2>/dev/null || true)
     if [[ -z $task ]]; then
-        log ERROR failed "file=\"$name\" reason=\"no task id in response\""
+        log WARN upload_error "file=\"$name\" reason=\"no task id in response\""
         return 0
     fi
     log INFO uploaded "file=\"$name\" task=$task via=$via"
