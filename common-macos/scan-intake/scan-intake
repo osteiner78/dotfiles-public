@@ -264,8 +264,9 @@ upload() { # path base-url -> HTTP_CODE, TMP_BODY; returns curl's exit code
         form=(-F "$doc;filename=\"$(form_quote "$name")\"" -F "created=${name:0:10}")
     else
         title=$(scan_title "$name")
-        # Same rule as the document path: curl splits an unquoted value on ';' and ','.
-        if [[ $title == *[\\\"\;,]* ]]; then title="\"$(form_quote "$title")\""; fi
+        # Same rule as the document path: curl splits an unquoted value on ';' and ',',
+        # and reads the file named by an unquoted value starting with '<' or '@'.
+        if [[ $title == *[\\\"\;,]* || $title == [\<@]* ]]; then title="\"$(form_quote "$title")\""; fi
         form=(-F "$doc;filename=scan.$(lower_ext "$name")" -F "title=$title")
     fi
     HTTP_CODE=$(printf 'Authorization: Token %s\nAccept: application/json; version=%s\n' "$PAPERLESS_TOKEN" "$API_VERSION" |
