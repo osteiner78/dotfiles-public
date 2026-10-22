@@ -305,9 +305,6 @@ opencode() { _nvm_lazy_load; opencode "$@" }
 
 command -v oh-my-posh >/dev/null && eval "$(oh-my-posh init zsh --config ~/.config/ohmyposh/config.toml)"
 
-# Added by Antigravity
-export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
-
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
@@ -333,6 +330,3 @@ export PATH="$HOME/.opencode/bin:$PATH"
 if command -v zoxide >/dev/null; then
   eval "$(zoxide init zsh --cmd cd)"
 fi
-
-# Added by Antigravity IDE
-export PATH="/Users/oliversteiner/.antigravity-ide/antigravity-ide/bin:$PATH"
