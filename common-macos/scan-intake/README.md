@@ -72,6 +72,12 @@ With `terminal-notifier` on `PATH`, notifications open something on click: the d
 paperless (summary without errors). Without it, or when it fails, plain `osascript`
 notifications are used.
 
+Uploaded and Duplicate notifications carry page 1 of the scan as a thumbnail, and problem
+notifications a system stop (caution for Waiting) icon. macOS shows it only after you expand the
+banner or open Notification Center. Page content can therefore show on the lock screen; set
+System Settings > Notifications > Show previews to "When unlocked" if that matters. The
+`osascript` fallback has no images.
+
 Once after installing, grant it notification permission. Run from a shell it can't ask
 ("Notifications are not allowed for this application"); launched through LaunchServices it can:
 
