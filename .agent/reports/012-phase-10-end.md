@@ -346,3 +346,12 @@ The orchestrator made both changes. I didn't edit any tests.
 ## Confidence
 
 likely-good. The suite and shellcheck are green. The live check is still open.
+
+## Live check (2026-10-22)
+
+Passed. A real 1-page PDF named `<test> probe.pdf` was uploaded as document 6914 (before 10.1
+it would have stayed in outbox with curl exit 26); the user confirmed the title `<test> probe` in
+paperless and deleted the document. `./install.sh` rerun: both agents loaded, selftest passed.
+A fake file placed directly in failed/ turned the plugin icon red (confirmed by the user and by
+decoding the `sfconfig`); after removing it the icon was back to normal. Local test copies
+removed. Confidence: certain.
