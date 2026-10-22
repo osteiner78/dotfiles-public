@@ -5,7 +5,7 @@
     signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEgnP7ER5amem+5Br7dYQ2pJzUJfZzrFj1VduZW8O9pu
 
 [include]
-	path = ~/themes.gitconfig
+	path = ~/.config/git/themes.gitconfig
     
 [core]
 	editor = nvim

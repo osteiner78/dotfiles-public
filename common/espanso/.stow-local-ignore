@@ -1,2 +1,3 @@
 # Secrets match files come from dotfiles-secrets, not here
 private\.yml
+README.*

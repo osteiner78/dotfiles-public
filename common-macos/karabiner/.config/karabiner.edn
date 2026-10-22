@@ -40,8 +40,8 @@
         :launch_new "open -n -a %s"        ; -n: separate process per window (Ghostty)
 
         ; launch-focus (common-macos/bin): activates the app if it is running, otherwise opens it and waits for it to start
-        :focus            "$HOME/dotfiles/common-macos/bin/launch-focus --app \"%s\""
-        :focus_bid        "$HOME/dotfiles/common-macos/bin/launch-focus --bundle-id \"%s\""
+        :focus            "$HOME/.local/bin/launch-focus --app \"%s\""
+        :focus_bid        "$HOME/.local/bin/launch-focus --bundle-id \"%s\""
 }
 
 :applications{
@@ -150,7 +150,7 @@
 
         {:des "Cheatsheet (Hyper + ?)"
         :rules [:hyper-mode
-                [:##slash "$HOME/dotfiles/common-macos/bin/show-karabiner-cheatsheet"]
+                [:##slash "$HOME/.local/bin/show-karabiner-cheatsheet"]
                 ]}
 
         {:des "Hyper+B: Toggle jankyborders"

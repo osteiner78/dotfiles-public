@@ -50,7 +50,7 @@
             "key_code" : "a"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Arc\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Arc\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -63,7 +63,7 @@
             "key_code" : "c"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Calendar\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Calendar\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -102,7 +102,7 @@
             "key_code" : "g"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Gmail\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Gmail\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -128,7 +128,7 @@
             "key_code" : "o"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Obsidian\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Obsidian\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -141,7 +141,7 @@
             "key_code" : "p"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Paperless-ngx\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Paperless-ngx\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -154,7 +154,7 @@
             "key_code" : "t"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Todoist\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Todoist\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -180,7 +180,7 @@
             "key_code" : "v"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --bundle-id \"com.microsoft.VSCode\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --bundle-id \"com.microsoft.VSCode\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -193,7 +193,7 @@
             "key_code" : "w"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --bundle-id \"net.whatsapp.WhatsApp\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --bundle-id \"net.whatsapp.WhatsApp\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -206,7 +206,7 @@
             "key_code" : "z"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Claude\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Claude\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -219,7 +219,7 @@
             "key_code" : "x"
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/launch-focus --app \"Gemini\""
+            "shell_command" : "$HOME/.local/bin/launch-focus --app \"Gemini\""
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",
@@ -850,7 +850,7 @@
             }
           },
           "to" : [ {
-            "shell_command" : "$HOME/dotfiles/common-macos/bin/show-karabiner-cheatsheet"
+            "shell_command" : "$HOME/.local/bin/show-karabiner-cheatsheet"
           } ],
           "conditions" : [ {
             "name" : "hyper-mode",

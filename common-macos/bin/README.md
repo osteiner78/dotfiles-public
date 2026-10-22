@@ -1,1 +1,1 @@
-To symlink in /usr/local/bin
+Personal macOS scripts. Stowed into ~/.local/bin (on PATH via .zshenv).
