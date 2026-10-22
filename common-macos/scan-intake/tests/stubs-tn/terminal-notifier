@@ -7,12 +7,28 @@
 # Like the real tool (3.1.0, checked 2026-10-22), it refuses a -message value
 # that starts with - " ( [ { and exits 2; a leading backslash escapes it and is
 # not shown in the notification.
+#
+# -contentImage PATH: like the real tool, it reads the file at call time and leaves
+# it in place; a copy goes to $STUB_LOG/tn-image-N (N = call number). A missing
+# file gets a warning on stderr and the notification is still sent (exit 0).
 {
     printf '%s\x1f' "$@"
     printf '\n'
 } >>"$STUB_LOG/terminal-notifier.log"
 
 args=("$@")
+n=$(grep -c . "$STUB_LOG/terminal-notifier.log")
+for ((i = 0; i < ${#args[@]} - 1; i++)); do
+    if [[ "${args[$i]}" == -contentImage ]]; then
+        img=${args[$((i + 1))]}
+        if [[ -f "$img" ]]; then
+            cp "$img" "$STUB_LOG/tn-image-$n"
+        else
+            echo "[!] Could not attach '$img': no such file." >&2
+        fi
+    fi
+done
+
 for ((i = 0; i < ${#args[@]} - 1; i++)); do
     if [[ "${args[$i]}" == -message ]]; then
         case "${args[$((i + 1))]}" in
