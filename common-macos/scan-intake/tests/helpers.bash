@@ -118,6 +118,20 @@ tn_arg() {
     awk -v RS='\037' -v flag="$1" 'found { print; ok = 1; exit } $0 == flag { found = 1 } END { exit !ok }' <<<"$line"
 }
 
+# tn_image [CALL] — the copy of the -contentImage file the fake kept for call
+# number CALL (default: the last call); status 1 when that call had no image.
+tn_image() {
+    local n=${1:-$(tn_calls)}
+    [[ -f "$STUB_LOG/tn-image-$n" ]] && echo "$STUB_LOG/tn-image-$n"
+}
+
+# make_real_scan NAME — outbox/NAME holding a real one-page PDF (tests/data/page.pdf,
+# made-up text) that sips can render; make_scan's files can't be rendered.
+make_real_scan() {
+    mkdir -p "$SCANS/outbox"
+    cp "$ROOT/tests/data/page.pdf" "$SCANS/outbox/$1"
+}
+
 # write_success_log — a log with two uploads; the latest is doc 6342.
 write_success_log() {
     mkdir -p "${LOG%/*}"
