@@ -526,12 +526,15 @@ acquire_lock() { # returns 1 when another run holds the lock
     local lock=$SCAN_ROOT/.lock pid=
     if ! mkdir "$lock" 2>/dev/null; then
         pid=$(cat "$lock/pid" 2>/dev/null || true)
-        if [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null; then
+        # The lock survives a reboot and pids get reused, so a live pid alone isn't proof.
+        if [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null &&
+            [[ $(ps -p "$pid" -o command= 2>/dev/null) == *scan-intake* ]]; then
             log INFO skipped 'reason="another run in progress"'
             return 1
         fi
         log WARN stale_lock "pid=${pid:-none}"
-        rm -rf "$lock"
+        # Rename first so a run that takes over at the same time can't lose its new lock.
+        mv "$lock" "$lock.stale.$$" 2>/dev/null && rm -rf "$lock.stale.$$"
         if ! mkdir "$lock" 2>/dev/null; then
             log INFO skipped 'reason="another run in progress"'
             return 1
