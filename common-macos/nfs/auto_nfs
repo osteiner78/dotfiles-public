@@ -1,0 +1,9 @@
+# Managed by ~/dotfiles/common-macos/nfs — edit there, then run install.sh.
+# NAS: OpenMediaVault 192.168.1.150. Mounted under ~/NetworkDrives (autofs, see install.sh).
+#
+# books: Calibre libraries. `hard` and NFS locking on (no `nolockd`), because each
+# library's metadata.db is SQLite and calibre-web on snoopy opens the same files.
+# The NAS export squashes every client to uid/gid 1000 (all_squash,anonuid=1000).
+books  -fstype=nfs,vers=3,rw,tcp,hard,intr,nfc  192.168.1.150:/export/books
+#
+# comics / comics2 are used over SMB (Finder ⌘K + Login Items), not NFS. See README.md.
