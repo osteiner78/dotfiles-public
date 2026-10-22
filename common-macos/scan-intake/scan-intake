@@ -28,6 +28,7 @@ N_SUB=()
 N_BODY=()
 N_ERR=()
 N_URL=()
+N_IMG=()
 NOTIFY_SEQ=0
 N_OK=0
 N_DUP=0
@@ -48,8 +49,18 @@ debug() {
     log DEBUG "$@"
 }
 
-notify() { # subtitle body [error] [click-url]
-    local sub=$1 body=$2 url=${4:-} sound='' tn=()
+notify_image() { # src (path|stop|caution) out
+    local src=$1 icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
+    case $src in
+    stop) src=$icons/AlertStopIcon.icns ;;
+    caution) src=$icons/AlertCautionBadgeIcon.icns ;;
+    esac
+    sips -s format png -Z 256 "$src" --out "$2" >/dev/null 2>&1
+    [[ -s $2 ]]
+}
+
+notify() { # subtitle body [error] [click-url] [image: path|stop|caution]
+    local sub=$1 body=$2 url=${4:-} img=${5:-} imgdir='' png='' sound='' tn=()
     local bs=$'\\' q='"'
     NOTIFY_SEQ=$((NOTIFY_SEQ + 1))
     if command -v terminal-notifier >/dev/null 2>&1; then
@@ -60,7 +71,18 @@ notify() { # subtitle body [error] [click-url]
         [[ ${3:-} == error ]] && tn+=(-sound Basso)
         [[ -n $url ]] && tn+=(-open "$url")
         tn+=(-group "scan-intake-$$-$NOTIFY_SEQ")
-        if terminal-notifier "${tn[@]}" >/dev/null 2>&1; then return 0; fi
+        if [[ -n $img ]]; then
+            # mktemp can't add a .png suffix on BSD, so the PNG lives in a temp dir.
+            if imgdir=$(mktemp -d "${TMPDIR:-/tmp}/scan-intake-img.XXXXXX"); then
+                png=$imgdir/image.png
+                if notify_image "$img" "$png"; then tn+=(-contentImage "$png"); fi
+            fi
+        fi
+        if terminal-notifier "${tn[@]}" >/dev/null 2>&1; then
+            [[ -z $imgdir ]] || rm -rf "$imgdir"
+            return 0
+        fi
+        [[ -z $imgdir ]] || rm -rf "$imgdir"
     fi
     sub=${sub//$bs/$bs$bs}
     sub=${sub//$q/$bs$q}
@@ -70,11 +92,12 @@ notify() { # subtitle body [error] [click-url]
     osascript -e "display notification \"$body\" with title \"Scan intake\" subtitle \"$sub\"$sound" >/dev/null 2>&1 || true
 }
 
-queue_notify() { # subtitle body [error] [click-url]
+queue_notify() { # subtitle body [error] [click-url] [image]
     N_SUB+=("$1")
     N_BODY+=("$2")
     N_ERR+=("${3:-}")
     N_URL+=("${4:-}")
+    N_IMG+=("${5:-}")
 }
 
 failed_url() {
@@ -94,7 +117,7 @@ flush_notifications() {
     ((n > 0)) || return 0
     if ((n <= 5)); then
         for ((i = 0; i < n; i++)); do
-            notify "${N_SUB[$i]}" "${N_BODY[$i]}" "${N_ERR[$i]}" "${N_URL[$i]}"
+            notify "${N_SUB[$i]}" "${N_BODY[$i]}" "${N_ERR[$i]}" "${N_URL[$i]}" "${N_IMG[$i]}"
         done
         return 0
     fi
@@ -103,7 +126,7 @@ flush_notifications() {
     ((N_FAIL == 0)) || parts+=("$(plural "$N_FAIL" error)")
     summary=$(printf '%s, ' "${parts[@]}")
     if ((N_FAIL > 0)); then
-        notify "Summary" "${summary%, }" error "$(failed_url)"
+        notify "Summary" "${summary%, }" error "$(failed_url)" stop
     else
         notify "Summary" "${summary%, }" "" "$PAPERLESS_URL"
     fi
@@ -149,7 +172,7 @@ check_api_version() {
 
 config_error() {
     log ERROR config_error "reason=\"$CONFIG_ERR\""
-    notify "Config error" "$CONFIG_ERR" error "file://$LOG"
+    notify "Config error" "$CONFIG_ERR" error "file://$LOG" stop
 }
 
 ensure_dirs() {
@@ -294,7 +317,7 @@ file_result() { # path secs
         touch "$DEST"
         log INFO success "file=\"$name\" doc=$doc secs=$secs"
         N_OK=$((N_OK + 1))
-        if [[ $NOTIFY_SUCCESS == true ]]; then queue_notify "Uploaded" "$name → document #$doc" "" "$(doc_url "$doc")"; fi
+        if [[ $NOTIFY_SUCCESS == true ]]; then queue_notify "Uploaded" "$name → document #$doc" "" "$(doc_url "$doc")" "$DEST"; fi
     elif [[ $(jq -r '(.[0].duplicate_documents // []) | length' <"$TMP_BODY") -gt 0 ]] ||
         printf '%s' "$result" | grep -qi duplicate; then
         existing=$(jq -r '.[0].duplicate_documents[0].id // empty' <"$TMP_BODY")
@@ -305,14 +328,14 @@ file_result() { # path secs
         log WARN duplicate "file=\"$name\" existing=${existing:-unknown}"
         N_DUP=$((N_DUP + 1))
         queue_notify "Duplicate, skipped" "$name: already document #${existing:-unknown}" "" \
-            "${existing:+$(doc_url "$existing")}"
+            "${existing:+$(doc_url "$existing")}" "$DEST"
     else
         first=${result%%$'\n'*}
         file_into "$path" failed
         printf '%s\n' "$result" >"$DEST.error"
         log ERROR failed "file=\"$name\" reason=\"$first\""
         N_FAIL=$((N_FAIL + 1))
-        queue_notify "Error" "$name: $first" error "$(failed_url)"
+        queue_notify "Error" "$name: $first" error "$(failed_url)" stop
     fi
 }
 
@@ -326,7 +349,7 @@ fail_file() { # path error-text notify-text
     file_into "$path" failed
     printf '%s\n' "$2" >"$DEST.error"
     N_FAIL=$((N_FAIL + 1))
-    queue_notify "Error" "$name: $3" error "$(failed_url)"
+    queue_notify "Error" "$name: $3" error "$(failed_url)" stop
 }
 
 # Returns 1 when the run must stop (token rejected).
@@ -510,7 +533,7 @@ health_cmd() {
     log WARN health "problems=${#problems[@]}"
     d="file://$LOG"
     if ((n_failed > 0)); then d=$(failed_url); fi
-    notify "Health check" "$body" error "$d"
+    notify "Health check" "$body" error "$d" stop
     return 1
 }
 
@@ -720,7 +743,7 @@ run_once() {
         return 1
     fi
     if ((N_WAITING > 0)); then
-        notify "Waiting" "$(plural "$N_WAITING" scan) queued, paperless unreachable"
+        notify "Waiting" "$(plural "$N_WAITING" scan) queued, paperless unreachable" "" "" caution
     fi
     delete_old_done
     rotate_log

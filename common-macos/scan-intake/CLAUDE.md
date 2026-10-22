@@ -15,6 +15,8 @@ run by a LaunchAgent. macOS only. User docs: `README.md`. History and design dec
   `scan-intake-health.plist.in` with absolute paths and load them with launchctl.
 - The SwiftBar plugin lives in the swiftbar stow package:
   `../swiftbar/.config/swiftbar/scan-intake.1m.sh`. It only renders `status --json`.
+- `tests/data/`: real fixture files (made-up content), e.g. `page.pdf` for tests that need a
+  renderable scan.
 - `tests/`: bats. `bats tests/` (~1 min) plus
   `shellcheck scan-intake install.sh uninstall.sh ../swiftbar/.config/swiftbar/scan-intake.1m.sh`.
 
@@ -38,6 +40,10 @@ run by a LaunchAgent. macOS only. User docs: `README.md`. History and design dec
 - `API_VERSION` must be 9, checked outside `load_env` so `--selftest` still runs its other checks.
 - terminal-notifier refuses messages starting with `- " ( [ {` (escape with a leading `\`), and
   needs a one-time permission grant via `open …/terminal-notifier.app` (README).
+- `qlmanage -t` never exits on a missing, empty or corrupt file; render thumbnails with `sips`
+  (it writes no output on failure, so check the output file, not the exit code).
+- terminal-notifier can't change the notification icon (`-appIcon`/`-sender` are gone); only
+  `-contentImage` attaches a picture. It reads the file and leaves it in place.
 - `curl -F name=<x` / `name=@x` read the file `x`: quote any user-derived `-F` value.
 - `selftest` runs as `$(selftest)` in `health`: its `load_env` doesn't reach the caller.
 - The lock counts as held only for a live process whose command line contains `scan-intake`
