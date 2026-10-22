@@ -496,7 +496,7 @@ selftest() {
 }
 
 health_cmd() {
-    local out line d f problems=() n_failed=0 now body="" p
+    local out line d f problems=() n_failed=0 now body="" p mtime
     now=$(date +%s)
     out=$(selftest) || true
     while IFS= read -r line; do
@@ -507,7 +507,8 @@ health_cmd() {
     if ((n_failed > 0)); then problems+=("$(plural "$n_failed" file) in failed/"); fi
     for f in "$SCAN_ROOT"/outbox/*; do
         is_scan_file "$f" || continue
-        if ((now - $(stat -f %m "$f") > 3600)); then problems+=("outbox file older than 1 h: ${f##*/}"); fi
+        mtime=$(stat -f %m "$f" 2>/dev/null) || continue
+        if ((now - mtime > 3600)); then problems+=("outbox file older than 1 h: ${f##*/}"); fi
     done
     if ((${#problems[@]} == 0)); then
         log INFO health ok
@@ -572,12 +573,13 @@ failed_entries() { # one JSON object per line
 }
 
 pending_entries() { # one JSON object per line
-    local t now
+    local t now mtime
     now=$(date +%s)
     for t in "$SCAN_ROOT"/pending/*.task; do
         [[ -f $t ]] || continue
+        mtime=$(stat -f %m "$t" 2>/dev/null) || continue
         jq -nc --arg file "$(basename "$t" .task)" --arg task "$(head -n 1 "$t")" \
-            --argjson age "$((now - $(stat -f %m "$t")))" '{file: $file, task: $task, age_secs: $age}'
+            --argjson age "$((now - mtime))" '{file: $file, task: $task, age_secs: $age}'
     done
 }
 
