@@ -128,7 +128,7 @@ load_env() {
         key=${line%%=*}
         val=${line#*=}
         case $key in
-            PAPERLESS_TOKEN | PAPERLESS_URL | SCAN_ROOT | API_VERSION | POLL_TIMEOUT | POLL_INTERVAL | \
+            PAPERLESS_TOKEN | PAPERLESS_URL | API_VERSION | POLL_TIMEOUT | POLL_INTERVAL | \
                 STABLE_SECS | DONE_RETENTION_DAYS | NOTIFY_SUCCESS | LAN_FALLBACK_URL)
                 printf -v "$key" '%s' "$val"
                 ;;
