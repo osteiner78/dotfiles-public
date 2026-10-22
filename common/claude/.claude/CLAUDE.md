@@ -2,7 +2,15 @@
 
 ## Who I am
 
-Oliver Steiner — computer enthusiast learning new technologies, not a professional developer. I work across a macOS workstation (arm64), a home server (garfield, running Docker), and Linux VMs (currently preferring Fedora + niri).
+Oliver Steiner — computer enthusiast learning new technologies, not a professional developer. I work across a macOS workstation (arm64), a self-hosting setup, and Linux VMs (currently preferring Fedora + niri).
+
+**Infrastructure:**
+
+- **garfield** — VPS, acts as the reverse proxy fronting the home server
+- **home server** — runs Proxmox; hosts several VMs
+- **minnie** — Proxmox VM holding all self-hosted personal projects (Docker)
+
+Self-hosted projects deploy to **minnie**, exposed externally through garfield and reachable from my own devices over Tailscale.
 
 ---
 
@@ -134,3 +142,9 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+
+## NAS mounts (NFS)
+- Mac: `~/dotfiles/common-macos/nfs/install.sh` mounts the NAS books share at `~/NetworkDrives/books` (Calibre). Run `install.sh --check` after every macOS upgrade, since upgrades reset `/etc/auto_master`.
+- snoopy: `~/dotfiles/machines/snoopy/nfs/apply.sh` manages the NFS block of `/etc/fstab` from `fstab.nfs`. Edit the repo file, then run `./apply.sh --check` and `sudo ./apply.sh`. Never edit `/etc/fstab` by hand.
+- Comics and comics2 are SMB shares (user `smbshare`), not NFS.
