@@ -172,14 +172,6 @@ is_scan_file() { # path
     return 1
 }
 
-count_outbox() {
-    local f n=0
-    for f in "$SCAN_ROOT"/outbox/*; do
-        if is_scan_file "$f"; then n=$((n + 1)); fi
-    done
-    echo "$n"
-}
-
 count_pending() {
     local f n=0
     for f in "$SCAN_ROOT"/pending/*.task; do
@@ -711,7 +703,7 @@ run_once() {
     }
     ensure_dirs
     if [[ $DRY_RUN == false ]]; then acquire_lock || return 0; fi
-    log INFO run_start "outbox=$(count_outbox) pending=$(count_pending)"
+    log INFO run_start "outbox=$(count_scans outbox) pending=$(count_pending)"
 
     if [[ $DRY_RUN == true ]]; then
         for f in "$SCAN_ROOT"/outbox/*; do
