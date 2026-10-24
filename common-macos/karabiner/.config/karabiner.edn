@@ -186,9 +186,10 @@
          {:alone :!Ctab}
         ]]}
 
-        {:des "In Arc/Code/Zen/Safari/Obsidian/Ghostty: left_control alone -> ctrl + tab to last tab"
+        {:des "In Arc/Claude/Code/Zen/Safari/Obsidian/Ghostty: left_control alone -> ctrl + tab to last tab"
         :rules [
                 [:left_control :left_control :arc {:alone :!Ttab}]
+                [:left_control :left_control :claude {:alone :!Ttab}]
                 [:left_control :left_control :code {:alone :!Ttab}]
                 [:left_control :left_control :zen {:alone :!Ttab}]
                 [:left_control :left_control :safari {:alone :!Ttab}]

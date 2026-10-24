@@ -1004,7 +1004,7 @@
           "type" : "basic"
         } ]
       }, {
-        "description" : "In Arc/Code/Zen/Safari/Obsidian/Ghostty: left_control alone -> ctrl + tab to last tab",
+        "description" : "In Arc/Claude/Code/Zen/Safari/Obsidian/Ghostty: left_control alone -> ctrl + tab to last tab",
         "manipulators" : [ {
           "to_if_alone" : [ {
             "key_code" : "tab",
@@ -1019,6 +1019,22 @@
           "conditions" : [ {
             "type" : "frontmost_application_if",
             "bundle_identifiers" : [ "^company\\.thebrowser\\.Browser$" ]
+          } ],
+          "type" : "basic"
+        }, {
+          "to_if_alone" : [ {
+            "key_code" : "tab",
+            "modifiers" : [ "left_control" ]
+          } ],
+          "from" : {
+            "key_code" : "left_control"
+          },
+          "to" : [ {
+            "key_code" : "left_control"
+          } ],
+          "conditions" : [ {
+            "type" : "frontmost_application_if",
+            "bundle_identifiers" : [ "^com\\.anthropic\\.claudefordesktop" ]
           } ],
           "type" : "basic"
         }, {
