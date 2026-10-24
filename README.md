@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal dotfiles managed with stow.
+Personal dotfiles managed with stow. This repo is public; secrets live in the private `dotfiles-secrets` repo (see [Secrets](#secrets)).
 
 ## Structure
 
@@ -10,8 +10,7 @@ dotfiles/
 ├── common/          cross-platform configs (macOS + Linux)
 ├── common-linux/    Linux-only configs
 ├── common-macos/    macOS-only configs
-├── machines/        machine-specific dotfiles (borgmatic, caddy, ssh, …)
-│   ├── macbook/
+├── machines/        machine-specific dotfiles (borgmatic, caddy, ssh, nfs, …)
 │   ├── garfield/    VPS
 │   ├── snoopy/      Proxmox VM (media services)
 │   └── raspi/       Raspberry Pi (Home Assistant + Pi-hole)
@@ -23,7 +22,7 @@ dotfiles/
 
 ```bash
 # 1. Clone both repos (dotfiles-secrets is private)
-git clone git@github.com:osteiner78/dotfiles.git ~/dotfiles
+git clone git@github.com:osteiner78/dotfiles-public.git ~/dotfiles
 git clone git@github.com:osteiner78/dotfiles-secrets.git ~/dotfiles-secrets
 
 # 2. Run the installer — machine is auto-detected from hostname/uname

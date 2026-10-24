@@ -54,14 +54,6 @@
 #     reverse_proxy 192.168.1.100:8123
 # }
 
-# http://firefly.osteiner.xyz {
-#     reverse_proxy http:/192.168.1.101:1080
-# }
-#
-# http://fireflyimporter.osteiner.xyz {
-#     reverse_proxy http://192.168.1.101:1081
-# }
-#
 # http://radarr.osteiner.xyz {
 #     reverse_proxy http://192.168.1.101:7878
 # }

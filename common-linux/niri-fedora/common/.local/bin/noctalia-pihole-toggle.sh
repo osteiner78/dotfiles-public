@@ -1,7 +1,8 @@
 #!/bin/bash
 # Configuration
 PIHOLE_IP="192.168.1.100"
-APP_PASSWORD="***REMOVED***"
+# App password lives in dotfiles-secrets (stowed to ~/.config/noctalia/pihole-app-password)
+APP_PASSWORD="${PIHOLE_APP_PASSWORD:-$(cat "$HOME/.config/noctalia/pihole-app-password" 2>/dev/null)}"
 SID_FILE="/tmp/pihole_sid_${PIHOLE_IP//./_}"
 
 # Function to perform authentication and cache the SID

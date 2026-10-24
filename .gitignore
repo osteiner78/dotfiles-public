@@ -3,7 +3,6 @@
 .env
 lazy-lock.json
 common/nvim/.config/nvim/.history/
-~/.local/share/nvim/lazy/
 docker/raspi-docker/etc-pihole/
 docker/linkding/data
 common/ssh/.ssh/id_ed25519
