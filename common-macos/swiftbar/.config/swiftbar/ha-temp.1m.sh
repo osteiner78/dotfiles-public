@@ -7,9 +7,13 @@
 
 set -eo pipefail
 
+# Secrets (HA_TOKEN, PIHOLE_PASSWORD) come from the private dotfiles-secrets repo
+SECRETS_FILE="${SECRETS_FILE:-$HOME/dotfiles-secrets/common-macos/swiftbar/secrets.env}"
+[ -f "$SECRETS_FILE" ] && . "$SECRETS_FILE"
+
 # --- CONFIG ---
 HA_URL="${HA_URL:-https://home.osteiner.xyz}"
-HA_TOKEN="${HA_TOKEN:-***REMOVED***}"
+HA_TOKEN="${HA_TOKEN:-}"
 IN_SENSOR="${IN_SENSOR:-sensor.aqara_temperature_sensor_bedroom_temperature}"
 OUT_SENSOR="${OUT_SENSOR:-sensor.aqara_temperature_sensor_terrace_temperature}"
 TIMEOUT="${TIMEOUT:-4}"

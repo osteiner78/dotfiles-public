@@ -7,9 +7,13 @@
 
 set -euo pipefail
 
+# Secrets (HA_TOKEN, PIHOLE_PASSWORD) come from the private dotfiles-secrets repo
+SECRETS_FILE="${SECRETS_FILE:-$HOME/dotfiles-secrets/common-macos/swiftbar/secrets.env}"
+[ -f "$SECRETS_FILE" ] && . "$SECRETS_FILE"
+
 # --- CONFIG ---
 PIHOLE_URL="${PIHOLE_URL:-http://192.168.1.100}"
-PIHOLE_PASSWORD="${PIHOLE_PASSWORD:-***REMOVED***"
+PIHOLE_PASSWORD="${PIHOLE_PASSWORD:-}"
 TIMEOUT="${TIMEOUT:-4}"
 # --------------
 
