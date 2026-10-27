@@ -6,4 +6,8 @@
 # The NAS export squashes every client to uid/gid 1000 (all_squash,anonuid=1000).
 books  -fstype=nfs,vers=3,rw,tcp,hard,intr,nfc  192.168.1.150:/export/books
 #
-# comics / comics2 are used over SMB (Finder ⌘K + Login Items), not NFS. See README.md.
+# comics2: Kavita library (snoopy mounts the same export at /mnt/nfs/comics2). NFS here so
+# scripts and Claude's Cowork shell can read it and drop new albums in; Finder/SMB still works.
+comics2  -fstype=nfs,vers=3,rw,tcp,hard,intr,nfc  192.168.1.150:/export/comics2
+#
+# comics is used over SMB (Finder ⌘K + Login Items), not NFS. See README.md.

@@ -1,7 +1,7 @@
 # nfs (macOS)
 
-Mounts the NAS `books` share at `~/NetworkDrives/books` with autofs, so the
-Calibre app can open the libraries that live on the NAS (OpenMediaVault, 192.168.1.150).
+Mounts the NAS `books` share at `~/NetworkDrives/books` (Calibre libraries) and `comics2`
+at `~/NetworkDrives/comics2` (Kavita library) with autofs (OpenMediaVault, 192.168.1.150).
 
 ```bash
 ~/dotfiles/common-macos/nfs/install.sh           # install / repair (asks for sudo)
@@ -17,7 +17,7 @@ stops mounting, and Calibre creates an empty local library at the old path.
 | File | Content |
 |---|---|
 | `/etc/auto_master` | adds `~/NetworkDrives  auto_nfs  -nobrowse,nosuid` (appended, rest untouched) |
-| `/etc/auto_nfs` | copy of [`auto_nfs`](auto_nfs) — only `books` |
+| `/etc/auto_nfs` | copy of [`auto_nfs`](auto_nfs) — `books` and `comics2` |
 
 Existing files are backed up as `*.bak-<timestamp>` before any change.
 
