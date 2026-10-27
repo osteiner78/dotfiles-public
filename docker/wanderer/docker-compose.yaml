@@ -1,0 +1,89 @@
+# wanderer — self-hosted trail database (GPX/FIT/KML), https://wanderer.to
+# Runs on snoopy. Public URL via Caddy on garfield: https://wanderer.osteiner.xyz
+# Secrets (MEILI_MASTER_KEY, POCKETBASE_ENCRYPTION_KEY, POCKETBASE_PROXY_SECRET) live in
+# dotfiles-secrets/docker/wanderer/.env — see README.md for setup and bulk GPX import.
+# Based on the upstream compose for v0.21.x (Flomp/wanderer, docker-compose.yml).
+
+x-common-env: &cenv
+  MEILI_URL: http://search:7700
+  MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?set in .env}
+
+services:
+  search:
+    container_name: wanderer-search
+    image: getmeili/meilisearch:v1.36.0   # version pinned upstream; wanderer's index needs a matching Meilisearch
+    environment:
+      <<: *cenv
+      MEILI_NO_ANALYTICS: "true"
+    networks: [wanderer]
+    volumes:
+      - /opt/wanderer/data.ms:/meili_data/data.ms
+    restart: unless-stopped
+    healthcheck:
+      test: curl --fail http://localhost:7700/health || exit 1
+      interval: 15s
+      retries: 10
+      start_period: 20s
+      timeout: 10s
+
+  db:
+    container_name: wanderer-db
+    image: flomp/wanderer-db:latest
+    depends_on:
+      search:
+        condition: service_healthy
+    environment:
+      <<: *cenv
+      POCKETBASE_ENCRYPTION_KEY: ${POCKETBASE_ENCRYPTION_KEY:?set in .env}
+      POCKETBASE_PROXY_SECRET: ${POCKETBASE_PROXY_SECRET:?set in .env}
+      ORIGIN: ${ORIGIN:-https://wanderer.osteiner.xyz}
+    ports:
+      - "127.0.0.1:8090:8090"   # PocketBase admin UI, only via SSH tunnel
+    networks: [wanderer]
+    volumes:
+      - /opt/wanderer/pb_data:/pb_data
+      - /opt/wanderer/plugins:/data/plugins
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/curl", "--fail", "http://localhost:8090/health"]
+      interval: 15s
+      retries: 10
+      start_period: 20s
+      timeout: 10s
+
+  web:
+    container_name: wanderer-web
+    image: flomp/wanderer-web:latest
+    depends_on:
+      search:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    environment:
+      <<: *cenv
+      ORIGIN: ${ORIGIN:-https://wanderer.osteiner.xyz}
+      BODY_SIZE_LIMIT: 2G
+      POCKETBASE_PROXY_SECRET: ${POCKETBASE_PROXY_SECRET:?set in .env}
+      PUBLIC_POCKETBASE_URL: http://db:8090
+      PUBLIC_DISABLE_SIGNUP: ${PUBLIC_DISABLE_SIGNUP:-false}   # set "true" in .env once your account exists
+      UPLOAD_FOLDER: /app/uploads
+      OVERPASS_API_URL: https://overpass-api.de
+      VALHALLA_URL: https://valhalla1.openstreetmap.de
+      NOMINATIM_URL: https://nominatim.openstreetmap.org
+      PUBLIC_MAP_MAX_POLYLINES: 100
+    volumes:
+      - /opt/wanderer/uploads:/app/uploads   # bulk import: drop GPX into uploads/<api-token>/
+    ports:
+      - "3003:3000"   # 3000 is taken on snoopy
+    networks: [wanderer]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/"]
+      interval: 15s
+      retries: 10
+      start_period: 20s
+      timeout: 10s
+
+networks:
+  wanderer:
+    driver: bridge
