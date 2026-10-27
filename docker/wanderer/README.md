@@ -11,6 +11,8 @@ Self-hosted trail database ([wanderer.to](https://wanderer.to)) on **snoopy**, p
 | `/opt/wanderer/` on snoopy | data: `data.ms` (search index), `pb_data` (database), `plugins`, `uploads` |
 
 ## First install (snoopy)
+The secrets repo needs an SSH remote on snoopy (HTTPS has no credentials there):
+`git -C ~/dotfiles-secrets remote set-url origin git@github.com:osteiner78/dotfiles-secrets.git`
 ```bash
 cd ~/dotfiles && git pull && cd ~/dotfiles-secrets && git pull
 sudo mkdir -p /opt/wanderer/{data.ms,pb_data,plugins,uploads}
@@ -30,10 +32,23 @@ Then on garfield: `cd ~/dotfiles && git pull && sudo caddy validate --config /et
 ## Bulk GPX import
 1. In wanderer: Settings → create an **API token**.
 2. On snoopy: `mkdir /opt/wanderer/uploads/<api-token>` (folder name = the token).
-3. Copy files in (`.gpx`, `.fit`, `.kml`), e.g. from the Mac:
-   `scp ~/Downloads/Tracks/*.gpx snoopy:/opt/wanderer/uploads/<api-token>/`
+3. Copy files in (`.gpx`, `.fit`, `.kml`) via a staging dir, so the watcher never sees a half-written file
+   (copying straight into the token folder made it reject files with 400 "Empty file" / "Invalid file"):
+   ```bash
+   ssh snoopy 'mkdir -p /opt/wanderer/staging'
+   scp ~/Downloads/Tracks/*.gpx snoopy:/opt/wanderer/staging/
+   ssh snoopy 'mv /opt/wanderer/staging/*.gpx /opt/wanderer/uploads/<api-token>/'
+   ```
 4. The watcher imports them while the container runs and deletes each imported file.
    Files left behind failed to import; check `docker logs wanderer-web`.
+   The watcher only reacts to new files and never retries: move a leftover file out of the token folder and back in.
+5. Afterwards remove the token folder and `/opt/wanderer/staging`, and delete the API token in wanderer.
+
+Pitfalls:
+- Wanderer merges all `<trk>` in one GPX into a single trail. Split multi-track files first, or you get duplicated
+  routes and jumps between tracks. Check track dates before merging: order the pieces chronologically.
+- A ~6 MB Strava GPX failed with 500 "Failed to create record"; the same file without the per-point `<extensions>`
+  (heart rate, cadence; 2.3 MB) imported fine.
 
 ## Update
 Read https://wanderer.to/changelog first (v0.21 added `POCKETBASE_PROXY_SECRET`), then
