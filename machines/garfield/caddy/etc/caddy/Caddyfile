@@ -107,11 +107,6 @@ jellyfin.osteiner.xyz {
 	reverse_proxy 192.168.1.106:8096
 }
 
-# VM 118 (openclaw)
-openclaw.osteiner.xyz {
-    reverse_proxy 192.168.1.118:18789
-}
-
 # VM 202 (openwebui)
 # openwebui.osteiner.xyz {
 	# reverse_proxy 192.168.1.202:8080
