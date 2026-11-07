@@ -136,3 +136,18 @@ paperless.osteiner.xyz {
 # dawarich.osteiner.xyz {
 	# reverse_proxy 192.168.1.208:3000
 # }
+
+# Minnie (LXC 230) — project-horizon (job search)
+horizon.osteiner.xyz {
+    basic_auth {
+        oliver {$HORIZON_AUTH_HASH:$2a$14$QQzTKV/OVRNn/qRKw6jt8u1Bce2TwA.Xqhw/GdC22lya2mCkZb06y}
+    }
+    reverse_proxy 192.168.1.230:8106
+}
+# Minnie (Proxmox VM 230) — mobile plans monitor
+phone-plans-monitor.osteiner.xyz {
+	basic_auth {
+		osteiner {$PHONE_PLANS_AUTH_HASH:$2a$14$QQzTKV/OVRNn/qRKw6jt8u1Bce2TwA.Xqhw/GdC22lya2mCkZb06y}
+	}
+	reverse_proxy 192.168.1.230:8000
+}
