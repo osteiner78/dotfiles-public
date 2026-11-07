@@ -1,6 +1,6 @@
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:2
+    image: louislam/uptime-kuma:2.5.9
     volumes:
       - /opt/uptime-kuma/data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -8,3 +8,8 @@ services:
       # <Host Port>:<Container Port>
       - 127.0.0.1:3001:3001 # loopback-only: Docker bypasses UFW, so without this the port is publicly reachable; Caddy proxies from the host and only needs localhost
     restart: unless-stopped
+
+networks:
+  default:
+    driver_opts:
+      com.docker.network.driver.mtu: 1280 # match tailscale0's MTU; container's default 1500 causes silent packet loss / ECONNRESET on docker-host checks routed over the home LAN's tailscale subnet route

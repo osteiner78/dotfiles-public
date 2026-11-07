@@ -27,7 +27,7 @@ source_directories:
 # ReadWritePaths list. Prior to borgmatic 1.7.10, repositories was a
 # list of plain path strings.
 
-# relocated_repo_access_is_ok: true
+relocated_repo_access_is_ok: true
 
 # Name of the archive. Borg placeholders can be used. See the output
 # of "borg help placeholders" for details. Defaults to
